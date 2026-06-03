@@ -1,0 +1,55 @@
+@model ManagementOfForeigners.Models.ViewModels.Police.BaoCaoViPhamViewModel
+@{
+    ViewBag.Title = "Báo cáo vi phạm lên XNC";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8 col-md-10">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                <div class="card-header bg-dark text-white p-4">
+                    <h5 class="fw-bold mb-0">Báo cáo vi phạm lên Cục/Phòng XNC</h5>
+                    <p class="text-white-50 mb-0 fs-7">Báo cáo các trường hợp vi phạm nghiêm trọng cần Phòng Xuất Nhập Cảnh xử lý hoặc trục xuất</p>
+                </div>
+
+                <div class="card-body p-4">
+                    <form asp-action="BaoCaoViPham" method="post" class="needs-validation">
+                        @Html.AntiForgeryToken()
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small"></div>
+
+                        <div class="row g-3">
+                            <!-- Người nước ngoài -->
+                            <div class="col-md-12">
+                                <label asp-for="MaNguoiNuocNgoai" class="form-label fw-semibold text-dark fs-7"></label>
+                                <select asp-for="MaNguoiNuocNgoai" asp-items="ViewBag.NguoiNuocNgoais" class="form-select" style="border-radius: 8px;">
+                                    <option value="">-- Chọn người nước ngoài liên quan --</option>
+                                </select>
+                                <span asp-validation-for="MaNguoiNuocNgoai" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Nội dung báo cáo -->
+                            <div class="col-12">
+                                <label asp-for="NoiDungBaoCao" class="form-label fw-semibold text-dark fs-7"></label>
+                                <textarea asp-for="NoiDungBaoCao" class="form-control" rows="5" placeholder="Mô tả chi tiết hành vi vi phạm nghiêm trọng (Ví dụ: Cư trú bất hợp pháp, sử dụng Visa sai mục đích, lao động trái phép...)" style="border-radius: 8px;"></textarea>
+                                <span asp-validation-for="NoiDungBaoCao" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-12 d-flex justify-content-between mt-4">
+                                <a asp-action="Dashboard" class="btn btn-outline-secondary px-4 fw-semibold" style="border-radius: 8px;">
+                                    <i class="bi bi-arrow-left me-1"></i> Quay lại
+                                </a>
+                                <button type="submit" class="btn btn-dark px-4 fw-semibold" style="border-radius: 8px;">
+                                    <i class="bi bi-flag me-1"></i> Gửi báo cáo
+                                </button>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}
