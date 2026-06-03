@@ -1,0 +1,406 @@
+/* 
+ * SYSTEM PORTAL - LANDING PAGE CSS 
+ * Phong cách hành chính điện tử chính thống Việt Nam & TP. Đà Nẵng
+ */
+
+:root {
+    --portal-primary: #074580;      /* Xanh dương hành chính chính thống */
+    --portal-primary-dark: #053360; /* Xanh dương đậm */
+    --portal-primary-light: #1e64a8;/* Xanh dương sáng */
+    --portal-accent: #d32f2f;       /* Đỏ quốc kỳ / Điểm nhấn thông báo */
+    --portal-gold: #ffb300;         /* Vàng kim điểm nhấn */
+    --portal-bg: #f8fafc;           /* Nền xám nhạt */
+    --portal-surface: #ffffff;      /* Nền trắng */
+    --portal-text: #1e293b;         /* Chữ tối màu chính */
+    --portal-text-muted: #64748b;   /* Chữ phụ mờ */
+    --portal-border: #cbd5e1;       /* Đường viền */
+    --font-administrative: 'Inter', 'Segoe UI', Arial, sans-serif;
+}
+
+body {
+    background-color: var(--portal-bg);
+    color: var(--portal-text);
+    font-family: var(--font-administrative);
+    line-height: 1.6;
+    overflow-x: hidden;
+}
+
+/* TOPBAR */
+.portal-topbar {
+    background-color: #032140;
+    color: #cbd5e1;
+    font-size: 0.8rem;
+    padding: 6px 0;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.portal-topbar a {
+    color: #cbd5e1;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.portal-topbar a:hover {
+    color: #ffffff;
+}
+
+.flag-vn {
+    display: inline-block;
+    width: 18px;
+    height: 12px;
+    background-color: #da251d;
+    position: relative;
+    vertical-align: middle;
+    margin-right: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.flag-vn::before {
+    content: "★";
+    color: #ffff00;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 8px;
+    line-height: 1;
+}
+
+/* MAIN BANNER */
+.portal-header-banner {
+    background: linear-gradient(135deg, #074580 0%, #032140 100%);
+    color: #ffffff;
+    padding: 20px 0;
+    border-bottom: 3px solid var(--portal-gold);
+}
+
+.portal-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.portal-emblem {
+    width: 70px;
+    height: 70px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--portal-gold);
+    box-shadow: 0 0 15px rgba(255, 179, 0, 0.2);
+}
+
+.portal-emblem i {
+    font-size: 38px;
+    color: var(--portal-gold);
+}
+
+.portal-titles {
+    display: flex;
+    flex-direction: column;
+}
+
+.portal-title-gov {
+    font-size: 0.9rem;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    color: #93c5fd;
+    text-transform: uppercase;
+}
+
+.portal-title-main {
+    font-size: 1.4rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin: 2px 0;
+    color: #ffffff;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.portal-title-sub {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: #cbd5e1;
+    font-style: italic;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* NAVIGATION */
+.portal-navbar {
+    background-color: var(--portal-primary-dark) !important;
+    padding: 0 !important;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+    z-index: 100;
+}
+
+.portal-navbar .nav-link {
+    color: #e2e8f0 !important;
+    font-weight: 600;
+    font-size: 0.9rem;
+    padding: 15px 20px !important;
+    text-transform: uppercase;
+    border-right: 1px solid rgba(255, 255, 255, 0.05);
+    transition: all 0.2s ease;
+}
+
+.portal-navbar .nav-item:first-child .nav-link {
+    border-left: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.portal-navbar .nav-link:hover, 
+.portal-navbar .nav-item.active .nav-link {
+    background-color: var(--portal-primary-light);
+    color: #ffffff !important;
+}
+
+/* HERO BANNER */
+.portal-hero {
+    position: relative;
+    background-image: linear-gradient(rgba(3, 33, 64, 0.75), rgba(3, 33, 64, 0.85)), url('/images/landing/dragon_bridge_banner.png');
+    background-size: cover;
+    background-position: center;
+    color: #ffffff;
+    padding: 80px 0;
+    min-height: 480px;
+    display: flex;
+    align-items: center;
+    border-bottom: 5px solid var(--portal-primary);
+}
+
+.portal-hero-title {
+    font-size: 2.8rem;
+    font-weight: 800;
+    line-height: 1.25;
+    text-transform: uppercase;
+    text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+    color: #ffffff;
+}
+
+.portal-hero-title span {
+    color: var(--portal-gold);
+}
+
+/* DỊCH VỤ CÔNG SECTION */
+.section-title-admin {
+    font-size: 1.6rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    color: var(--portal-primary);
+    position: relative;
+    padding-bottom: 12px;
+    margin-bottom: 30px;
+}
+
+.section-title-admin::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 60px;
+    height: 4px;
+    background-color: var(--portal-accent);
+}
+
+.section-title-admin.center {
+    text-align: center;
+}
+
+.section-title-admin.center::after {
+    left: 50%;
+    transform: translateX(-50%);
+}
+
+.service-card-admin {
+    background-color: var(--portal-surface);
+    border: 1px solid var(--portal-border);
+    border-top: 4px solid var(--portal-primary);
+    border-radius: 6px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    padding: 24px;
+    height: 100%;
+    transition: all 0.3s ease;
+}
+
+.service-card-admin:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    border-top-color: var(--portal-accent);
+}
+
+.service-icon-admin {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    background-color: #eff6ff;
+    color: var(--portal-primary);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 28px;
+    margin-bottom: 20px;
+    border: 1px solid #dbeafe;
+    transition: all 0.3s ease;
+}
+
+.service-card-admin:hover .service-icon-admin {
+    background-color: #fef2f2;
+    color: var(--portal-accent);
+    border-color: #fee2e2;
+}
+
+/* TIN TỨC & VĂN BẢN QUY PHẠM */
+.news-item-mini {
+    padding: 12px 0;
+    border-bottom: 1px dashed var(--portal-border);
+}
+
+.news-item-mini:last-child {
+    border-bottom: none;
+}
+
+.news-date {
+    font-size: 0.75rem;
+    color: var(--portal-text-muted);
+    font-weight: 500;
+}
+
+.news-title {
+    font-size: 0.9rem;
+    font-weight: 600;
+    color: var(--portal-text);
+    text-decoration: none;
+    transition: color 0.2s;
+    display: block;
+    margin-top: 4px;
+}
+
+.news-title:hover {
+    color: var(--portal-primary-light);
+}
+
+/* QUICK LINKS BUTTONS */
+.btn-gov-primary {
+    background-color: var(--portal-primary);
+    color: #ffffff;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 24px;
+    border-radius: 4px;
+    border: none;
+    box-shadow: 0 4px 6px rgba(7, 69, 128, 0.2);
+    transition: all 0.2s ease;
+}
+
+.btn-gov-primary:hover {
+    background-color: var(--portal-primary-dark);
+    color: #ffffff;
+    box-shadow: 0 6px 8px rgba(7, 69, 128, 0.3);
+    transform: translateY(-1px);
+}
+
+.btn-gov-accent {
+    background-color: var(--portal-accent);
+    color: #ffffff;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    padding: 12px 24px;
+    border-radius: 4px;
+    border: none;
+    box-shadow: 0 4px 6px rgba(211, 47, 47, 0.2);
+    transition: all 0.2s ease;
+}
+
+.btn-gov-accent:hover {
+    background-color: #b71c1c;
+    color: #ffffff;
+    box-shadow: 0 6px 8px rgba(211, 47, 47, 0.3);
+    transform: translateY(-1px);
+}
+
+/* HOTLINE BLOCK */
+.portal-hotline-card {
+    background-color: #fef2f2;
+    border: 1px solid #fee2e2;
+    border-left: 5px solid var(--portal-accent);
+    border-radius: 6px;
+    padding: 20px;
+}
+
+/* FOOTER */
+.portal-footer {
+    background-color: #032140;
+    color: #cbd5e1;
+    font-size: 0.85rem;
+    border-top: 4px solid var(--portal-gold);
+    padding: 40px 0 20px 0;
+}
+
+.portal-footer h5 {
+    color: #ffffff;
+    font-weight: 700;
+    font-size: 1rem;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    position: relative;
+    padding-bottom: 8px;
+}
+
+.portal-footer h5::after {
+    content: "";
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    width: 40px;
+    height: 2px;
+    background-color: var(--portal-gold);
+}
+
+.portal-footer a {
+    color: #94a3b8;
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.portal-footer a:hover {
+    color: #ffffff;
+    text-decoration: underline;
+}
+
+.portal-footer-bottom {
+    background-color: #011326;
+    padding: 15px 0;
+    margin-top: 30px;
+    font-size: 0.8rem;
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* STATS BADGE */
+.stat-box {
+    background-color: var(--portal-surface);
+    border: 1px solid var(--portal-border);
+    border-radius: 6px;
+    padding: 20px;
+    text-align: center;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.stat-number {
+    font-size: 2.2rem;
+    font-weight: 800;
+    color: var(--portal-primary);
+    line-height: 1;
+    margin-bottom: 5px;
+}
+
+.stat-label {
+    font-size: 0.8rem;
+    color: var(--portal-text-muted);
+    font-weight: 600;
+    text-transform: uppercase;
+}

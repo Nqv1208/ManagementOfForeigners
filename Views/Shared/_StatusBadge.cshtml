@@ -1,0 +1,22 @@
+@model string
+
+@{
+    var badgeClass = Model switch
+    {
+        "Chờ duyệt" => "badge-cho-duyet",
+        "Đã duyệt" => "badge-da-duyet",
+        "Từ chối" => "badge-tu-choi",
+        "Đang ở" => "badge-dang-o",
+        "Đã rời" => "badge-da-roi",
+        "Quá hạn" => "badge-qua-han",
+        "Hoạt động" or "Đang hoạt động" => "badge-hoat-dong",
+        "Khoá" => "badge-khoa",
+        "Đã gửi" => "badge-da-gui",
+        "Chưa xử lý" => "badge-chua-xu-ly",
+        "Đang xử lý" => "badge-dang-xu-ly",
+        "Đã xử lý" => "badge-da-xu-ly",
+        _ => "bg-secondary"
+    };
+}
+
+<span class="badge @badgeClass">@Model</span>

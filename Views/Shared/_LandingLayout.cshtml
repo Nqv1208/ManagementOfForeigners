@@ -23,7 +23,7 @@
         <div class="container d-flex flex-wrap justify-content-between align-items-center">
             <div class="d-flex align-items-center gap-2">
                 <span class="flag-vn"></span>
-                <span class="fw-semibold text-white text-uppercase" style="letter-spacing: 0.5px; font-size: 0.72rem;">Cổng thông tin điện tử chính thức nước Cộng hòa xã hội chủ nghĩa Việt Nam</span>
+                <span class="fw-semibold text-white">CỔNG THÔNG TIN ĐIỆN TỬ CHÍNH THỨC NƯỚC CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</span>
             </div>
             <div class="d-flex align-items-center gap-3">
                 <span id="portal-realtime" class="me-2"><i class="bi bi-clock me-1"></i>Đang tải thời gian...</span>
@@ -57,86 +57,30 @@
     </header>
 
     <!-- 3. THANH ĐIỀU HƯỚNG PHẲNG HÀNH CHÍNH -->
-    <nav class="navbar navbar-expand-lg navbar-dark portal-navbar mb-4">
+    <nav class="navbar navbar-expand-lg navbar-dark portal-navbar">
         <div class="container">
-            <a class="navbar-brand d-lg-none" asp-controller="Home" asp-action="Index">
-                🌐 QL Người nước ngoài
-            </a>
             <button class="navbar-toggler my-2 ms-auto" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#mainNavbar" aria-controls="mainNavbar"
+                    data-bs-target="#landingNavbar" aria-controls="landingNavbar"
                     aria-expanded="false" aria-label="Toggle navigation">
                 <span class="navbar-toggler-icon"></span>
             </button>
-            <div class="collapse navbar-collapse" id="mainNavbar">
+            <div class="collapse navbar-collapse" id="landingNavbar">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item">
+                    <li class="nav-item active">
                         <a class="nav-link" asp-controller="Home" asp-action="Index"><i class="bi bi-house-door-fill me-1"></i> Trang chủ</a>
                     </li>
-
-                    @if (isAuthenticated)
-                    {
-                        @* ===== Menu cho Người nước ngoài ===== *@
-                        if (userRole == "NguoiNuocNgoai")
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Foreigner" asp-action="KhaiBaoTamTru"><i class="bi bi-file-earmark-text me-1"></i> Khai báo tạm trú</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Foreigner" asp-action="ThongTinCaNhan"><i class="bi bi-person-bounding-box me-1"></i> Thông tin cá nhân</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Foreigner" asp-action="LichSuCuTru"><i class="bi bi-clock-history me-1"></i> Lịch sử cư trú</a>
-                            </li>
-                        }
-
-                        @* ===== Menu cho Chủ lưu trú ===== *@
-                        if (userRole == "ChuLuuTru")
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Accommodation" asp-action="KhaiBaoLuuTru"><i class="bi bi-building-add me-1"></i> Khai báo lưu trú</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Accommodation" asp-action="DanhSachLuuTru"><i class="bi bi-card-list me-1"></i> Danh sách lưu trú</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Accommodation" asp-action="ThongTinCoSo"><i class="bi bi-house-gear me-1"></i> Thông tin cơ sở</a>
-                            </li>
-                        }
-
-                        @* ===== Menu cho Cán bộ xuất nhập cảnh ===== *@
-                        if (userRole == "CanBoXNC")
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Officer" asp-action="TraCuu"><i class="bi bi-search me-1"></i> Tra cứu</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Officer" asp-action="ThongKe"><i class="bi bi-bar-chart me-1"></i> Thống kê</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Officer" asp-action="CanhBaoViPham"><i class="bi bi-exclamation-octagon me-1"></i> Cảnh báo vi phạm</a>
-                            </li>
-                        }
-
-                        @* ===== Menu cho Công an Phường/Xã ===== *@
-                        if (userRole == "CongAn")
-                        {
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Police" asp-action="PheDuyetKhaiBao"><i class="bi bi-check2-circle me-1"></i> Phê duyệt khai báo</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Police" asp-action="TraCuu"><i class="bi bi-shield-shaded me-1"></i> Tra cứu</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Police" asp-action="CanhBao"><i class="bi bi-bell me-1"></i> Cảnh báo</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Police" asp-action="BaoCao"><i class="bi bi-file-earmark-break me-1"></i> Báo cáo</a>
-                            </li>
-                            <li class="nav-item">
-                                <a class="nav-link" asp-controller="Police" asp-action="ThongKe"><i class="bi bi-graph-up me-1"></i> Thống kê</a>
-                            </li>
-                        }
-                    }
+                    <li class="nav-item">
+                        <a class="nav-link" href="#quy-trinh"><i class="bi bi-journal-check me-1"></i> Quy trình khai báo</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#phap-luat"><i class="bi bi-card-checklist me-1"></i> Quy định pháp luật</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#thong-ke"><i class="bi bi-bar-chart-line me-1"></i> Số liệu công khai</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="#lien-he"><i class="bi bi-telephone-inbound me-1"></i> Hotline hỗ trợ</a>
+                    </li>
                 </ul>
 
                 <ul class="navbar-nav ms-auto align-items-center">
@@ -198,9 +142,8 @@
         </div>
     </nav>
 
-    <!-- 4. MAIN CONTAINER -->
-    <div class="container pb-5" style="min-height: 60vh; padding-top: 1rem;">
-        <!-- TempData Alerts -->
+    <!-- 4. TEMP DATA ALERTS -->
+    <div class="container mt-3">
         @if (TempData["SuccessMessage"] != null)
         {
             <div class="alert alert-success alert-dismissible fade show border-0 border-start border-5 border-success shadow-sm" role="alert">
@@ -215,27 +158,14 @@
                 <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
             </div>
         }
-        @if (TempData["WarningMessage"] != null)
-        {
-            <div class="alert alert-warning alert-dismissible fade show border-0 border-start border-5 border-warning shadow-sm" role="alert">
-                <i class="bi bi-exclamation-circle-fill me-2"></i> @TempData["WarningMessage"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-            </div>
-        }
-        @if (TempData["InfoMessage"] != null)
-        {
-            <div class="alert alert-info alert-dismissible fade show border-0 border-start border-5 border-info shadow-sm" role="alert">
-                <i class="bi bi-info-circle-fill me-2"></i> @TempData["InfoMessage"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-            </div>
-        }
-
-        <main role="main" class="pb-3">
-            @RenderBody()
-        </main>
     </div>
 
-    <!-- 5. FOOTER HÀNH CHÍNH ĐIỆN TỬ -->
+    <!-- 5. MAIN CONTENT -->
+    <main role="main">
+        @RenderBody()
+    </main>
+
+    <!-- 6. FOOTER HÀNH CHÍNH ĐIỆN TỬ -->
     <footer class="portal-footer">
         <div class="container">
             <div class="row g-4">
@@ -260,12 +190,12 @@
                     </ul>
                 </div>
                 <div class="col-md-6 col-lg-3">
-                    <h5>HỖ TRỢ KỸ THUẬT</h5>
+                    <h5>THỦ TỤC HÀNH CHÍNH</h5>
                     <ul class="list-unstyled d-flex flex-column gap-2 small">
-                        <li><a href="tel:0236.1022"><i class="bi bi-headset me-1"></i> Tổng đài dịch vụ công: 0236.1022</a></li>
-                        <li><a href="mailto:qlxnc@danang.gov.vn"><i class="bi bi-envelope me-1"></i> Hộp thư qlxnc@danang.gov.vn</a></li>
-                        <li><a href="~/docs.pdf" target="_blank"><i class="bi bi-file-earmark-pdf me-1"></i> Tài liệu hướng dẫn (PDF)</a></li>
-                        <li><a href="~/docs.docx" target="_blank"><i class="bi bi-file-earmark-word me-1"></i> Hướng dẫn biểu mẫu (DOCX)</a></li>
+                        <li><a href="#quy-trinh"><i class="bi bi-chevron-right me-1"></i> Quy trình đăng ký tài khoản</a></li>
+                        <li><a href="#quy-trinh"><i class="bi bi-chevron-right me-1"></i> Khai báo tạm trú cho người nước ngoài</a></li>
+                        <li><a href="#quy-trinh"><i class="bi bi-chevron-right me-1"></i> Hướng dẫn chủ cơ sở lưu trú</a></li>
+                        <li><a href="#phap-luat"><i class="bi bi-chevron-right me-1"></i> Văn bản quy phạm pháp luật liên quan</a></li>
                     </ul>
                 </div>
             </div>
