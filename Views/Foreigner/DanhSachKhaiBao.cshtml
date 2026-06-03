@@ -1,0 +1,90 @@
+@using X.PagedList.Mvc.Core
+@using X.PagedList
+@model IPagedList<ManagementOfForeigners.Models.Entities.HoSoKhaiBaoTamTru>
+@{
+    ViewBag.Title = "Lịch sử khai báo tạm trú";
+}
+
+<div class="container py-4">
+    <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+        <div class="card-header bg-dark text-white p-4 d-flex justify-content-between align-items-center">
+            <div>
+                <h5 class="fw-bold mb-0">Lịch sử khai báo tạm trú</h5>
+                <p class="text-white-50 mb-0 fs-7">Danh sách hồ sơ bạn đã tự khai báo tạm trú trên hệ thống</p>
+            </div>
+            <a asp-action="KhaiBaoTamTru" class="btn btn-light btn-sm fw-bold px-3 py-2" style="border-radius: 8px;">
+                <i class="bi bi-plus-lg me-1"></i> Khai báo mới
+            </a>
+        </div>
+
+        <div class="card-body p-4">
+            <!-- Alert TempData -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert" style="border-radius: 12px;">
+                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+            }
+
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-file-earmark-text text-muted" style="font-size: 3rem;"></i>
+                    <p class="text-muted mt-3 fs-6">Bạn chưa gửi hồ sơ khai báo tạm trú nào.</p>
+                    <a asp-action="KhaiBaoTamTru" class="btn btn-dark mt-2" style="border-radius: 8px;">Khai báo ngay</a>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 fs-7">
+                        <thead>
+                            <tr class="table-dark">
+                                <th>Mã hồ sơ</th>
+                                <th>Ngày khai báo</th>
+                                <th>Từ ngày</th>
+                                <th>Đến ngày</th>
+                                <th>Mục đích</th>
+                                <th>Địa chỉ tạm trú</th>
+                                <th>Cơ sở</th>
+                                <th class="text-center">Trạng thái</th>
+                                <th class="text-center">Hành động</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var dec in Model)
+                            {
+                                <tr>
+                                    <td class="fw-bold">@dec.MaHSKhaiBao</td>
+                                    <td>@dec.NgayKhaiBao.ToString("dd/MM/yyyy")</td>
+                                    <td>@dec.NgayBatDau.ToString("dd/MM/yyyy")</td>
+                                    <td>@dec.NgayKetThuc.ToString("dd/MM/yyyy")</td>
+                                    <td>@dec.MucDichLuuTru</td>
+                                    <td class="text-truncate" style="max-width: 150px;" title="@dec.DiaChiLuuTru">@dec.DiaChiLuuTru</td>
+                                    <td>@(dec.CoSoLuuTru?.TenCoSo ?? "Tự do")</td>
+                                    <td class="text-center">
+                                        @await Html.PartialAsync("_StatusBadge", dec.TrangThai)
+                                    </td>
+                                    <td class="text-center">
+                                        <a asp-action="ChiTietKhaiBao" asp-route-id="@dec.MaHSKhaiBao" class="btn btn-outline-dark btn-xs" style="border-radius: 6px;">Chi tiết</a>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="d-flex justify-content-center mt-4">
+                    @Html.PagedListPager(Model, page => Url.Action("DanhSachKhaiBao", new { page }),
+                        new X.PagedList.Mvc.Core.PagedListRenderOptions {
+                            LiElementClasses = new string[] { "page-item" },
+                            PageClasses = new string[] { "page-link" },
+                            UlElementClasses = new string[] { "pagination", "pagination-sm" }
+                        })
+                </div>
+            }
+        </div>
+    </div>
+</div>

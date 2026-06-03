@@ -1,0 +1,132 @@
+@using X.PagedList.Mvc.Core
+@using X.PagedList
+@model IPagedList<ManagementOfForeigners.Models.Entities.LichSuCuTru>
+@{
+    ViewBag.Title = "Lịch sử cư trú & Cập nhật nơi ở";
+    var cuTruModel = ViewBag.CuTruModel as ManagementOfForeigners.Models.ViewModels.Foreigner.CuTruViewModel ?? new ManagementOfForeigners.Models.ViewModels.Foreigner.CuTruViewModel();
+}
+
+<div class="container py-4">
+    <div class="row g-4">
+        <!-- List of stay history -->
+        <div class="col-lg-7">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                <div class="card-header bg-dark text-white p-4">
+                    <h5 class="fw-bold mb-0">Lịch sử cư trú cá nhân</h5>
+                    <p class="text-white-50 mb-0 fs-7">Theo dõi nơi ở và lịch trình di chuyển của bạn tại Đà Nẵng</p>
+                </div>
+
+                <div class="card-body p-4">
+                    <!-- Alert TempData -->
+                    @if (TempData["SuccessMessage"] != null)
+                    {
+                        <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert" style="border-radius: 12px;">
+                            <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                    }
+
+                    @if (!Model.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-geo-alt-fill text-muted" style="font-size: 3rem;"></i>
+                            <p class="text-muted mt-3 mb-0">Bạn chưa khai báo lịch sử cư trú nào.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="timeline fs-7">
+                            @foreach (var item in Model)
+                            {
+                                <div class="card mb-3 border-0 shadow-none bg-light p-3" style="border-radius: 12px; border-left: 4px solid @(item.TrangThai == "Đang ở" ? "#198754" : "#6c757d") !important;">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <span class="badge @(item.TrangThai == "Đang ở" ? "bg-success" : "bg-secondary")">
+                                            @item.TrangThai
+                                        </span>
+                                        <small class="text-muted fw-bold">
+                                            @item.NgayBatDau.ToString("dd/MM/yyyy") - 
+                                            @(item.NgayKetThuc.HasValue ? item.NgayKetThuc.Value.ToString("dd/MM/yyyy") : "Hiện tại")
+                                        </small>
+                                    </div>
+                                    <h6 class="fw-bold text-dark mb-1">@(item.CoSoLuuTru?.TenCoSo ?? "Cư trú tự do / Ngoài cơ sở")</h6>
+                                    <p class="mb-1 text-secondary fs-7"><i class="bi bi-geo-alt me-1"></i> @(item.CoSoLuuTru?.DiaChi ?? "Địa chỉ tự khai")</p>
+                                    <div class="d-flex justify-content-between text-muted fs-8 mt-2">
+                                        <span>Phòng: <strong>@item.Phong</strong></span>
+                                        @if (!string.IsNullOrEmpty(item.GhiChu))
+                                        {
+                                            <span>Ghi chú: @item.GhiChu</span>
+                                        }
+                                    </div>
+                                </div>
+                            }
+                        </div>
+
+                        <!-- Pagination -->
+                        <div class="d-flex justify-content-center mt-3">
+                            @Html.PagedListPager(Model, page => Url.Action("LichSuCuTru", new { page }),
+                                new X.PagedList.Mvc.Core.PagedListRenderOptions {
+                                    LiElementClasses = new string[] { "page-item" },
+                                    PageClasses = new string[] { "page-link" },
+                                    UlElementClasses = new string[] { "pagination", "pagination-sm" }
+                                })
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Declaration of new stay / Update residence -->
+        <div class="col-lg-5">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                <div class="card-header bg-dark text-white p-4">
+                    <h5 class="fw-bold mb-0">Cập nhật nơi cư trú mới</h5>
+                    <p class="text-white-50 mb-0 fs-7">Khai báo ngay khi bạn chuyển đến nơi ở mới</p>
+                </div>
+
+                <form asp-action="CapNhatNoiCuTru" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="card-body p-4">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark fs-7">Cơ sở lưu trú đăng ký mới</label>
+                            <select name="MaCoSoLuuTru" asp-items="ViewBag.CoSoLuuTrus" class="form-select" style="border-radius: 8px;" required>
+                                <option value="">-- Chọn cơ sở lưu trú tại Đà Nẵng --</option>
+                            </select>
+                            <span class="text-danger fs-8"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark fs-7">Số phòng / Số căn hộ</label>
+                            <input name="Phong" class="form-control" placeholder="Ví dụ: Phòng 402, Villa A..." style="border-radius: 8px;" required />
+                            <span class="text-danger fs-8"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark fs-7">Ngày bắt đầu đến ở</label>
+                            <input name="NgayBatDau" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" style="border-radius: 8px;" required />
+                            <span class="text-danger fs-8"></span>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label fw-semibold text-dark fs-7">Ghi chú / Yêu cầu thêm</label>
+                            <textarea name="GhiChu" class="form-control" rows="3" placeholder="Ghi chú thêm về nơi ở..." style="border-radius: 8px;"></textarea>
+                        </div>
+
+                        <div class="alert alert-warning fs-8 text-muted border-0 p-2" style="border-radius: 8px;">
+                            <i class="bi bi-info-circle me-1"></i> <strong>Lưu ý:</strong> Khi bạn khai báo nơi ở mới, hệ thống sẽ tự động cập nhật trạng thái nơi ở cũ của bạn thành "Đã rời".
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-transparent border-0 p-4">
+                        <button type="submit" class="btn btn-dark w-100 py-2 fw-bold" style="border-radius: 8px;">Xác nhận chuyển nơi ở</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}

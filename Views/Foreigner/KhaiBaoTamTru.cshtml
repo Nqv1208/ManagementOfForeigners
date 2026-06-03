@@ -1,0 +1,80 @@
+@model ManagementOfForeigners.Models.ViewModels.Foreigner.KhaiBaoViewModel
+@{
+    ViewBag.Title = "Khai báo tạm trú";
+}
+
+<div class="container py-4">
+    <div class="row justify-content-center">
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                <div class="card-header bg-dark text-white p-4">
+                    <h5 class="fw-bold mb-0">Tờ khai báo tạm trú cho người nước ngoài</h5>
+                    <p class="text-white-50 mb-0 fs-7">Nhập đầy đủ thông tin lưu trú của bạn tại thành phố Đà Nẵng</p>
+                </div>
+
+                <form asp-action="KhaiBaoTamTru" method="post">
+                    @Html.AntiForgeryToken()
+                    <div class="card-body p-4">
+                        <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-6">
+                                <label asp-for="NgayBatDau" class="form-label fw-semibold text-dark fs-7"></label>
+                                <input asp-for="NgayBatDau" class="form-control" type="date" style="border-radius: 8px;" />
+                                <span asp-validation-for="NgayBatDau" class="text-danger fs-8"></span>
+                            </div>
+                            <div class="col-md-6">
+                                <label asp-for="NgayKetThuc" class="form-label fw-semibold text-dark fs-7"></label>
+                                <input asp-for="NgayKetThuc" class="form-control" type="date" style="border-radius: 8px;" />
+                                <span asp-validation-for="NgayKetThuc" class="text-danger fs-8"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-12">
+                                <label asp-for="MucDichLuuTru" class="form-label fw-semibold text-dark fs-7"></label>
+                                <input asp-for="MucDichLuuTru" class="form-control" placeholder="Ví dụ: Du lịch, Làm việc, Học tập..." style="border-radius: 8px;" />
+                                <span asp-validation-for="MucDichLuuTru" class="text-danger fs-8"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-12">
+                                <label asp-for="DiaChiLuuTru" class="form-label fw-semibold text-dark fs-7"></label>
+                                <input asp-for="DiaChiLuuTru" class="form-control" placeholder="Số nhà, tên đường, phường/xã, quận/huyện tại Đà Nẵng" style="border-radius: 8px;" />
+                                <span asp-validation-for="DiaChiLuuTru" class="text-danger fs-8"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3 mb-4">
+                            <div class="col-md-12">
+                                <label asp-for="MaCoSoLuuTru" class="form-label fw-semibold text-dark fs-7"></label>
+                                <select asp-for="MaCoSoLuuTru" asp-items="ViewBag.CoSoLuuTrus" class="form-select" style="border-radius: 8px;">
+                                    <option value="">-- Tự do / Không thuộc cơ sở lưu trú đăng ký --</option>
+                                </select>
+                                <span asp-validation-for="MaCoSoLuuTru" class="text-danger fs-8"></span>
+                            </div>
+                        </div>
+
+                        <div class="row g-3">
+                            <div class="col-md-12">
+                                <label asp-for="GhiChu" class="form-label fw-semibold text-dark fs-7"></label>
+                                <textarea asp-for="GhiChu" class="form-control" rows="3" placeholder="Ghi chú thêm (nếu có)..." style="border-radius: 8px;"></textarea>
+                                <span asp-validation-for="GhiChu" class="text-danger fs-8"></span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="card-footer bg-transparent border-0 p-4 d-flex justify-content-between">
+                        <a asp-action="Dashboard" class="btn btn-outline-secondary px-4" style="border-radius: 8px;">Hủy</a>
+                        <button type="submit" class="btn btn-dark px-4" style="border-radius: 8px;">Nộp tờ khai</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+}
