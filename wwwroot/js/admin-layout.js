@@ -20,7 +20,7 @@ document.addEventListener("DOMContentLoaded", function () {
     // Tự động đóng khi chọn menu trên mobile
     menuLinks.forEach(link => {
         link.addEventListener("click", function () {
-            if (window.innerWidth < 992 && sidebar) {
+            if (window.innerWidth < 768 && sidebar) {
                 sidebar.classList.remove("show");
             }
         });
