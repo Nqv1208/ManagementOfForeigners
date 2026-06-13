@@ -11,7 +11,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
     let debounceTimeout = null;
 
-    // 1. Reset facility when ward changes
+    // 1. Clear selected facility when ward changes
     if (phuongXaSelect) {
         phuongXaSelect.addEventListener("change", function () {
             clearSelectedFacility();
@@ -25,7 +25,7 @@ document.addEventListener("DOMContentLoaded", function () {
             const query = this.value.trim();
             clearTimeout(debounceTimeout);
 
-            // If user types, clear previously selected hidden ID to enforce selection from autocomplete list
+            // Clear hidden ID to ensure user picks from autocomplete list
             coSoIdInput.value = "";
             searchInput.classList.remove("is-valid");
 
@@ -48,7 +48,7 @@ document.addEventListener("DOMContentLoaded", function () {
         });
     }
 
-    // Fetch matching facilities via AJAX
+    // Fetch facilities from server
     function fetchFacilities(keyword) {
         const phuongXaId = phuongXaSelect ? phuongXaSelect.value : "";
         let url = `/Foreigner/SearchCoSoLuuTru?keyword=${encodeURIComponent(keyword)}`;
@@ -57,7 +57,7 @@ document.addEventListener("DOMContentLoaded", function () {
         }
 
         // Show loading indicator
-        resultsContainer.innerHTML = '<div class="p-3 text-muted text-center"><span class="spinner-border spinner-border-sm me-2" role="status"></span>Đang tìm kiếm cơ sở lưu trú...</div>';
+        resultsContainer.innerHTML = '<div class="p-3 text-muted text-center"><span class="spinner-border spinner-border-sm me-2 text-primary" role="status"></span>Đang tìm kiếm...</div>';
         resultsContainer.style.display = "block";
 
         fetch(url)
@@ -90,25 +90,16 @@ document.addEventListener("DOMContentLoaded", function () {
             item.innerHTML = `
                 <div class="search-result-name">
                     ${escapeHtml(facility.tenCoSo)} 
-                    <span class="badge ${facility.isActive ? 'bg-success' : 'bg-secondary'} search-result-badge">
-                        ${facility.isActive ? 'Đang hoạt động' : 'Ngừng hoạt động'}
-                    </span>
                 </div>
                 <div class="search-result-address text-truncate">
-                    <i class="bi bi-geo-alt me-1"></i>${escapeHtml(facility.diaChi)} | Phường/Xã: ${escapeHtml(facility.phuongXa)}
+                    <i class="bi bi-geo-alt me-1"></i>${escapeHtml(facility.diaChi)} | Phường: ${escapeHtml(facility.phuongXa)}
                 </div>
                 ${facility.soDienThoai ? `<div class="search-result-address"><i class="bi bi-telephone me-1"></i>SĐT: ${escapeHtml(facility.soDienThoai)}</div>` : ''}
             `;
 
-            // If facility is inactive, disable selecting
-            if (!facility.isActive) {
-                item.style.opacity = "0.5";
-                item.style.cursor = "not-allowed";
-            } else {
-                item.addEventListener("click", function () {
-                    selectFacility(facility);
-                });
-            }
+            item.addEventListener("click", function () {
+                selectFacility(facility);
+            });
 
             resultsContainer.appendChild(item);
         });
@@ -119,7 +110,11 @@ document.addEventListener("DOMContentLoaded", function () {
         coSoIdInput.value = facility.id;
         searchInput.classList.add("is-valid");
         searchInput.classList.remove("is-invalid");
-        document.getElementById("CoSoLuuTruId-error-custom").style.display = "none";
+        
+        const errorSpan = document.getElementById("CoSoLuuTruId-error-custom");
+        if (errorSpan) {
+            errorSpan.style.display = "none";
+        }
         hideResults();
         
         // Auto-fill address detail if empty
@@ -133,6 +128,7 @@ document.addEventListener("DOMContentLoaded", function () {
         if (searchInput) {
             searchInput.value = "";
             searchInput.classList.remove("is-valid");
+            searchInput.classList.remove("is-invalid");
         }
         if (coSoIdInput) {
             coSoIdInput.value = "";
@@ -151,7 +147,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
         if (searchInput.value.trim() !== "" && coSoIdInput.value === "") {
             searchInput.classList.add("is-invalid");
-            errorSpan.textContent = "Vui lòng chọn cơ sở lưu trú từ danh sách gợi ý.";
+            errorSpan.textContent = "Vui lòng chọn cơ sở lưu trú hợp lệ từ danh sách gợi ý.";
             errorSpan.style.display = "block";
         } else if (searchInput.value.trim() === "") {
             errorSpan.style.display = "none";
@@ -187,7 +183,7 @@ document.addEventListener("DOMContentLoaded", function () {
         toggleMucDichKhac(); // Initial state
     }
 
-    // 4. Enable submit button upon ticking the agreement checkbox
+    // 4. Enable submit button upon checking the agreement checkbox
     if (commitCheckbox && submitBtn) {
         commitCheckbox.addEventListener("change", function () {
             submitBtn.disabled = !this.checked;

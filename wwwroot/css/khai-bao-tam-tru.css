@@ -1,50 +1,55 @@
-/* Premium CSS for Residence Declaration Form */
+/* Minimalist Blue CSS for Residence Declaration Form */
 :root {
-    --police-primary: #0a5c36;
-    --police-primary-dark: #053d23;
-    --police-accent: #d4af37;
-    --police-accent-light: #fef08a;
-    --police-bg: #f8fafc;
-    --border-color: #e2e8f0;
+    --primary: #0d47a1;
+    --primary-dark: #08306b;
+    --primary-soft: #eaf2ff;
+    --border: #d9e2f0;
+    --text: #1f2937;
+    --muted: #6b7280;
+    --bg: #f7f9fc;
+    --card: #ffffff;
+    --danger: #dc2626;
 }
 
 .temporary-residence-page {
-    background-color: var(--police-bg);
+    background-color: var(--bg);
     min-height: 100vh;
-    padding-bottom: 3rem;
+    padding-bottom: 2rem;
+    color: var(--text);
+    font-family: 'Inter', sans-serif;
 }
 
 .declaration-shell {
-    max-width: 1000px;
+    max-width: 960px;
     margin: 0 auto;
 }
 
-/* Step Indicator */
-.declaration-steps {
+/* Minimalist Stepper */
+.stepper {
     display: flex;
     justify-content: space-between;
     position: relative;
-    margin-bottom: 2.5rem;
+    margin-bottom: 2rem;
     padding: 0 1rem;
 }
 
-.declaration-steps::before {
+.stepper::before {
     content: '';
     position: absolute;
     top: 50%;
     left: 0;
     right: 0;
-    height: 3px;
-    background-color: var(--border-color);
+    height: 2px;
+    background-color: var(--border);
     z-index: 1;
     transform: translateY(-50%);
 }
 
-.declaration-step-item {
+.step {
     position: relative;
     z-index: 2;
-    background-color: var(--police-bg);
-    padding: 0 15px;
+    background-color: var(--bg);
+    padding: 0 10px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -52,137 +57,134 @@
 }
 
 .step-number {
-    width: 40px;
-    height: 40px;
+    width: 32px;
+    height: 32px;
     border-radius: 50%;
     background-color: white;
-    border: 3px solid var(--border-color);
+    border: 2px solid var(--border);
     display: flex;
     align-items: center;
     justify-content: center;
-    font-weight: 700;
-    color: #64748b;
-    margin-bottom: 0.5rem;
-    transition: all 0.3s ease;
-    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    font-weight: 600;
+    font-size: 0.85rem;
+    color: var(--muted);
+    margin-bottom: 0.35rem;
+    transition: all 0.2s ease;
 }
 
-.declaration-step-item.active .step-number {
-    background-color: var(--police-primary);
-    border-color: var(--police-primary);
+.step.active .step-number {
+    background-color: var(--primary);
+    border-color: var(--primary);
     color: white;
-    box-shadow: 0 0 0 4px rgba(10, 92, 54, 0.2);
 }
 
-.declaration-step-item.completed .step-number {
-    background-color: var(--police-accent);
-    border-color: var(--police-accent);
-    color: var(--police-primary-dark);
+.step.completed .step-number {
+    background-color: var(--primary-soft);
+    border-color: var(--primary);
+    color: var(--primary-dark);
 }
 
 .step-label {
-    font-size: 0.8rem;
+    font-size: 0.75rem;
+    font-weight: 500;
+    color: var(--muted);
+}
+
+.step.active .step-label {
+    color: var(--primary-dark);
     font-weight: 600;
-    color: #64748b;
-    max-width: 150px;
 }
 
-.declaration-step-item.active .step-label {
-    color: var(--police-primary-dark);
-    font-weight: 700;
-}
-
-/* Cards */
-.declaration-card {
-    background-color: white;
-    border-radius: 16px;
-    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
-    border: 1px solid var(--border-color);
-    margin-bottom: 2rem;
-    overflow: hidden;
-    transition: transform 0.2s ease, box-shadow 0.2s ease;
-}
-
-.declaration-card-header {
-    background-color: var(--police-primary-dark);
-    color: white;
-    padding: 1.25rem 1.75rem;
-    border-bottom: 3px solid var(--police-accent);
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-}
-
-.declaration-card-body {
-    padding: 2rem;
-}
-
-.declaration-section-title {
-    font-size: 1.15rem;
-    font-weight: 700;
-    color: var(--police-primary-dark);
+/* Minimalist Sections */
+.declaration-section {
+    background-color: var(--card);
+    border-radius: 8px;
+    border: 1px solid var(--border);
+    padding: 1.75rem;
     margin-bottom: 1.5rem;
+}
+
+.section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--primary-dark);
+    margin-bottom: 1.25rem;
     display: flex;
     align-items: center;
-    gap: 10px;
-    border-bottom: 1px solid #f1f5f9;
-    padding-bottom: 0.75rem;
+    gap: 8px;
+    border-bottom: 1px solid var(--border);
+    padding-bottom: 0.5rem;
+    text-transform: none; /* No overbearing uppercase */
 }
 
-/* Profile Summary Grid */
-.profile-summary-grid {
+/* Readonly Grid */
+.readonly-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
-    gap: 1.25rem;
+    grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+    gap: 1rem;
 }
 
-.readonly-info {
+.readonly-field {
     background-color: #f8fafc;
     border: 1px solid #f1f5f9;
-    border-radius: 8px;
-    padding: 0.75rem 1rem;
-    position: relative;
-    min-height: 65px;
+    border-radius: 6px;
+    padding: 0.5rem 0.75rem;
 }
 
-.readonly-info-label {
-    font-size: 0.72rem;
+.readonly-label {
+    font-size: 0.7rem;
     font-weight: 600;
-    color: #64748b;
+    color: var(--muted);
     text-transform: uppercase;
-    margin-bottom: 0.25rem;
+    margin-bottom: 0.15rem;
     display: block;
 }
 
-.readonly-info-value {
-    font-size: 0.9rem;
-    font-weight: 700;
-    color: #1e293b;
+.readonly-value {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--text);
     word-break: break-all;
 }
 
-.readonly-info-value .badge {
+.readonly-value .badge {
     font-size: 0.75rem;
-    padding: 0.25rem 0.5rem;
+    padding: 0.2rem 0.4rem;
+}
+
+/* Form inputs styling */
+.form-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text);
+    margin-bottom: 0.35rem;
+}
+
+.form-control, .form-select {
+    font-size: 0.85rem;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    padding: 0.45rem 0.75rem;
+    color: var(--text);
+    transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+}
+
+.form-control:focus, .form-select:focus {
+    border-color: var(--primary);
+    box-shadow: 0 0 0 3px rgba(13, 71, 161, 0.15);
+}
+
+.form-control.is-invalid, .form-select.is-invalid {
+    border-color: var(--danger);
+}
+
+.form-control.is-invalid:focus, .form-select.is-invalid:focus {
+    box-shadow: 0 0 0 3px rgba(220, 38, 38, 0.15);
 }
 
 /* Search Combobox Autocomplete */
 .search-combobox {
     position: relative;
-}
-
-.search-combobox .input-group-text {
-    background-color: white;
-    border-right: none;
-    color: #64748b;
-}
-
-.search-combobox .form-control {
-    border-left: none;
-}
-
-.search-combobox .form-control:focus {
-    box-shadow: none;
 }
 
 .search-results {
@@ -192,20 +194,20 @@
     right: 0;
     z-index: 1000;
     background-color: white;
-    border: 1px solid var(--border-color);
-    border-radius: 8px;
-    margin-top: 5px;
-    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
-    max-height: 250px;
+    border: 1px solid var(--border);
+    border-radius: 6px;
+    margin-top: 4px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.05);
+    max-height: 220px;
     overflow-y: auto;
     display: none;
 }
 
 .search-result-item {
-    padding: 0.75rem 1rem;
+    padding: 0.6rem 0.9rem;
     cursor: pointer;
     border-bottom: 1px solid #f1f5f9;
-    transition: background-color 0.15s ease;
+    transition: background-color 0.1s ease;
 }
 
 .search-result-item:last-child {
@@ -213,87 +215,97 @@
 }
 
 .search-result-item:hover, .search-result-item.selected {
-    background-color: #f0fdf4;
+    background-color: var(--primary-soft);
 }
 
 .search-result-name {
-    font-weight: 700;
-    color: var(--police-primary-dark);
-    font-size: 0.9rem;
-    margin-bottom: 0.15rem;
+    font-weight: 600;
+    color: var(--primary-dark);
+    font-size: 0.85rem;
+    margin-bottom: 0.1rem;
 }
 
 .search-result-address {
-    font-size: 0.75rem;
-    color: #64748b;
+    font-size: 0.72rem;
+    color: var(--muted);
 }
 
 .search-result-badge {
     font-size: 0.65rem;
-    font-weight: 600;
-    margin-left: 5px;
+    font-weight: 500;
+    margin-left: 4px;
 }
 
-/* Validation */
-.required::after {
-    content: " *";
-    color: #ef4444;
-    font-weight: bold;
-}
-
-.form-hint {
-    font-size: 0.72rem;
-    color: #64748b;
-    margin-top: 0.25rem;
-}
-
-/* Actions Footer */
-.declaration-actions {
+/* Form Actions */
+.form-actions {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-top: 2rem;
-    padding-top: 1.5rem;
-    border-top: 1px solid var(--border-color);
+    margin-top: 1.5rem;
 }
 
-.btn-police-primary {
-    background-color: var(--police-primary);
-    border-color: var(--police-primary);
+.btn-primary-blue {
+    background-color: var(--primary);
+    border-color: var(--primary);
     color: white;
+    font-size: 0.85rem;
     font-weight: 600;
-    padding: 0.6rem 1.75rem;
-    border-radius: 8px;
-    transition: all 0.25s ease;
+    padding: 0.5rem 1.5rem;
+    border-radius: 6px;
+    transition: all 0.15s ease;
 }
 
-.btn-police-primary:hover:not(:disabled) {
-    background-color: var(--police-primary-dark);
-    border-color: var(--police-primary-dark);
+.btn-primary-blue:hover:not(:disabled) {
+    background-color: var(--primary-dark);
+    border-color: var(--primary-dark);
     color: white;
-    box-shadow: 0 4px 12px rgba(10, 92, 54, 0.25);
 }
 
-.btn-police-primary:disabled {
-    background-color: #94a3b8;
-    border-color: #94a3b8;
+.btn-primary-blue:disabled {
+    background-color: #9ca3af;
+    border-color: #9ca3af;
     cursor: not-allowed;
-    opacity: 0.7;
+    opacity: 0.75;
 }
 
-.disclaimer-card {
+/* Required field indicator */
+.required::after {
+    content: " *";
+    color: var(--danger);
+    font-weight: bold;
+}
+
+/* Warnings and Notes */
+.validation-message {
+    color: var(--danger);
+    font-size: 0.75rem;
+    margin-top: 0.25rem;
+    display: block;
+}
+
+.warning-note {
     background-color: #fffbeb;
     border: 1px solid #fef3c7;
-    border-radius: 12px;
-    padding: 1.25rem;
-    margin-top: 2.5rem;
+    border-radius: 6px;
+    padding: 1rem;
+    font-size: 0.75rem;
+    color: #b45309;
+    margin-top: 1.5rem;
+}
+
+.form-check-label {
+    font-size: 0.8rem;
+    font-weight: 500;
+    color: var(--text);
+    cursor: pointer;
+    user-select: none;
 }
 
 @media (max-width: 768px) {
-    .declaration-steps {
+    .stepper {
         display: none;
     }
-    .declaration-card-body {
+    .declaration-section {
         padding: 1.25rem;
     }
 }
