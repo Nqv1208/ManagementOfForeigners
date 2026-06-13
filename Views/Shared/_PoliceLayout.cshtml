@@ -1,0 +1,138 @@
+@inject ManagementOfForeigners.Data.ApplicationDbContext DbContext
+@using Microsoft.EntityFrameworkCore
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Cổng Thông tin Công an Phường/Xã</title>
+    <!-- CSS Dependencies -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/police-layout.css" asp-append-version="true" />
+</head>
+<body>
+    @{
+        var userId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+        var canBo = DbContext.CanBos.Include(c => c.PhuongXa).FirstOrDefault(c => c.MaTaiKhoan == userId);
+        var tenureTitle = canBo?.PhuongXa?.TenPhuongXa ?? "Công an Phường/Xã";
+        var officerName = canBo?.HoTen ?? User.Identity?.Name ?? "Cán bộ công an";
+        
+        var controllerName = ViewContext.RouteData.Values["Controller"]?.ToString();
+        var actionName = ViewContext.RouteData.Values["Action"]?.ToString();
+    }
+
+    <!-- 1. PORTAL TOPBAR QUỐC GIA -->
+    <partial name="_PortalTopbar" />
+
+    <!-- 2. POLICE CONTAINER WRAPPER -->
+    <div class="police-wrapper">
+        <!-- 2.1 SIDEBAR BÊN TRÁI -->
+        <aside class="police-sidebar">
+            <div class="police-sidebar-header">
+                <img class="police-sidebar-logo" src="~/images/police/police-logo.png" alt="Logo Công an Nhân dân Việt Nam" />
+                <div class="police-sidebar-title">
+                    <h1>@tenureTitle</h1>
+                    <span>Hệ thống Quản lý</span>
+                </div>
+            </div>
+
+            <ul class="police-sidebar-menu">
+                <li class="police-menu-item @(actionName == "Dashboard" ? "active" : "")">
+                    <a asp-controller="Police" asp-action="Dashboard">
+                        <i class="bi bi-grid-fill"></i> Tổng quan
+                    </a>
+                </li>
+                <li class="police-menu-item @(actionName == "DanhSachKhaiBao" || actionName == "ChiTietKhaiBao" ? "active" : "")">
+                    <a asp-controller="Police" asp-action="DanhSachKhaiBao">
+                        <i class="bi bi-file-earmark-check-fill"></i> Phê duyệt khai báo
+                    </a>
+                </li>
+                <li class="police-menu-item @(actionName == "TraCuu" ? "active" : "")">
+                    <a asp-controller="Police" asp-action="TraCuu">
+                        <i class="bi bi-person-badge-fill"></i> Tra cứu địa bàn
+                    </a>
+                </li>
+                <li class="police-menu-item @(actionName == "CanhBaoViPham" ? "active" : "")">
+                    <a asp-controller="Police" asp-action="CanhBaoViPham">
+                        <i class="bi bi-exclamation-triangle-fill"></i> Cảnh báo vi phạm
+                    </a>
+                </li>
+                <li class="police-menu-item @(actionName == "BaoCaoViPham" ? "active" : "")">
+                    <a asp-controller="Police" asp-action="BaoCaoViPham">
+                        <i class="bi bi-megaphone-fill"></i> Báo cáo vi phạm
+                    </a>
+                </li>
+                <li class="police-menu-item @(actionName == "ThongKe" ? "active" : "")">
+                    <a asp-controller="Police" asp-action="ThongKe">
+                        <i class="bi bi-graph-up-arrow"></i> Thống kê báo cáo
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- 2.2 NỘI DUNG CHÍNH & TOPBAR -->
+        <div class="police-main-container">
+            <!-- TOPBAR TRONG -->
+            <header class="police-topbar shadow-sm">
+                <div class="police-topbar-left">
+                    <button class="police-sidebar-toggle" aria-label="Toggle Sidebar Menu">
+                        <i class="bi bi-list"></i>
+                    </button>
+                    <span class="fw-bold text-uppercase text-success small d-none d-md-inline-block">
+                        <i class="bi bi-shield-fill-check me-1"></i> Trang quản lý chuyên dùng Công an cấp cơ sở
+                    </span>
+                </div>
+                <div class="police-topbar-right">
+                    <div class="police-user-info">
+                        <span class="police-user-name">@officerName</span>
+                        <span class="police-user-role">Cán bộ Phường/Xã</span>
+                    </div>
+                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline m-0">
+                        @Html.AntiForgeryToken()
+                        <button type="submit" class="btn btn-outline-danger btn-sm rounded-1 px-3">
+                            <i class="bi bi-box-arrow-right me-1"></i> Đăng xuất
+                        </button>
+                    </form>
+                </div>
+            </header>
+
+            <!-- KHU VỰC CHỨA NỘI DUNG VÀ WATERMARK -->
+            <main class="police-content" role="main">
+                <!-- TempData Alerts -->
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success alert-dismissible fade show border-0 border-start border-5 border-success shadow-sm" role="alert">
+                        <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+                    </div>
+                }
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger alert-dismissible fade show border-0 border-start border-5 border-danger shadow-sm" role="alert">
+                        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+                    </div>
+                }
+                @if (TempData["WarningMessage"] != null)
+                {
+                    <div class="alert alert-warning alert-dismissible fade show border-0 border-start border-5 border-warning shadow-sm" role="alert">
+                        <i class="bi bi-exclamation-circle-fill me-2"></i> @TempData["WarningMessage"]
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
+                    </div>
+                }
+
+                @RenderBody()
+            </main>
+        </div>
+    </div>
+
+    <!-- JS Dependencies -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/police-layout.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>
