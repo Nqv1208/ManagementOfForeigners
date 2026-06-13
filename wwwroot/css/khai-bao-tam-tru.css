@@ -1,0 +1,299 @@
+/* Premium CSS for Residence Declaration Form */
+:root {
+    --police-primary: #0a5c36;
+    --police-primary-dark: #053d23;
+    --police-accent: #d4af37;
+    --police-accent-light: #fef08a;
+    --police-bg: #f8fafc;
+    --border-color: #e2e8f0;
+}
+
+.temporary-residence-page {
+    background-color: var(--police-bg);
+    min-height: 100vh;
+    padding-bottom: 3rem;
+}
+
+.declaration-shell {
+    max-width: 1000px;
+    margin: 0 auto;
+}
+
+/* Step Indicator */
+.declaration-steps {
+    display: flex;
+    justify-content: space-between;
+    position: relative;
+    margin-bottom: 2.5rem;
+    padding: 0 1rem;
+}
+
+.declaration-steps::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 3px;
+    background-color: var(--border-color);
+    z-index: 1;
+    transform: translateY(-50%);
+}
+
+.declaration-step-item {
+    position: relative;
+    z-index: 2;
+    background-color: var(--police-bg);
+    padding: 0 15px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+.step-number {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background-color: white;
+    border: 3px solid var(--border-color);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-weight: 700;
+    color: #64748b;
+    margin-bottom: 0.5rem;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+}
+
+.declaration-step-item.active .step-number {
+    background-color: var(--police-primary);
+    border-color: var(--police-primary);
+    color: white;
+    box-shadow: 0 0 0 4px rgba(10, 92, 54, 0.2);
+}
+
+.declaration-step-item.completed .step-number {
+    background-color: var(--police-accent);
+    border-color: var(--police-accent);
+    color: var(--police-primary-dark);
+}
+
+.step-label {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #64748b;
+    max-width: 150px;
+}
+
+.declaration-step-item.active .step-label {
+    color: var(--police-primary-dark);
+    font-weight: 700;
+}
+
+/* Cards */
+.declaration-card {
+    background-color: white;
+    border-radius: 16px;
+    box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.05), 0 8px 10px -6px rgba(0, 0, 0, 0.05);
+    border: 1px solid var(--border-color);
+    margin-bottom: 2rem;
+    overflow: hidden;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.declaration-card-header {
+    background-color: var(--police-primary-dark);
+    color: white;
+    padding: 1.25rem 1.75rem;
+    border-bottom: 3px solid var(--police-accent);
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.declaration-card-body {
+    padding: 2rem;
+}
+
+.declaration-section-title {
+    font-size: 1.15rem;
+    font-weight: 700;
+    color: var(--police-primary-dark);
+    margin-bottom: 1.5rem;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    border-bottom: 1px solid #f1f5f9;
+    padding-bottom: 0.75rem;
+}
+
+/* Profile Summary Grid */
+.profile-summary-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+    gap: 1.25rem;
+}
+
+.readonly-info {
+    background-color: #f8fafc;
+    border: 1px solid #f1f5f9;
+    border-radius: 8px;
+    padding: 0.75rem 1rem;
+    position: relative;
+    min-height: 65px;
+}
+
+.readonly-info-label {
+    font-size: 0.72rem;
+    font-weight: 600;
+    color: #64748b;
+    text-transform: uppercase;
+    margin-bottom: 0.25rem;
+    display: block;
+}
+
+.readonly-info-value {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: #1e293b;
+    word-break: break-all;
+}
+
+.readonly-info-value .badge {
+    font-size: 0.75rem;
+    padding: 0.25rem 0.5rem;
+}
+
+/* Search Combobox Autocomplete */
+.search-combobox {
+    position: relative;
+}
+
+.search-combobox .input-group-text {
+    background-color: white;
+    border-right: none;
+    color: #64748b;
+}
+
+.search-combobox .form-control {
+    border-left: none;
+}
+
+.search-combobox .form-control:focus {
+    box-shadow: none;
+}
+
+.search-results {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    z-index: 1000;
+    background-color: white;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    margin-top: 5px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -4px rgba(0, 0, 0, 0.1);
+    max-height: 250px;
+    overflow-y: auto;
+    display: none;
+}
+
+.search-result-item {
+    padding: 0.75rem 1rem;
+    cursor: pointer;
+    border-bottom: 1px solid #f1f5f9;
+    transition: background-color 0.15s ease;
+}
+
+.search-result-item:last-child {
+    border-bottom: none;
+}
+
+.search-result-item:hover, .search-result-item.selected {
+    background-color: #f0fdf4;
+}
+
+.search-result-name {
+    font-weight: 700;
+    color: var(--police-primary-dark);
+    font-size: 0.9rem;
+    margin-bottom: 0.15rem;
+}
+
+.search-result-address {
+    font-size: 0.75rem;
+    color: #64748b;
+}
+
+.search-result-badge {
+    font-size: 0.65rem;
+    font-weight: 600;
+    margin-left: 5px;
+}
+
+/* Validation */
+.required::after {
+    content: " *";
+    color: #ef4444;
+    font-weight: bold;
+}
+
+.form-hint {
+    font-size: 0.72rem;
+    color: #64748b;
+    margin-top: 0.25rem;
+}
+
+/* Actions Footer */
+.declaration-actions {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-top: 2rem;
+    padding-top: 1.5rem;
+    border-top: 1px solid var(--border-color);
+}
+
+.btn-police-primary {
+    background-color: var(--police-primary);
+    border-color: var(--police-primary);
+    color: white;
+    font-weight: 600;
+    padding: 0.6rem 1.75rem;
+    border-radius: 8px;
+    transition: all 0.25s ease;
+}
+
+.btn-police-primary:hover:not(:disabled) {
+    background-color: var(--police-primary-dark);
+    border-color: var(--police-primary-dark);
+    color: white;
+    box-shadow: 0 4px 12px rgba(10, 92, 54, 0.25);
+}
+
+.btn-police-primary:disabled {
+    background-color: #94a3b8;
+    border-color: #94a3b8;
+    cursor: not-allowed;
+    opacity: 0.7;
+}
+
+.disclaimer-card {
+    background-color: #fffbeb;
+    border: 1px solid #fef3c7;
+    border-radius: 12px;
+    padding: 1.25rem;
+    margin-top: 2.5rem;
+}
+
+@media (max-width: 768px) {
+    .declaration-steps {
+        display: none;
+    }
+    .declaration-card-body {
+        padding: 1.25rem;
+    }
+}
