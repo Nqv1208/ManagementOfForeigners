@@ -2,9 +2,9 @@
 @{
     ViewBag.Title = "Hồ sơ người nước ngoài - Chi tiết";
     var declarations = ViewBag.Declarations as List<ManagementOfForeigners.Models.Entities.HoSoKhaiBaoTamTru> ?? new();
-    var stays = ViewBag.Stays as List<ManagementOfForeigners.Models.Entities.LichSuLuuTru> ?? new();
+    var stays = ViewBag.Stays as List<ManagementOfForeigners.Models.Entities.LichSuCuTru> ?? new();
     var warnings = ViewBag.Warnings as List<ManagementOfForeigners.Models.Entities.CanhBaoViPham> ?? new();
-    var editHistories = ViewBag.EditHistories as List<ManagementOfForeigners.Models.Entities.LichSuCapNhatThongTin> ?? new();
+    var editHistories = ViewBag.EditHistories as List<ManagementOfForeigners.Models.Entities.LichSuCapNhatThongTinCaNhan> ?? new();
 }
 
 <div class="container py-4">
@@ -118,7 +118,7 @@
                                             {
                                                 <tr>
                                                     <td><code class="text-secondary fw-semibold">@dec.MaHSKhaiBao</code></td>
-                                                    <td>@(dec.CoSoLuuTru?.TenCoSo ?? "Nhà riêng / Cư trú tự do")</td>
+                                                    <td>@dec.CoSoLuuTru.TenCoSo</td>
                                                     <td>@dec.MucDichLuuTru</td>
                                                     <td>@dec.NgayBatDau.ToString("dd/MM/yyyy") - @dec.NgayKetThuc.ToString("dd/MM/yyyy")</td>
                                                     <td>@dec.NgayKhaiBao.ToString("dd/MM/yyyy")</td>

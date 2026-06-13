@@ -26,6 +26,12 @@ public class OfficerController : Controller
         return User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
     }
 
+    private async Task<CanBo?> GetCurrentCanBoAsync()
+    {
+        var accountId = GetCurrentAccountId();
+        return await _context.CanBos.FirstOrDefaultAsync(c => c.MaTaiKhoan == accountId);
+    }
+
     // GET: Officer/Dashboard
     public async Task<IActionResult> Dashboard()
     {
@@ -80,8 +86,7 @@ public class OfficerController : Controller
         if (!string.IsNullOrEmpty(search))
         {
             query = query.Where(n => n.HoTen.Contains(search) || 
-                                     n.SoHoChieu.Contains(search) || 
-                                     n.NoiCuTruHienTai.Contains(search));
+                                     n.SoHoChieu.Contains(search));
         }
 
         if (!string.IsNullOrEmpty(quocTich))
@@ -110,6 +115,7 @@ public class OfficerController : Controller
         ViewBag.LoaiVisa = loaiVisa;
 
         var pagedList = query.OrderBy(n => n.HoTen).ToPagedList(pageNumber, pageSize);
+        PopulateCurrentResidence(pagedList);
         return View(pagedList);
     }
 
@@ -123,6 +129,7 @@ public class OfficerController : Controller
             .FirstOrDefaultAsync(n => n.MaNguoiNuocNgoai == id);
 
         if (foreigner == null) return NotFound();
+        PopulateCurrentResidence(new[] { foreigner });
 
         // Get residence declarations
         var declarations = await _context.HoSoKhaiBaoTamTrus
@@ -134,7 +141,7 @@ public class OfficerController : Controller
             .ToListAsync();
 
         // Get stays in facilities
-        var stays = await _context.LichSuLuuTrus
+        var stays = await _context.LichSuCuTrus
             .Include(l => l.CoSoLuuTru)
             .Where(l => l.MaNguoiNuocNgoai == id)
             .OrderByDescending(l => l.NgayBatDau)
@@ -148,7 +155,7 @@ public class OfficerController : Controller
             .ToListAsync();
 
         // Get edit history
-        var editHistories = await _context.LichSuCapNhatThongTins
+        var editHistories = await _context.LichSuCapNhatThongTinCaNhans
             .Where(e => e.MaTaiKhoan == foreigner.MaTaiKhoan)
             .OrderByDescending(e => e.NgayCapNhat)
             .ToListAsync();
@@ -186,6 +193,12 @@ public class OfficerController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CanhBaoViPham(CanhBaoViewModel model)
     {
+        var canBo = await GetCurrentCanBoAsync();
+        if (canBo == null)
+        {
+            return RedirectToAction("AccessDenied", "Account");
+        }
+
         if (!ModelState.IsValid)
         {
             var foreigners = await _context.NguoiNuocNgoais
@@ -201,7 +214,7 @@ public class OfficerController : Controller
         var warning = new CanhBaoViPham
         {
             MaNguoiNuocNgoai = model.MaNguoiNuocNgoai,
-            MaCanBo = GetCurrentAccountId(),
+            MaCanBo = canBo.MaCanBo,
             LoaiViPham = model.LoaiViPham,
             NoiDungCanhBao = model.NoiDungCanhBao,
             MucDoViPham = model.MucDoViPham,
@@ -240,6 +253,64 @@ public class OfficerController : Controller
         return View(pagedList);
     }
 
+    // GET: Officer/DanhSachBaoCao
+    public async Task<IActionResult> DanhSachBaoCao(string? search, string? trangThai, int? page)
+    {
+        var query = _context.BaoCaoViPhams
+            .Include(r => r.NguoiNuocNgoai)
+            .Include(r => r.CanBo)
+            .ThenInclude(c => c.PhuongXa)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(r =>
+                r.NguoiNuocNgoai.HoTen.Contains(search) ||
+                r.NguoiNuocNgoai.SoHoChieu.Contains(search) ||
+                r.NoiDungBaoCao.Contains(search));
+        }
+
+        if (!string.IsNullOrWhiteSpace(trangThai))
+        {
+            query = query.Where(r => r.TrangThaiXuLy == trangThai);
+        }
+
+        ViewBag.Search = search;
+        ViewBag.TrangThai = trangThai;
+        var pagedList = query.OrderByDescending(r => r.NgayBaoCao).ToPagedList(page ?? 1, 10);
+        return View(pagedList);
+    }
+
+    // POST: Officer/CapNhatTrangThaiBaoCao
+    [HttpPost]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CapNhatTrangThaiBaoCao(string id, string trangThai)
+    {
+        if (string.IsNullOrWhiteSpace(id))
+        {
+            return NotFound();
+        }
+
+        var allowedStatuses = new[] { TrangThaiXuLyConst.ChuaXuLy, TrangThaiXuLyConst.DangXuLy, TrangThaiXuLyConst.DaXuLy };
+        if (!allowedStatuses.Contains(trangThai))
+        {
+            TempData["ErrorMessage"] = "Trạng thái xử lý không hợp lệ.";
+            return RedirectToAction(nameof(DanhSachBaoCao));
+        }
+
+        var report = await _context.BaoCaoViPhams.FirstOrDefaultAsync(r => r.MaBaoCao == id);
+        if (report == null)
+        {
+            return NotFound();
+        }
+
+        report.TrangThaiXuLy = trangThai;
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "Cập nhật trạng thái báo cáo vi phạm thành công.";
+        return RedirectToAction(nameof(DanhSachBaoCao));
+    }
+
     // GET: Officer/ThongKe
     public async Task<IActionResult> ThongKe()
     {
@@ -264,7 +335,7 @@ public class OfficerController : Controller
         ViewBag.VisaStats = visaGroup;
 
         // Thống kê cơ sở lưu trú có nhiều khách nhất
-        var facilityGroup = await _context.LichSuLuuTrus
+        var facilityGroup = await _context.LichSuCuTrus
             .Include(l => l.CoSoLuuTru)
             .Where(l => l.TrangThai == TrangThaiLuuTru.DangO)
             .GroupBy(l => l.CoSoLuuTru.TenCoSo)
@@ -276,5 +347,28 @@ public class OfficerController : Controller
         ViewBag.FacilityStats = facilityGroup;
 
         return View();
+    }
+
+    private void PopulateCurrentResidence(IEnumerable<NguoiNuocNgoai> foreigners)
+    {
+        var ids = foreigners.Select(f => f.MaNguoiNuocNgoai).ToList();
+        if (ids.Count == 0)
+        {
+            return;
+        }
+
+        var residences = _context.LichSuCuTrus
+            .Include(l => l.CoSoLuuTru)
+            .Where(l => ids.Contains(l.MaNguoiNuocNgoai) && l.TrangThai == TrangThaiLuuTru.DangO)
+            .ToList()
+            .GroupBy(l => l.MaNguoiNuocNgoai)
+            .ToDictionary(g => g.Key, g => g.OrderByDescending(l => l.NgayBatDau).First().CoSoLuuTru.DiaChi);
+
+        foreach (var foreigner in foreigners)
+        {
+            foreigner.NoiCuTruHienTai = residences.TryGetValue(foreigner.MaNguoiNuocNgoai, out var address)
+                ? address
+                : "Chưa có dữ liệu cư trú hiện tại";
+        }
     }
 }
