@@ -201,45 +201,193 @@ public class ForeignerController : Controller
         }
     }
 
+    // GET: Foreigner/SearchCoSoLuuTru
+    [HttpGet]
+    public async Task<IActionResult> SearchCoSoLuuTru(string? keyword, int? phuongXaId)
+    {
+        if (string.IsNullOrWhiteSpace(keyword) || keyword.Length < 2)
+        {
+            return Json(new List<object>());
+        }
+
+        var query = _context.CoSoLuuTrus
+            .Include(c => c.PhuongXa)
+            .Where(c => c.TrangThai == TrangThaiCoSo.DangHoatDong);
+
+        if (phuongXaId.HasValue)
+        {
+            query = query.Where(c => c.MaPhuongXa == phuongXaId.Value);
+        }
+
+        keyword = keyword.ToLower();
+        query = query.Where(c => 
+            c.TenCoSo.ToLower().Contains(keyword) || 
+            c.DiaChi.ToLower().Contains(keyword) || 
+            c.MaCoSoLuuTru.ToLower().Contains(keyword)
+        );
+
+        var results = await query
+            .Take(10)
+            .Select(c => new
+            {
+                id = c.MaCoSoLuuTru,
+                tenCoSo = c.TenCoSo,
+                diaChi = c.DiaChi,
+                phuongXa = c.PhuongXa.TenPhuongXa,
+                soDienThoai = c.SoDienThoai,
+                isActive = c.TrangThai == TrangThaiCoSo.DangHoatDong
+            })
+            .ToListAsync();
+
+        return Json(results);
+    }
+
     // GET: Foreigner/KhaiBaoTamTru
     public async Task<IActionResult> KhaiBaoTamTru()
     {
-        var facilities = await _context.CoSoLuuTrus
-            .Where(c => c.TrangThai == TrangThaiCoSo.DangHoatDong)
-            .Select(c => new SelectListItem
-            {
-                Value = c.MaCoSoLuuTru,
-                Text = $"{c.TenCoSo} - {c.DiaChi}"
-            }).ToListAsync();
+        var accountId = GetCurrentAccountId();
+        var account = await _context.TaiKhoans
+            .FirstOrDefaultAsync(t => t.MaTaiKhoan == accountId);
 
-        ViewBag.CoSoLuuTrus = new SelectList(facilities, "Value", "Text");
-        return View(new KhaiBaoViewModel());
+        if (account == null) return Challenge();
+
+        var foreigner = await _context.NguoiNuocNgoais
+            .FirstOrDefaultAsync(n => n.MaTaiKhoan == accountId);
+
+        if (foreigner == null)
+        {
+            TempData["ErrorMessage"] = "Tài khoản của bạn chưa được liên kết với hồ sơ người nước ngoài. Vui lòng liên hệ quản trị viên.";
+            return RedirectToAction("Dashboard");
+        }
+
+        var model = new KhaiBaoTamTruCreateViewModel
+        {
+            HoTen = foreigner.HoTen,
+            GioiTinh = foreigner.GioiTinh,
+            NgaySinh = foreigner.NgaySinh,
+            QuocTich = foreigner.QuocTich,
+            SoHoChieu = foreigner.SoHoChieu,
+            NgayHetHanHoChieu = foreigner.NgayHetHanHoChieu,
+            LoaiVisa = foreigner.LoaiVisa,
+            NgayHetHanVisa = foreigner.NgayHetHanVisa,
+            Email = account.Email ?? string.Empty,
+            SoDienThoai = account.SoDienThoai ?? string.Empty,
+            NgayBatDau = DateTime.Today,
+            NgayKetThuc = DateTime.Today.AddMonths(1)
+        };
+
+        var wards = await _context.PhuongXas
+            .OrderBy(p => p.TenPhuongXa)
+            .Select(p => new SelectListItem
+            {
+                Value = p.MaPhuongXa.ToString(),
+                Text = $"Phường {p.TenPhuongXa}"
+            })
+            .ToListAsync();
+
+        model.PhuongXaOptions = wards;
+
+        return View(model);
     }
 
     // POST: Foreigner/KhaiBaoTamTru
     [HttpPost]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> KhaiBaoTamTru(KhaiBaoViewModel model)
+    public async Task<IActionResult> KhaiBaoTamTru(KhaiBaoTamTruCreateViewModel model)
     {
+        var accountId = GetCurrentAccountId();
+        var account = await _context.TaiKhoans
+            .FirstOrDefaultAsync(t => t.MaTaiKhoan == accountId);
+
+        if (account == null) return Challenge();
+
+        var foreigner = await _context.NguoiNuocNgoais
+            .FirstOrDefaultAsync(n => n.MaTaiKhoan == accountId);
+
+        if (foreigner == null)
+        {
+            TempData["ErrorMessage"] = "Tài khoản của bạn chưa được liên kết với hồ sơ người nước ngoài.";
+            return RedirectToAction("Dashboard");
+        }
+
         if (model.NgayKetThuc <= model.NgayBatDau)
         {
-            ModelState.AddModelError("NgayKetThuc", "Ngày kết thúc phải lớn hơn ngày bắt đầu");
+            ModelState.AddModelError(nameof(model.NgayKetThuc), "Ngày kết thúc phải lớn hơn ngày bắt đầu");
+        }
+
+        if (model.NgayBatDau.Date < DateTime.Today.AddDays(-7))
+        {
+            ModelState.AddModelError(nameof(model.NgayBatDau), "Ngày bắt đầu không được nhỏ hơn quá khứ quá 7 ngày");
+        }
+
+        if (!model.PhuongXaId.HasValue)
+        {
+            ModelState.AddModelError(nameof(model.PhuongXaId), "Vui lòng chọn Phường/Xã lưu trú");
+        }
+        else
+        {
+            var wardExists = await _context.PhuongXas.AnyAsync(p => p.MaPhuongXa == model.PhuongXaId.Value);
+            if (!wardExists)
+            {
+                ModelState.AddModelError(nameof(model.PhuongXaId), "Phường/Xã lưu trú không tồn tại");
+            }
+        }
+
+        CoSoLuuTru? facility = null;
+        if (string.IsNullOrWhiteSpace(model.CoSoLuuTruId))
+        {
+            ModelState.AddModelError(nameof(model.CoSoLuuTruId), "Vui lòng chọn cơ sở lưu trú từ danh sách gợi ý");
+        }
+        else
+        {
+            facility = await _context.CoSoLuuTrus
+                .FirstOrDefaultAsync(c => c.MaCoSoLuuTru == model.CoSoLuuTruId && c.TrangThai == TrangThaiCoSo.DangHoatDong);
+            
+            if (facility == null)
+            {
+                ModelState.AddModelError(nameof(model.CoSoLuuTruId), "Cơ sở lưu trú không tồn tại hoặc đã ngừng hoạt động");
+            }
+            else if (model.PhuongXaId.HasValue && facility.MaPhuongXa != model.PhuongXaId.Value)
+            {
+                ModelState.AddModelError(nameof(model.CoSoLuuTruId), "Cơ sở lưu trú đã chọn không thuộc Phường/Xã lưu trú đã chọn");
+            }
+        }
+
+        if (model.MucDichLuuTru == "Khác" && string.IsNullOrWhiteSpace(model.MucDichKhac))
+        {
+            ModelState.AddModelError(nameof(model.MucDichKhac), "Vui lòng nhập mục đích cụ thể");
         }
 
         if (!ModelState.IsValid)
         {
-            var facilities = await _context.CoSoLuuTrus
-                .Where(c => c.TrangThai == TrangThaiCoSo.DangHoatDong)
-                .Select(c => new SelectListItem
+            model.HoTen = foreigner.HoTen;
+            model.GioiTinh = foreigner.GioiTinh;
+            model.NgaySinh = foreigner.NgaySinh;
+            model.QuocTich = foreigner.QuocTich;
+            model.SoHoChieu = foreigner.SoHoChieu;
+            model.NgayHetHanHoChieu = foreigner.NgayHetHanHoChieu;
+            model.LoaiVisa = foreigner.LoaiVisa;
+            model.NgayHetHanVisa = foreigner.NgayHetHanVisa;
+            model.Email = account.Email ?? string.Empty;
+            model.SoDienThoai = account.SoDienThoai ?? string.Empty;
+
+            var wards = await _context.PhuongXas
+                .OrderBy(p => p.TenPhuongXa)
+                .Select(p => new SelectListItem
                 {
-                    Value = c.MaCoSoLuuTru,
-                    Text = $"{c.TenCoSo} - {c.DiaChi}"
-                }).ToListAsync();
-            ViewBag.CoSoLuuTrus = new SelectList(facilities, "Value", "Text");
+                    Value = p.MaPhuongXa.ToString(),
+                    Text = $"Phường {p.TenPhuongXa}"
+                })
+                .ToListAsync();
+
+            model.PhuongXaOptions = wards;
             return View(model);
         }
 
-        var accountId = GetCurrentAccountId();
+        var mucDich = model.MucDichLuuTru == "Khác" ? model.MucDichKhac! : model.MucDichLuuTru;
+        var ghiChu = string.IsNullOrWhiteSpace(model.SoPhong) 
+            ? model.GhiChu 
+            : $"Phòng/Căn hộ: {model.SoPhong}. {(string.IsNullOrWhiteSpace(model.GhiChu) ? "" : model.GhiChu)}";
 
         var declaration = new HoSoKhaiBaoTamTru
         {
@@ -248,11 +396,11 @@ public class ForeignerController : Controller
             NgayKhaiBao = DateTime.Now,
             NgayBatDau = model.NgayBatDau,
             NgayKetThuc = model.NgayKetThuc,
-            MucDichLuuTru = model.MucDichLuuTru,
-            DiaChiLuuTru = model.DiaChiLuuTru,
-            MaCoSoLuuTru = model.MaCoSoLuuTru,
+            MucDichLuuTru = mucDich,
+            DiaChiLuuTru = model.DiaChiLuuTruCuThe,
+            MaCoSoLuuTru = model.CoSoLuuTruId,
             TrangThai = TrangThaiKhaiBao.ChoDuyet,
-            GhiChu = model.GhiChu
+            GhiChu = ghiChu
         };
 
         _context.HoSoKhaiBaoTamTrus.Add(declaration);
