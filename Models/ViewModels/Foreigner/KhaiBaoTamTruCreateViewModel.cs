@@ -60,6 +60,9 @@ public class KhaiBaoTamTruCreateViewModel
     [Display(Name = "Ghi chú thêm")]
     public string? GhiChu { get; set; }
 
+    [Display(Name = "Tôi cam kết các thông tin khai báo trên là đúng sự thật")]
+    public bool CamKetThongTin { get; set; }
+
     // Dropdown data
     public List<SelectListItem> PhuongXaOptions { get; set; } = new List<SelectListItem>();
 }

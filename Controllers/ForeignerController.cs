@@ -358,6 +358,11 @@ public class ForeignerController : Controller
             ModelState.AddModelError(nameof(model.MucDichKhac), "Vui lòng nhập mục đích cụ thể");
         }
 
+        if (!model.CamKetThongTin)
+        {
+            ModelState.AddModelError(nameof(model.CamKetThongTin), "Vui lòng xác nhận cam kết trước khi gửi");
+        }
+
         if (!ModelState.IsValid)
         {
             model.HoTen = foreigner.HoTen;
