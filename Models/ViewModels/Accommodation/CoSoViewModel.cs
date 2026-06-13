@@ -4,6 +4,10 @@ namespace ManagementOfForeigners.Models.ViewModels.Accommodation;
 
 public class CoSoViewModel
 {
+    [Required(ErrorMessage = "Vui lòng chọn Phường/Xã")]
+    [Display(Name = "Phường/Xã")]
+    public int MaPhuongXa { get; set; }
+
     [Required(ErrorMessage = "Tên cơ sở lưu trú không được để trống")]
     [StringLength(255)]
     [Display(Name = "Tên cơ sở lưu trú")]

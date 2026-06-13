@@ -1,6 +1,6 @@
 @using X.PagedList.Mvc.Core
 @using X.PagedList
-@model IPagedList<ManagementOfForeigners.Models.Entities.LichSuLuuTru>
+@model IPagedList<ManagementOfForeigners.Models.Entities.LichSuCuTru>
 @{
     ViewBag.Title = "Lịch sử khai báo lưu trú";
 }
@@ -19,7 +19,7 @@
 
         <div class="card-body p-4">
             <!-- Search Form -->
-            <form asp-action="LichSuLuuTru" method="get" class="row g-3 mb-4">
+            <form asp-action="LichSuCuTru" method="get" class="row g-3 mb-4">
                 <div class="col-md-8">
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0" style="border-radius: 8px 0 0 8px;"><i class="bi bi-search text-muted"></i></span>
@@ -78,7 +78,7 @@
 
                 <!-- Pagination -->
                 <div class="d-flex justify-content-center mt-4">
-                    @Html.PagedListPager(Model, page => Url.Action("LichSuLuuTru", new { page, search = ViewBag.Search }),
+                    @Html.PagedListPager(Model, page => Url.Action("LichSuCuTru", new { page, search = ViewBag.Search }),
                         new X.PagedList.Mvc.Core.PagedListRenderOptions {
                             LiElementClasses = new string[] { "page-item" },
                             PageClasses = new string[] { "page-link" },

@@ -31,7 +31,8 @@ public class AccommodationController : Controller
     {
         var accountId = GetCurrentAccountId();
         return await _context.CoSoLuuTrus
-            .FirstOrDefaultAsync(c => c.MaTaiKhoan == accountId);
+            .Include(c => c.PhuongXa)
+            .FirstOrDefaultAsync(c => c.ChuCoSoLuuTru.MaTaiKhoan == accountId);
     }
 
     // GET: Accommodation/Dashboard
@@ -44,7 +45,7 @@ public class AccommodationController : Controller
             return RedirectToAction("Index", "Home");
         }
 
-        var stays = await _context.LichSuLuuTrus
+        var stays = await _context.LichSuCuTrus
             .Where(l => l.MaCoSoLuuTru == facility.MaCoSoLuuTru)
             .ToListAsync();
 
@@ -52,14 +53,14 @@ public class AccommodationController : Controller
         var totalStayed = stays.Count(s => s.TrangThai == TrangThaiLuuTru.DaRoi);
         var totalOverdue = stays.Count(s => s.TrangThai == TrangThaiLuuTru.QuaHan);
 
-        var activeStaysList = await _context.LichSuLuuTrus
+        var activeStaysList = await _context.LichSuCuTrus
             .Include(l => l.NguoiNuocNgoai)
             .Where(l => l.MaCoSoLuuTru == facility.MaCoSoLuuTru && l.TrangThai == TrangThaiLuuTru.DangO)
             .OrderByDescending(l => l.NgayBatDau)
             .Take(5)
             .ToListAsync();
 
-        var recentCheckins = await _context.LichSuLuuTrus
+        var recentCheckins = await _context.LichSuCuTrus
             .Include(l => l.NguoiNuocNgoai)
             .Where(l => l.MaCoSoLuuTru == facility.MaCoSoLuuTru)
             .OrderByDescending(l => l.NgayBatDau)
@@ -123,9 +124,9 @@ public class AccommodationController : Controller
         }
 
         // Tạo bản ghi lưu trú
-        var stay = new LichSuLuuTru
+        var stay = new LichSuCuTru
         {
-            MaLSLuuTru = IdGenerator.NewMaLichSuLuuTru(_context),
+            MaLSLuuTru = IdGenerator.NewMaLichSuCuTru(_context),
             MaNguoiNuocNgoai = model.MaNguoiNuocNgoai,
             MaCoSoLuuTru = facility.MaCoSoLuuTru,
             NgayBatDau = model.NgayBatDau,
@@ -135,7 +136,7 @@ public class AccommodationController : Controller
             GhiChu = model.GhiChu
         };
 
-        _context.LichSuLuuTrus.Add(stay);
+        _context.LichSuCuTrus.Add(stay);
         await _context.SaveChangesAsync();
 
         TempData["SuccessMessage"] = "Khai báo lưu trú cho người nước ngoài thành công!";
@@ -151,7 +152,7 @@ public class AccommodationController : Controller
         int pageSize = 10;
         int pageNumber = page ?? 1;
 
-        var query = _context.LichSuLuuTrus
+        var query = _context.LichSuCuTrus
             .Include(l => l.NguoiNuocNgoai)
             .Where(l => l.MaCoSoLuuTru == facility.MaCoSoLuuTru && 
                        (l.TrangThai == TrangThaiLuuTru.DangO || l.TrangThai == TrangThaiLuuTru.QuaHan));
@@ -160,7 +161,7 @@ public class AccommodationController : Controller
         {
             query = query.Where(l => l.NguoiNuocNgoai.HoTen.Contains(search) || 
                                      l.NguoiNuocNgoai.SoHoChieu.Contains(search) || 
-                                     l.Phong.Contains(search));
+                                     (l.Phong != null && l.Phong.Contains(search)));
         }
 
         ViewBag.Search = search;
@@ -168,8 +169,8 @@ public class AccommodationController : Controller
         return View(pagedList);
     }
 
-    // GET: Accommodation/LichSuLuuTru
-    public async Task<IActionResult> LichSuLuuTru(string? search, int? page)
+    // GET: Accommodation/LichSuCuTru
+    public async Task<IActionResult> LichSuCuTru(string? search, int? page)
     {
         var facility = await GetCurrentFacility();
         if (facility == null) return NotFound();
@@ -177,7 +178,7 @@ public class AccommodationController : Controller
         int pageSize = 10;
         int pageNumber = page ?? 1;
 
-        var query = _context.LichSuLuuTrus
+        var query = _context.LichSuCuTrus
             .Include(l => l.NguoiNuocNgoai)
             .Where(l => l.MaCoSoLuuTru == facility.MaCoSoLuuTru);
 
@@ -202,7 +203,7 @@ public class AccommodationController : Controller
         var facility = await GetCurrentFacility();
         if (facility == null) return NotFound();
 
-        var stay = await _context.LichSuLuuTrus
+        var stay = await _context.LichSuCuTrus
             .FirstOrDefaultAsync(l => l.MaLSLuuTru == id && l.MaCoSoLuuTru == facility.MaCoSoLuuTru);
 
         if (stay == null) return NotFound();
@@ -227,8 +228,9 @@ public class AccommodationController : Controller
     public async Task<IActionResult> ThongTinCoSo()
     {
         var facility = await _context.CoSoLuuTrus
-            .Include(c => c.TaiKhoan)
-            .FirstOrDefaultAsync(c => c.MaTaiKhoan == GetCurrentAccountId());
+            .Include(c => c.ChuCoSoLuuTru).ThenInclude(c => c.TaiKhoan)
+            .Include(c => c.PhuongXa)
+            .FirstOrDefaultAsync(c => c.ChuCoSoLuuTru.MaTaiKhoan == GetCurrentAccountId());
 
         if (facility == null) return NotFound();
 
@@ -243,12 +245,14 @@ public class AccommodationController : Controller
 
         var model = new CoSoViewModel
         {
+            MaPhuongXa = facility.MaPhuongXa,
             TenCoSo = facility.TenCoSo,
             DiaChi = facility.DiaChi,
             SoDienThoai = facility.SoDienThoai,
             Email = facility.Email
         };
 
+        await LoadWardLookupsAsync(facility.MaPhuongXa);
         return View(model);
     }
 
@@ -257,11 +261,16 @@ public class AccommodationController : Controller
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CapNhatCoSo(CoSoViewModel model)
     {
-        if (!ModelState.IsValid) return View(model);
+        if (!ModelState.IsValid)
+        {
+            await LoadWardLookupsAsync(model.MaPhuongXa);
+            return View(model);
+        }
 
         var facility = await GetCurrentFacility();
         if (facility == null) return NotFound();
 
+        facility.MaPhuongXa = model.MaPhuongXa;
         facility.TenCoSo = model.TenCoSo;
         facility.DiaChi = model.DiaChi;
         facility.SoDienThoai = model.SoDienThoai;
@@ -271,5 +280,19 @@ public class AccommodationController : Controller
 
         TempData["SuccessMessage"] = "Cập nhật thông tin cơ sở lưu trú thành công!";
         return RedirectToAction(nameof(ThongTinCoSo));
+    }
+
+    private async Task LoadWardLookupsAsync(int? selectedWardId = null)
+    {
+        var wards = await _context.PhuongXas
+            .OrderBy(p => p.TenPhuongXa)
+            .Select(p => new
+            {
+                p.MaPhuongXa,
+                DisplayName = p.TenPhuongXa
+            })
+            .ToListAsync();
+
+        ViewBag.PhuongXas = new SelectList(wards, "MaPhuongXa", "DisplayName", selectedWardId);
     }
 }

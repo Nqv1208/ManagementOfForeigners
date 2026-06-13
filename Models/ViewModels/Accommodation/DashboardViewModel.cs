@@ -8,6 +8,6 @@ public class DashboardViewModel
     public int TotalStaying { get; set; }
     public int TotalStayed { get; set; }
     public int TotalOverdue { get; set; }
-    public List<LichSuLuuTru> ActiveStays { get; set; } = new();
-    public List<LichSuLuuTru> RecentCheckins { get; set; } = new();
+    public List<LichSuCuTru> ActiveStays { get; set; } = new();
+    public List<LichSuCuTru> RecentCheckins { get; set; } = new();
 }

@@ -36,6 +36,14 @@
                                 <span asp-validation-for="DiaChi" class="text-danger small"></span>
                             </div>
 
+                            <div class="col-12">
+                                <label asp-for="MaPhuongXa" class="form-label fw-semibold text-dark fs-7"></label>
+                                <select asp-for="MaPhuongXa" asp-items="ViewBag.PhuongXas" class="form-select" style="border-radius: 8px;">
+                                    <option value="">-- Chọn Phường/Xã --</option>
+                                </select>
+                                <span asp-validation-for="MaPhuongXa" class="text-danger small"></span>
+                            </div>
+
                             <div class="col-md-6">
                                 <label asp-for="SoDienThoai" class="form-label fw-semibold text-dark fs-7"></label>
                                 <div class="input-group">

@@ -93,7 +93,7 @@
                         <a asp-action="DanhSachLuuTru" class="btn btn-outline-dark btn-lg fs-6 py-3" style="border-radius: 12px;">
                             <i class="bi bi-list-stars me-2"></i> Danh sách đang lưu trú
                         </a>
-                        <a asp-action="LichSuLuuTru" class="btn btn-outline-secondary btn-lg fs-6 py-3" style="border-radius: 12px;">
+                        <a asp-action="LichSuCuTru" class="btn btn-outline-secondary btn-lg fs-6 py-3" style="border-radius: 12px;">
                             <i class="bi bi-clock-history me-2"></i> Lịch sử lưu trú
                         </a>
                     </div>
@@ -116,7 +116,7 @@
             <div class="card border-0 shadow-sm" style="border-radius: 16px;">
                 <div class="card-header bg-transparent border-0 pt-4 pb-0 px-4 d-flex justify-content-between align-items-center">
                     <h5 class="fw-bold text-dark mb-0">Khách nước ngoài đăng ký lưu trú gần đây</h5>
-                    <a asp-action="LichSuLuuTru" class="text-decoration-none fs-7 text-primary fw-semibold">Xem lịch sử</a>
+                    <a asp-action="LichSuCuTru" class="text-decoration-none fs-7 text-primary fw-semibold">Xem lịch sử</a>
                 </div>
                 <div class="card-body px-4">
                     @if (!Model.RecentCheckins.Any())
