@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Authentication;
 using Microsoft.AspNetCore.Authentication.Cookies;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.AspNetCore.Mvc.Rendering;
 using System.Security.Claims;
 using ManagementOfForeigners.Data;
 using ManagementOfForeigners.Models.Entities;
@@ -114,6 +115,7 @@ public class AccountController : Controller
             return RedirectToDashboard(User.FindFirst(ClaimTypes.Role)?.Value);
         }
 
+        LoadRegisterLookups();
         return View();
     }
 
@@ -161,6 +163,18 @@ public class AccountController : Controller
         // Validate thông tin cơ sở lưu trú
         if (model.VaiTro == VaiTroConst.ChuLuuTru)
         {
+            if (string.IsNullOrWhiteSpace(model.HoTenChuCoSo))
+                ModelState.AddModelError("HoTenChuCoSo", "Họ tên chủ cơ sở không được để trống.");
+            if (!model.NgaySinhChuCoSo.HasValue)
+                ModelState.AddModelError("NgaySinhChuCoSo", "Ngày sinh chủ cơ sở không được để trống.");
+            if (string.IsNullOrWhiteSpace(model.GioiTinhChuCoSo))
+                ModelState.AddModelError("GioiTinhChuCoSo", "Giới tính chủ cơ sở không được để trống.");
+            if (string.IsNullOrWhiteSpace(model.SoCCCDChuCoSo) || model.SoCCCDChuCoSo.Length != 12)
+                ModelState.AddModelError("SoCCCDChuCoSo", "Số CCCD chủ cơ sở phải gồm 12 ký tự.");
+            if (!model.NgayCapCCCDChuCoSo.HasValue)
+                ModelState.AddModelError("NgayCapCCCDChuCoSo", "Ngày cấp CCCD không được để trống.");
+            if (string.IsNullOrWhiteSpace(model.DiaChiThuongTruChuCoSo))
+                ModelState.AddModelError("DiaChiThuongTruChuCoSo", "Địa chỉ thường trú chủ cơ sở không được để trống.");
             if (string.IsNullOrWhiteSpace(model.TenCoSo))
                 ModelState.AddModelError("TenCoSo", "Tên cơ sở lưu trú không được để trống.");
             if (string.IsNullOrWhiteSpace(model.DiaChiCoSo))
@@ -169,10 +183,13 @@ public class AccountController : Controller
                 ModelState.AddModelError("SoDienThoaiCoSo", "Số điện thoại cơ sở không được để trống.");
             if (string.IsNullOrWhiteSpace(model.EmailCoSo))
                 ModelState.AddModelError("EmailCoSo", "Email cơ sở không được để trống.");
+            if (!model.MaPhuongXa.HasValue)
+                ModelState.AddModelError("MaPhuongXa", "Vui lòng chọn Phường/Xã của cơ sở lưu trú.");
         }
 
         if (!ModelState.IsValid)
         {
+            LoadRegisterLookups(model.MaPhuongXa);
             return View(model);
         }
 
@@ -182,6 +199,7 @@ public class AccountController : Controller
         if (existingUser)
         {
             ModelState.AddModelError("TenDangNhap", "Tên đăng nhập đã tồn tại.");
+            LoadRegisterLookups(model.MaPhuongXa);
             return View(model);
         }
 
@@ -191,6 +209,7 @@ public class AccountController : Controller
         if (existingEmail)
         {
             ModelState.AddModelError("Email", "Email đã được sử dụng.");
+            LoadRegisterLookups(model.MaPhuongXa);
             return View(model);
         }
 
@@ -202,6 +221,19 @@ public class AccountController : Controller
             if (existingPassport)
             {
                 ModelState.AddModelError("SoHoChieu", "Số hộ chiếu đã được đăng ký.");
+                LoadRegisterLookups(model.MaPhuongXa);
+                return View(model);
+            }
+        }
+
+        if (model.VaiTro == VaiTroConst.ChuLuuTru)
+        {
+            var existingCccd = await _context.ChuCoSoLuuTrus
+                .AnyAsync(c => c.SoCCCD == model.SoCCCDChuCoSo);
+            if (existingCccd)
+            {
+                ModelState.AddModelError("SoCCCDChuCoSo", "Số CCCD chủ cơ sở đã được đăng ký.");
+                LoadRegisterLookups(model.MaPhuongXa);
                 return View(model);
             }
         }
@@ -257,13 +289,13 @@ public class AccountController : Controller
                 {
                     MaChuCoSo = maChuCoSo,
                     MaTaiKhoan = maTaiKhoan,
-                    HoTen = "Chủ cơ sở " + model.TenCoSo, // Tên tạm thời
-                    NgaySinh = new DateTime(1980, 1, 1),
-                    GioiTinh = "Nam",
-                    SoCCCD = "000000000000",
-                    NgayCapCCCD = new DateTime(2020, 1, 1),
-                    NoiCapCCCD = "Cục Cảnh sát cư trú",
-                    DiaChiThuongTru = model.DiaChiCoSo
+                    HoTen = model.HoTenChuCoSo!,
+                    NgaySinh = model.NgaySinhChuCoSo!.Value,
+                    GioiTinh = model.GioiTinhChuCoSo!,
+                    SoCCCD = model.SoCCCDChuCoSo!,
+                    NgayCapCCCD = model.NgayCapCCCDChuCoSo!.Value,
+                    NoiCapCCCD = model.NoiCapCCCDChuCoSo,
+                    DiaChiThuongTru = model.DiaChiThuongTruChuCoSo
                 };
                 _context.ChuCoSoLuuTrus.Add(chuCoSo);
 
@@ -272,7 +304,8 @@ public class AccountController : Controller
                 var coSoLuuTru = new CoSoLuuTru
                 {
                     MaCoSoLuuTru = maCoSoLuuTru,
-                    MaTaiKhoan = maTaiKhoan,
+                    MaChuCoSo = chuCoSo.MaChuCoSo,
+                    MaPhuongXa = model.MaPhuongXa!.Value,
                     TenCoSo = model.TenCoSo!,
                     DiaChi = model.DiaChiCoSo!,
                     SoDienThoai = model.SoDienThoaiCoSo!,
@@ -317,6 +350,7 @@ public class AccountController : Controller
             await transaction.RollbackAsync();
             _logger.LogError(ex, "Lỗi khi đăng ký tài khoản mới.");
             ModelState.AddModelError(string.Empty, "Đã xảy ra lỗi trong quá trình đăng ký. Vui lòng thử lại.");
+            LoadRegisterLookups(model.MaPhuongXa);
             return View(model);
         }
     }
@@ -351,8 +385,22 @@ public class AccountController : Controller
             VaiTroConst.ChuLuuTru => RedirectToAction("Dashboard", "Accommodation"),
             VaiTroConst.CanBoXNC => RedirectToAction("Dashboard", "Officer"),
             VaiTroConst.CongAn => RedirectToAction("Dashboard", "Police"),
-            VaiTroConst.Admin => RedirectToAction("Index", "Home"),
+            VaiTroConst.Admin => RedirectToAction("Dashboard", "Admin"),
             _ => RedirectToAction("Index", "Home")
         };
+    }
+
+    private void LoadRegisterLookups(int? selectedWardId = null)
+    {
+        var wards = _context.PhuongXas
+            .OrderBy(p => p.TenPhuongXa)
+            .Select(p => new
+            {
+                p.MaPhuongXa,
+                DisplayName = p.TenPhuongXa
+            })
+            .ToList();
+
+        ViewBag.PhuongXas = new SelectList(wards, "MaPhuongXa", "DisplayName", selectedWardId);
     }
 }

@@ -142,6 +142,56 @@
 
                     <!-- ===== Thông tin cơ sở lưu trú ===== -->
                     <div class="register-section d-none" id="sectionChuLuuTru">
+                        <h5>Thông tin chủ cơ sở</h5>
+
+                        <div class="row">
+                            <div class="col-md-8 mb-3">
+                                <label asp-for="HoTenChuCoSo" class="form-label"></label>
+                                <input asp-for="HoTenChuCoSo" class="form-control" placeholder="Nhập họ tên chủ cơ sở" />
+                                <span asp-validation-for="HoTenChuCoSo" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="GioiTinhChuCoSo" class="form-label"></label>
+                                <select asp-for="GioiTinhChuCoSo" class="form-select">
+                                    <option value="">-- Chọn --</option>
+                                    <option value="Nam">Nam</option>
+                                    <option value="Nữ">Nữ</option>
+                                    <option value="Khác">Khác</option>
+                                </select>
+                                <span asp-validation-for="GioiTinhChuCoSo" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="row">
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="NgaySinhChuCoSo" class="form-label"></label>
+                                <input asp-for="NgaySinhChuCoSo" class="form-control" type="date" />
+                                <span asp-validation-for="NgaySinhChuCoSo" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="SoCCCDChuCoSo" class="form-label"></label>
+                                <input asp-for="SoCCCDChuCoSo" class="form-control" placeholder="12 số CCCD" maxlength="12" />
+                                <span asp-validation-for="SoCCCDChuCoSo" class="text-danger"></span>
+                            </div>
+                            <div class="col-md-4 mb-3">
+                                <label asp-for="NgayCapCCCDChuCoSo" class="form-label"></label>
+                                <input asp-for="NgayCapCCCDChuCoSo" class="form-control" type="date" />
+                                <span asp-validation-for="NgayCapCCCDChuCoSo" class="text-danger"></span>
+                            </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="NoiCapCCCDChuCoSo" class="form-label"></label>
+                            <input asp-for="NoiCapCCCDChuCoSo" class="form-control" placeholder="Nơi cấp căn cước công dân" />
+                            <span asp-validation-for="NoiCapCCCDChuCoSo" class="text-danger"></span>
+                        </div>
+
+                        <div class="mb-4">
+                            <label asp-for="DiaChiThuongTruChuCoSo" class="form-label"></label>
+                            <input asp-for="DiaChiThuongTruChuCoSo" class="form-control" placeholder="Địa chỉ thường trú của chủ cơ sở" />
+                            <span asp-validation-for="DiaChiThuongTruChuCoSo" class="text-danger"></span>
+                        </div>
+
                         <h5>Thông tin cơ sở lưu trú</h5>
 
                         <div class="mb-3">
@@ -167,6 +217,14 @@
                                 <input asp-for="EmailCoSo" class="form-control" type="email" placeholder="Email cơ sở" />
                                 <span asp-validation-for="EmailCoSo" class="text-danger"></span>
                             </div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label asp-for="MaPhuongXa" class="form-label"></label>
+                            <select asp-for="MaPhuongXa" asp-items="ViewBag.PhuongXas" class="form-select">
+                                <option value="">-- Chọn Phường/Xã phụ trách --</option>
+                            </select>
+                            <span asp-validation-for="MaPhuongXa" class="text-danger"></span>
                         </div>
                     </div>
 

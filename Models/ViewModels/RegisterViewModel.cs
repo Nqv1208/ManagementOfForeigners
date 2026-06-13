@@ -73,6 +73,29 @@ public class RegisterViewModel
 
     // ===== Thông tin cơ sở lưu trú (khi VaiTro = ChuLuuTru) =====
 
+    [Display(Name = "Họ và tên chủ cơ sở")]
+    public string? HoTenChuCoSo { get; set; }
+
+    [Display(Name = "Ngày sinh chủ cơ sở")]
+    [DataType(DataType.Date)]
+    public DateTime? NgaySinhChuCoSo { get; set; }
+
+    [Display(Name = "Giới tính chủ cơ sở")]
+    public string? GioiTinhChuCoSo { get; set; }
+
+    [Display(Name = "Số CCCD chủ cơ sở")]
+    public string? SoCCCDChuCoSo { get; set; }
+
+    [Display(Name = "Ngày cấp CCCD")]
+    [DataType(DataType.Date)]
+    public DateTime? NgayCapCCCDChuCoSo { get; set; }
+
+    [Display(Name = "Nơi cấp CCCD")]
+    public string? NoiCapCCCDChuCoSo { get; set; }
+
+    [Display(Name = "Địa chỉ thường trú chủ cơ sở")]
+    public string? DiaChiThuongTruChuCoSo { get; set; }
+
     [Display(Name = "Tên cơ sở lưu trú")]
     public string? TenCoSo { get; set; }
 
@@ -86,4 +109,7 @@ public class RegisterViewModel
     [Display(Name = "Email cơ sở")]
     [EmailAddress(ErrorMessage = "Email cơ sở không hợp lệ")]
     public string? EmailCoSo { get; set; }
+
+    [Display(Name = "Phường/Xã cơ sở")]
+    public int? MaPhuongXa { get; set; }
 }
