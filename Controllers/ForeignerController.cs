@@ -150,7 +150,7 @@ public class ForeignerController : Controller
             {
                 if (oldValue != newValue)
                 {
-                    var lsc = new LichSuCapNhatThongTin
+                    var lsc = new LichSuCapNhatThongTinCaNhan
                     {
                         MaLSCapNhat = IdGenerator.NewMaLSCapNhat(_context),
                         MaTaiKhoan = accountId,
@@ -161,7 +161,7 @@ public class ForeignerController : Controller
                         LyDoCapNhat = model.LyDoCapNhat,
                         TrangThai = "Đã cập nhật"
                     };
-                    _context.LichSuCapNhatThongTins.Add(lsc);
+                    _context.LichSuCapNhatThongTinCaNhans.Add(lsc);
                 }
             }
 
@@ -356,7 +356,7 @@ public class ForeignerController : Controller
         // Tạo bản ghi cư trú mới
         var newResidence = new LichSuCuTru
         {
-            MaLuuTru = IdGenerator.NewMaLichSuCuTru(_context),
+            MaLSLuuTru = IdGenerator.NewMaLichSuCuTru(_context),
             MaNguoiNuocNgoai = foreigner.MaNguoiNuocNgoai,
             MaCoSoLuuTru = model.MaCoSoLuuTru,
             NgayBatDau = model.NgayBatDau,

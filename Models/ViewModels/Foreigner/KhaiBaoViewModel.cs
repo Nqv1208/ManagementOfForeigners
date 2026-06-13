@@ -24,8 +24,9 @@ public class KhaiBaoViewModel
     [Display(Name = "Địa chỉ lưu trú cụ thể")]
     public string DiaChiLuuTru { get; set; } = string.Empty;
 
-    [Display(Name = "Cơ sở lưu trú (nếu có)")]
-    public string? MaCoSoLuuTru { get; set; }
+    [Required(ErrorMessage = "Vui lòng chọn cơ sở lưu trú")]
+    [Display(Name = "Cơ sở lưu trú")]
+    public string MaCoSoLuuTru { get; set; } = string.Empty;
 
     [StringLength(225, ErrorMessage = "Ghi chú không dài quá 225 ký tự")]
     [Display(Name = "Ghi chú thêm")]
