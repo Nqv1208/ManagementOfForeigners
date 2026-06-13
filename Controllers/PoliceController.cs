@@ -1,13 +1,13 @@
 using System.Security.Claims;
+using ManagementOfForeigners.Data;
+using ManagementOfForeigners.Filters;
+using ManagementOfForeigners.Helpers;
+using ManagementOfForeigners.Models.Entities;
+using ManagementOfForeigners.Models.ViewModels.Police;
+using CanhBaoViewModel = ManagementOfForeigners.Models.ViewModels.Officer.CanhBaoViewModel;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
-using ManagementOfForeigners.Data;
-using ManagementOfForeigners.Models.Entities;
-using ManagementOfForeigners.Models.ViewModels.Police;
-using ManagementOfForeigners.Models.ViewModels.Officer;
-using ManagementOfForeigners.Filters;
-using ManagementOfForeigners.Helpers;
 using X.PagedList;
 using X.PagedList.Extensions;
 
@@ -28,384 +28,429 @@ public class PoliceController : Controller
         return User.FindFirst(ClaimTypes.NameIdentifier)?.Value ?? string.Empty;
     }
 
-    private string GetCurrentUsername()
+    private async Task<CanBo?> GetCurrentCanBoAsync()
     {
-        return User.FindFirst(ClaimTypes.Name)?.Value ?? string.Empty;
+        var accountId = GetCurrentAccountId();
+        return await _context.CanBos
+            .Include(c => c.PhuongXa)
+            .FirstOrDefaultAsync(c => c.MaTaiKhoan == accountId);
     }
 
-    private string GetManagedWard()
+    private IQueryable<HoSoKhaiBaoTamTru> WardDeclarations(int wardId)
     {
-        var username = GetCurrentUsername();
-        if (username.Equals("congan01", StringComparison.OrdinalIgnoreCase))
-        {
-            return "Hải Châu";
-        }
-        else if (username.Equals("congan02", StringComparison.OrdinalIgnoreCase))
-        {
-            return "Sơn Trà";
-        }
-        return "Hải Châu";
-    }
-
-    // GET: Police/Dashboard
-    public async Task<IActionResult> Dashboard()
-    {
-        var ward = GetManagedWard();
-        
-        // Lấy tất cả hồ sơ tạm trú thuộc địa bàn phụ trách
-        var wardDeclarationsQuery = _context.HoSoKhaiBaoTamTrus
+        return _context.HoSoKhaiBaoTamTrus
             .Include(h => h.TaiKhoan)
             .ThenInclude(t => t.NguoiNuocNgoai)
             .Include(h => h.CoSoLuuTru)
-            .Where(h => h.DiaChiLuuTru.Contains(ward) || (h.CoSoLuuTru != null && h.CoSoLuuTru.DiaChi.Contains(ward)));
+            .ThenInclude(c => c.PhuongXa)
+            .Where(h => h.CoSoLuuTru.MaPhuongXa == wardId);
+    }
 
-        var totalPending = await wardDeclarationsQuery.CountAsync(h => h.TrangThai == TrangThaiKhaiBao.ChoDuyet);
-        var totalApproved = await wardDeclarationsQuery.CountAsync(h => h.TrangThai == TrangThaiKhaiBao.DaDuyet);
+    private IQueryable<NguoiNuocNgoai> WardForeigners(int wardId)
+    {
+        var wardForeignerIds = _context.LichSuCuTrus
+            .Where(l => l.TrangThai == TrangThaiLuuTru.DangO && l.CoSoLuuTru.MaPhuongXa == wardId)
+            .Select(l => l.MaNguoiNuocNgoai)
+            .Distinct();
 
-        // Số lượng người nước ngoài thực tế đang ở tại địa bàn thông qua các hồ sơ đã được duyệt hoặc lịch sử cư trú
-        var foreignersInWard = await _context.NguoiNuocNgoais
-            .Where(n => n.NoiCuTruHienTai.Contains(ward))
-            .CountAsync();
+        return _context.NguoiNuocNgoais
+            .Where(n => wardForeignerIds.Contains(n.MaNguoiNuocNgoai));
+    }
 
-        // Số cảnh báo gửi bởi công an phường này
-        var totalWarnings = await _context.CanhBaoViPhams
-            .Where(w => w.MaCanBo == GetCurrentAccountId())
-            .CountAsync();
-
-        var recentPending = await wardDeclarationsQuery
-            .Where(h => h.TrangThai == TrangThaiKhaiBao.ChoDuyet)
-            .OrderByDescending(h => h.NgayKhaiBao)
-            .Take(5)
-            .ToListAsync();
-
-        var recentWarnings = await _context.CanhBaoViPhams
-            .Include(w => w.NguoiNuocNgoai)
-            .Where(w => w.MaCanBo == GetCurrentAccountId())
-            .OrderByDescending(w => w.NgayCanhBao)
-            .Take(5)
-            .ToListAsync();
-
-        var viewModel = new ManagementOfForeigners.Models.ViewModels.Police.DashboardViewModel
+    public async Task<IActionResult> Dashboard()
+    {
+        var canBo = await GetCurrentCanBoAsync();
+        if (canBo == null)
         {
-            TenDiaBan = ward,
+            return RedirectToAction("AccessDenied", "Account");
+        }
+
+        var declarations = WardDeclarations(canBo.MaPhuongXa);
+        var totalPending = await declarations.CountAsync(h => h.TrangThai == TrangThaiKhaiBao.ChoDuyet);
+        var totalApproved = await declarations.CountAsync(h => h.TrangThai == TrangThaiKhaiBao.DaDuyet);
+        var foreignersInWard = await WardForeigners(canBo.MaPhuongXa).CountAsync();
+        var totalWarnings = await _context.CanhBaoViPhams.CountAsync(w => w.MaCanBo == canBo.MaCanBo);
+
+        var viewModel = new DashboardViewModel
+        {
+            TenDiaBan = canBo.PhuongXa.TenPhuongXa,
             TotalPending = totalPending,
             TotalApproved = totalApproved,
             TotalForeigners = foreignersInWard,
             TotalWarnings = totalWarnings,
-            RecentPending = recentPending,
-            RecentWarnings = recentWarnings
+            RecentPending = await declarations
+                .Where(h => h.TrangThai == TrangThaiKhaiBao.ChoDuyet)
+                .OrderByDescending(h => h.NgayKhaiBao)
+                .Take(5)
+                .ToListAsync(),
+            RecentWarnings = await _context.CanhBaoViPhams
+                .Include(w => w.NguoiNuocNgoai)
+                .Where(w => w.MaCanBo == canBo.MaCanBo)
+                .OrderByDescending(w => w.NgayCanhBao)
+                .Take(5)
+                .ToListAsync()
         };
 
         return View(viewModel);
     }
 
-    // GET: Police/DanhSachKhaiBao
     public async Task<IActionResult> DanhSachKhaiBao(string? search, string? trangThai, int? page)
     {
-        var ward = GetManagedWard();
-        int pageSize = 10;
-        int pageNumber = page ?? 1;
+        var canBo = await GetCurrentCanBoAsync();
+        if (canBo == null)
+        {
+            return RedirectToAction("AccessDenied", "Account");
+        }
 
-        var query = _context.HoSoKhaiBaoTamTrus
-            .Include(h => h.TaiKhoan)
-            .ThenInclude(t => t.NguoiNuocNgoai)
-            .Include(h => h.CoSoLuuTru)
-            .Where(h => h.DiaChiLuuTru.Contains(ward) || (h.CoSoLuuTru != null && h.CoSoLuuTru.DiaChi.Contains(ward)));
-
-        if (!string.IsNullOrEmpty(trangThai))
+        var query = WardDeclarations(canBo.MaPhuongXa);
+        if (!string.IsNullOrWhiteSpace(trangThai))
         {
             query = query.Where(h => h.TrangThai == trangThai);
         }
         else
         {
-            // Mặc định hiển thị hồ sơ chờ duyệt
-            query = query.Where(h => h.TrangThai == TrangThaiKhaiBao.ChoDuyet);
             trangThai = TrangThaiKhaiBao.ChoDuyet;
+            query = query.Where(h => h.TrangThai == TrangThaiKhaiBao.ChoDuyet);
         }
 
-        if (!string.IsNullOrEmpty(search))
+        if (!string.IsNullOrWhiteSpace(search))
         {
-            query = query.Where(h => (h.TaiKhoan.NguoiNuocNgoai != null && h.TaiKhoan.NguoiNuocNgoai.HoTen.Contains(search)) || 
-                                     (h.TaiKhoan.NguoiNuocNgoai != null && h.TaiKhoan.NguoiNuocNgoai.SoHoChieu.Contains(search)) || 
-                                     h.DiaChiLuuTru.Contains(search));
+            query = query.Where(h =>
+                (h.TaiKhoan.NguoiNuocNgoai != null && h.TaiKhoan.NguoiNuocNgoai.HoTen.Contains(search)) ||
+                (h.TaiKhoan.NguoiNuocNgoai != null && h.TaiKhoan.NguoiNuocNgoai.SoHoChieu.Contains(search)) ||
+                h.DiaChiLuuTru.Contains(search) ||
+                h.CoSoLuuTru.TenCoSo.Contains(search));
         }
 
         ViewBag.Search = search;
         ViewBag.TrangThai = trangThai;
-        ViewBag.TenDiaBan = ward;
+        ViewBag.TenDiaBan = canBo.PhuongXa.TenPhuongXa;
 
-        var pagedList = query.OrderByDescending(h => h.NgayKhaiBao).ToPagedList(pageNumber, pageSize);
+        var pagedList = query.OrderByDescending(h => h.NgayKhaiBao).ToPagedList(page ?? 1, 10);
         return View(pagedList);
     }
 
-    // GET: Police/ChiTietKhaiBao
     public async Task<IActionResult> ChiTietKhaiBao(string id)
     {
-        if (string.IsNullOrEmpty(id)) return NotFound();
+        if (string.IsNullOrEmpty(id))
+        {
+            return NotFound();
+        }
 
-        var ward = GetManagedWard();
-        var declaration = await _context.HoSoKhaiBaoTamTrus
-            .Include(h => h.TaiKhoan)
-            .ThenInclude(t => t.NguoiNuocNgoai)
-            .Include(h => h.CoSoLuuTru)
-            .FirstOrDefaultAsync(h => h.MaHSKhaiBao == id);
-
-        if (declaration == null) return NotFound();
-
-        // Kiểm tra quyền địa bàn
-        if (!declaration.DiaChiLuuTru.Contains(ward) && 
-            (declaration.CoSoLuuTru == null || !declaration.CoSoLuuTru.DiaChi.Contains(ward)))
+        var canBo = await GetCurrentCanBoAsync();
+        if (canBo == null)
         {
             return RedirectToAction("AccessDenied", "Account");
+        }
+
+        var declaration = await WardDeclarations(canBo.MaPhuongXa)
+            .FirstOrDefaultAsync(h => h.MaHSKhaiBao == id);
+
+        if (declaration == null)
+        {
+            return NotFound();
+        }
+
+        if (declaration.TaiKhoan.NguoiNuocNgoai != null)
+        {
+            PopulateCurrentResidence(new[] { declaration.TaiKhoan.NguoiNuocNgoai });
         }
 
         return View(declaration);
     }
 
-    // POST: Police/PheDuyet
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> PheDuyet(string id)
     {
-        if (string.IsNullOrEmpty(id)) return NotFound();
+        if (string.IsNullOrEmpty(id))
+        {
+            return NotFound();
+        }
 
-        var ward = GetManagedWard();
-        var dec = await _context.HoSoKhaiBaoTamTrus
-            .Include(h => h.TaiKhoan)
-            .ThenInclude(t => t.NguoiNuocNgoai)
-            .Include(h => h.CoSoLuuTru)
-            .FirstOrDefaultAsync(h => h.MaHSKhaiBao == id);
-
-        if (dec == null) return NotFound();
-
-        // Kiểm tra quyền địa bàn
-        if (!dec.DiaChiLuuTru.Contains(ward) && 
-            (dec.CoSoLuuTru == null || !dec.CoSoLuuTru.DiaChi.Contains(ward)))
+        var canBo = await GetCurrentCanBoAsync();
+        if (canBo == null)
         {
             return RedirectToAction("AccessDenied", "Account");
         }
 
-        dec.TrangThai = TrangThaiKhaiBao.DaDuyet;
-
-        // Cập nhật nơi cư trú hiện tại của người nước ngoài
-        var foreigner = dec.TaiKhoan.NguoiNuocNgoai;
-        if (foreigner != null)
+        var declaration = await WardDeclarations(canBo.MaPhuongXa)
+            .FirstOrDefaultAsync(h => h.MaHSKhaiBao == id);
+        if (declaration == null)
         {
-            foreigner.NoiCuTruHienTai = dec.DiaChiLuuTru;
+            return NotFound();
         }
 
-        await _context.SaveChangesAsync();
+        if (declaration.TrangThai != TrangThaiKhaiBao.ChoDuyet)
+        {
+            TempData["WarningMessage"] = "Chỉ hồ sơ đang chờ duyệt mới được phê duyệt.";
+            return RedirectToAction(nameof(ChiTietKhaiBao), new { id });
+        }
 
-        TempData["SuccessMessage"] = "Phê duyệt hồ sơ khai báo tạm trú thành công!";
+        var foreigner = declaration.TaiKhoan.NguoiNuocNgoai;
+        if (foreigner == null)
+        {
+            TempData["ErrorMessage"] = "Hồ sơ khai báo chưa liên kết người nước ngoài.";
+            return RedirectToAction(nameof(ChiTietKhaiBao), new { id });
+        }
+
+        using var transaction = await _context.Database.BeginTransactionAsync();
+        try
+        {
+            declaration.TrangThai = TrangThaiKhaiBao.DaDuyet;
+
+            var activeStays = await _context.LichSuCuTrus
+                .Where(l => l.MaNguoiNuocNgoai == foreigner.MaNguoiNuocNgoai && l.TrangThai == TrangThaiLuuTru.DangO)
+                .ToListAsync();
+
+            foreach (var stay in activeStays)
+            {
+                stay.TrangThai = TrangThaiLuuTru.DaRoi;
+                stay.NgayKetThuc = declaration.NgayBatDau;
+            }
+
+            _context.LichSuCuTrus.Add(new LichSuCuTru
+            {
+                MaLSLuuTru = IdGenerator.NewMaLichSuCuTru(_context),
+                MaNguoiNuocNgoai = foreigner.MaNguoiNuocNgoai,
+                MaCoSoLuuTru = declaration.MaCoSoLuuTru,
+                NgayBatDau = declaration.NgayBatDau,
+                NgayKetThuc = declaration.NgayKetThuc,
+                TrangThai = declaration.NgayKetThuc.Date < DateTime.Today ? TrangThaiLuuTru.QuaHan : TrangThaiLuuTru.DangO,
+                GhiChu = $"Tạo từ hồ sơ khai báo {declaration.MaHSKhaiBao}"
+            });
+
+            await _context.SaveChangesAsync();
+            await transaction.CommitAsync();
+        }
+        catch
+        {
+            await transaction.RollbackAsync();
+            TempData["ErrorMessage"] = "Không thể phê duyệt hồ sơ. Vui lòng thử lại.";
+            return RedirectToAction(nameof(ChiTietKhaiBao), new { id });
+        }
+
+        TempData["SuccessMessage"] = "Phê duyệt hồ sơ khai báo tạm trú thành công.";
         return RedirectToAction(nameof(DanhSachKhaiBao));
     }
 
-    // POST: Police/TuChoi
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> TuChoi(TuChoiViewModel model)
     {
         if (!ModelState.IsValid)
         {
-            TempData["ErrorMessage"] = "Vui lòng nhập lý do từ chối!";
+            TempData["ErrorMessage"] = "Vui lòng nhập lý do từ chối.";
             return RedirectToAction(nameof(ChiTietKhaiBao), new { id = model.MaHSKhaiBao });
         }
 
-        var ward = GetManagedWard();
-        var dec = await _context.HoSoKhaiBaoTamTrus
-            .Include(h => h.CoSoLuuTru)
-            .FirstOrDefaultAsync(h => h.MaHSKhaiBao == model.MaHSKhaiBao);
-
-        if (dec == null) return NotFound();
-
-        // Kiểm tra quyền địa bàn
-        if (!dec.DiaChiLuuTru.Contains(ward) && 
-            (dec.CoSoLuuTru == null || !dec.CoSoLuuTru.DiaChi.Contains(ward)))
+        var canBo = await GetCurrentCanBoAsync();
+        if (canBo == null)
         {
             return RedirectToAction("AccessDenied", "Account");
         }
 
-        dec.TrangThai = TrangThaiKhaiBao.TuChoi;
-        dec.LyDoTuChoi = model.LyDoTuChoi;
+        var declaration = await WardDeclarations(canBo.MaPhuongXa)
+            .FirstOrDefaultAsync(h => h.MaHSKhaiBao == model.MaHSKhaiBao);
+        if (declaration == null)
+        {
+            return NotFound();
+        }
 
+        if (declaration.TrangThai != TrangThaiKhaiBao.ChoDuyet)
+        {
+            TempData["WarningMessage"] = "Chỉ hồ sơ đang chờ duyệt mới được từ chối.";
+            return RedirectToAction(nameof(ChiTietKhaiBao), new { id = model.MaHSKhaiBao });
+        }
+
+        declaration.TrangThai = TrangThaiKhaiBao.TuChoi;
+        declaration.LyDoTuChoi = model.LyDoTuChoi;
         await _context.SaveChangesAsync();
 
         TempData["WarningMessage"] = $"Đã từ chối duyệt hồ sơ. Lý do: {model.LyDoTuChoi}";
         return RedirectToAction(nameof(DanhSachKhaiBao));
     }
 
-    // GET: Police/TraCuu
     public async Task<IActionResult> TraCuu(string? search, int? page)
     {
-        var ward = GetManagedWard();
-        int pageSize = 10;
-        int pageNumber = page ?? 1;
-
-        // Chỉ tra cứu những người nước ngoài cư trú trong địa bàn phụ trách
-        var query = _context.NguoiNuocNgoais
-            .Where(n => n.NoiCuTruHienTai.Contains(ward));
-
-        if (!string.IsNullOrEmpty(search))
+        var canBo = await GetCurrentCanBoAsync();
+        if (canBo == null)
         {
-            query = query.Where(n => n.HoTen.Contains(search) || 
-                                     n.SoHoChieu.Contains(search) || 
-                                     n.NoiCuTruHienTai.Contains(search));
+            return RedirectToAction("AccessDenied", "Account");
+        }
+
+        var query = WardForeigners(canBo.MaPhuongXa);
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(n => n.HoTen.Contains(search) || n.SoHoChieu.Contains(search));
         }
 
         ViewBag.Search = search;
-        ViewBag.TenDiaBan = ward;
+        ViewBag.TenDiaBan = canBo.PhuongXa.TenPhuongXa;
 
-        var pagedList = query.OrderBy(n => n.HoTen).ToPagedList(pageNumber, pageSize);
+        var pagedList = query.OrderBy(n => n.HoTen).ToPagedList(page ?? 1, 10);
+        PopulateCurrentResidence(pagedList);
         return View(pagedList);
     }
 
-    // GET: Police/CanhBaoViPham
     public async Task<IActionResult> CanhBaoViPham(string? maNguoiNuocNgoai)
     {
-        var ward = GetManagedWard();
-        // Chỉ chọn người nước ngoài cư trú trong địa bàn
-        var foreigners = await _context.NguoiNuocNgoais
-            .Where(n => n.NoiCuTruHienTai.Contains(ward))
-            .Select(n => new SelectListItem
-            {
-                Value = n.MaNguoiNuocNgoai,
-                Text = $"{n.HoTen} - Hộ chiếu: {n.SoHoChieu} ({n.QuocTich})"
-            }).ToListAsync();
-
-        ViewBag.NguoiNuocNgoais = new SelectList(foreigners, "Value", "Text", maNguoiNuocNgoai);
-        
-        var model = new CanhBaoViewModel
+        var canBo = await GetCurrentCanBoAsync();
+        if (canBo == null)
         {
-            MaNguoiNuocNgoai = maNguoiNuocNgoai ?? string.Empty
-        };
+            return RedirectToAction("AccessDenied", "Account");
+        }
 
-        return View(model);
+        await LoadWardForeignersAsync(canBo.MaPhuongXa, maNguoiNuocNgoai);
+        return View(new CanhBaoViewModel { MaNguoiNuocNgoai = maNguoiNuocNgoai ?? string.Empty });
     }
 
-    // POST: Police/CanhBaoViPham
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> CanhBaoViPham(CanhBaoViewModel model)
     {
-        var ward = GetManagedWard();
+        var canBo = await GetCurrentCanBoAsync();
+        if (canBo == null)
+        {
+            return RedirectToAction("AccessDenied", "Account");
+        }
+
+        if (!await WardForeigners(canBo.MaPhuongXa).AnyAsync(n => n.MaNguoiNuocNgoai == model.MaNguoiNuocNgoai))
+        {
+            ModelState.AddModelError(nameof(model.MaNguoiNuocNgoai), "Người nước ngoài không thuộc địa bàn phụ trách.");
+        }
+
         if (!ModelState.IsValid)
         {
-            var foreigners = await _context.NguoiNuocNgoais
-                .Where(n => n.NoiCuTruHienTai.Contains(ward))
-                .Select(n => new SelectListItem
-                {
-                    Value = n.MaNguoiNuocNgoai,
-                    Text = $"{n.HoTen} - Hộ chiếu: {n.SoHoChieu} ({n.QuocTich})"
-                }).ToListAsync();
-            ViewBag.NguoiNuocNgoais = new SelectList(foreigners, "Value", "Text", model.MaNguoiNuocNgoai);
+            await LoadWardForeignersAsync(canBo.MaPhuongXa, model.MaNguoiNuocNgoai);
             return View(model);
         }
 
-        var warning = new CanhBaoViPham
+        _context.CanhBaoViPhams.Add(new CanhBaoViPham
         {
             MaNguoiNuocNgoai = model.MaNguoiNuocNgoai,
-            MaCanBo = GetCurrentAccountId(),
+            MaCanBo = canBo.MaCanBo,
             LoaiViPham = model.LoaiViPham,
             NoiDungCanhBao = model.NoiDungCanhBao,
             MucDoViPham = model.MucDoViPham,
             NgayCanhBao = DateTime.Now,
             TrangThai = TrangThaiCanhBao.DaGui,
             GhiChu = model.GhiChu
-        };
+        });
 
-        _context.CanhBaoViPhams.Add(warning);
         await _context.SaveChangesAsync();
-
-        TempData["SuccessMessage"] = "Gửi cảnh báo vi phạm thành công!";
+        TempData["SuccessMessage"] = "Gửi cảnh báo vi phạm thành công.";
         return RedirectToAction(nameof(Dashboard));
     }
 
-    // GET: Police/BaoCaoViPham
     public async Task<IActionResult> BaoCaoViPham(string? maNguoiNuocNgoai)
     {
-        var ward = GetManagedWard();
-        // Chỉ chọn người nước ngoài cư trú trong địa bàn
-        var foreigners = await _context.NguoiNuocNgoais
-            .Where(n => n.NoiCuTruHienTai.Contains(ward))
-            .Select(n => new SelectListItem
-            {
-                Value = n.MaNguoiNuocNgoai,
-                Text = $"{n.HoTen} - Hộ chiếu: {n.SoHoChieu} ({n.QuocTich})"
-            }).ToListAsync();
-
-        ViewBag.NguoiNuocNgoais = new SelectList(foreigners, "Value", "Text", maNguoiNuocNgoai);
-
-        var model = new BaoCaoViPhamViewModel
+        var canBo = await GetCurrentCanBoAsync();
+        if (canBo == null)
         {
-            MaNguoiNuocNgoai = maNguoiNuocNgoai ?? string.Empty
-        };
+            return RedirectToAction("AccessDenied", "Account");
+        }
 
-        return View(model);
+        await LoadWardForeignersAsync(canBo.MaPhuongXa, maNguoiNuocNgoai);
+        return View(new BaoCaoViPhamViewModel { MaNguoiNuocNgoai = maNguoiNuocNgoai ?? string.Empty });
     }
 
-    // POST: Police/BaoCaoViPham
     [HttpPost]
     [ValidateAntiForgeryToken]
     public async Task<IActionResult> BaoCaoViPham(BaoCaoViPhamViewModel model)
     {
-        var ward = GetManagedWard();
+        var canBo = await GetCurrentCanBoAsync();
+        if (canBo == null)
+        {
+            return RedirectToAction("AccessDenied", "Account");
+        }
+
+        if (!await WardForeigners(canBo.MaPhuongXa).AnyAsync(n => n.MaNguoiNuocNgoai == model.MaNguoiNuocNgoai))
+        {
+            ModelState.AddModelError(nameof(model.MaNguoiNuocNgoai), "Người nước ngoài không thuộc địa bàn phụ trách.");
+        }
+
         if (!ModelState.IsValid)
         {
-            var foreigners = await _context.NguoiNuocNgoais
-                .Where(n => n.NoiCuTruHienTai.Contains(ward))
-                .Select(n => new SelectListItem
-                {
-                    Value = n.MaNguoiNuocNgoai,
-                    Text = $"{n.HoTen} - Hộ chiếu: {n.SoHoChieu} ({n.QuocTich})"
-                }).ToListAsync();
-            ViewBag.NguoiNuocNgoais = new SelectList(foreigners, "Value", "Text", model.MaNguoiNuocNgoai);
+            await LoadWardForeignersAsync(canBo.MaPhuongXa, model.MaNguoiNuocNgoai);
             return View(model);
         }
 
-        var report = new BaoCaoViPham
+        _context.BaoCaoViPhams.Add(new BaoCaoViPham
         {
             MaBaoCao = IdGenerator.NewMaBaoCao(_context),
             MaNguoiNuocNgoai = model.MaNguoiNuocNgoai,
+            MaCanBo = canBo.MaCanBo,
             NoiDungBaoCao = model.NoiDungBaoCao,
             NgayBaoCao = DateTime.Now,
-            MaCanBo = GetCurrentAccountId(),
             TrangThaiXuLy = TrangThaiXuLyConst.ChuaXuLy
-        };
+        });
 
-        _context.BaoCaoViPhams.Add(report);
         await _context.SaveChangesAsync();
-
-        TempData["SuccessMessage"] = "Đã gửi báo cáo vi phạm lên Cán bộ quản lý xuất nhập cảnh thành công!";
+        TempData["SuccessMessage"] = "Đã gửi báo cáo vi phạm lên Cán bộ quản lý xuất nhập cảnh.";
         return RedirectToAction(nameof(Dashboard));
     }
 
-    // GET: Police/ThongKe
     public async Task<IActionResult> ThongKe()
     {
-        var ward = GetManagedWard();
-        ViewBag.TenDiaBan = ward;
+        var canBo = await GetCurrentCanBoAsync();
+        if (canBo == null)
+        {
+            return RedirectToAction("AccessDenied", "Account");
+        }
 
-        // Thống kê người nước ngoài theo quốc tịch trong địa bàn
-        var quocTichStats = await _context.NguoiNuocNgoais
-            .Where(n => n.NoiCuTruHienTai.Contains(ward))
+        var wardForeignerIds = _context.LichSuCuTrus
+            .Where(l => l.TrangThai == TrangThaiLuuTru.DangO && l.CoSoLuuTru.MaPhuongXa == canBo.MaPhuongXa)
+            .Select(l => l.MaNguoiNuocNgoai);
+
+        ViewBag.TenDiaBan = canBo.PhuongXa.TenPhuongXa;
+        ViewBag.QuocTichStats = await _context.NguoiNuocNgoais
+            .Where(n => wardForeignerIds.Contains(n.MaNguoiNuocNgoai))
             .GroupBy(n => n.QuocTich)
             .Select(g => new { Key = g.Key, Count = g.Count() })
             .OrderByDescending(g => g.Count)
             .ToListAsync();
 
-        ViewBag.QuocTichStats = quocTichStats;
-
-        // Thống kê theo loại hình cơ sở lưu trú (Khách sạn vs Nhà trọ)
-        var facilityStats = await _context.LichSuLuuTrus
+        ViewBag.FacilityStats = await _context.LichSuCuTrus
             .Include(l => l.CoSoLuuTru)
-            .Where(l => l.TrangThai == TrangThaiLuuTru.DangO && l.CoSoLuuTru.DiaChi.Contains(ward))
+            .Where(l => l.TrangThai == TrangThaiLuuTru.DangO && l.CoSoLuuTru.MaPhuongXa == canBo.MaPhuongXa)
             .GroupBy(l => l.CoSoLuuTru.TenCoSo)
             .Select(g => new { Key = g.Key, Count = g.Count() })
             .OrderByDescending(g => g.Count)
             .ToListAsync();
 
-        ViewBag.FacilityStats = facilityStats;
-
         return View();
+    }
+
+    private async Task LoadWardForeignersAsync(int wardId, string? selectedForeignerId)
+    {
+        var foreigners = await WardForeigners(wardId)
+            .OrderBy(n => n.HoTen)
+            .Select(n => new SelectListItem
+            {
+                Value = n.MaNguoiNuocNgoai,
+                Text = $"{n.HoTen} - Hộ chiếu: {n.SoHoChieu} ({n.QuocTich})"
+            })
+            .ToListAsync();
+
+        ViewBag.NguoiNuocNgoais = new SelectList(foreigners, "Value", "Text", selectedForeignerId);
+    }
+
+    private void PopulateCurrentResidence(IEnumerable<NguoiNuocNgoai> foreigners)
+    {
+        var ids = foreigners.Select(f => f.MaNguoiNuocNgoai).ToList();
+        var residences = _context.LichSuCuTrus
+            .Include(l => l.CoSoLuuTru)
+            .Where(l => ids.Contains(l.MaNguoiNuocNgoai) && l.TrangThai == TrangThaiLuuTru.DangO)
+            .ToList()
+            .GroupBy(l => l.MaNguoiNuocNgoai)
+            .ToDictionary(g => g.Key, g => g.OrderByDescending(l => l.NgayBatDau).First().CoSoLuuTru.DiaChi);
+
+        foreach (var foreigner in foreigners)
+        {
+            foreigner.NoiCuTruHienTai = residences.TryGetValue(foreigner.MaNguoiNuocNgoai, out var address)
+                ? address
+                : "Chưa có dữ liệu cư trú hiện tại";
+        }
     }
 }
