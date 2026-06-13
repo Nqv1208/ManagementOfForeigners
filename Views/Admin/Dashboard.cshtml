@@ -1,0 +1,89 @@
+@model ManagementOfForeigners.Models.ViewModels.Admin.DashboardViewModel
+
+@{
+    ViewData["Title"] = "Dashboard Quản trị";
+}
+
+<div class="container py-4">
+    <div class="d-flex flex-wrap justify-content-between align-items-center gap-3 mb-4">
+        <div>
+            <span class="badge bg-dark px-3 py-2 mb-2">Quản trị hệ thống</span>
+            <h2 class="fw-bold mb-1 text-dark">Bảng điều khiển quản trị</h2>
+            <p class="text-muted mb-0">Theo dõi dữ liệu nền, tài khoản và danh mục địa bàn TP. Đà Nẵng.</p>
+        </div>
+    </div>
+
+    <div class="row g-3 mb-4">
+        <div class="col-md-4 col-xl-2">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Người nước ngoài</div>
+                    <div class="fs-3 fw-bold text-primary">@Model.ForeignerCount</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-xl-2">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Cơ sở lưu trú</div>
+                    <div class="fs-3 fw-bold text-success">@Model.LodgingFacilityCount</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-xl-2">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Khai báo</div>
+                    <div class="fs-3 fw-bold text-info">@Model.DeclarationCount</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-xl-2">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Tài khoản</div>
+                    <div class="fs-3 fw-bold text-warning">@Model.UserCount</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-xl-2">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Phường/Xã</div>
+                    <div class="fs-3 fw-bold text-danger">@Model.WardCount</div>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 col-xl-2">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body">
+                    <div class="text-muted small">Báo cáo chờ xử lý</div>
+                    <div class="fs-3 fw-bold text-dark">@Model.PendingReportCount</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-3">
+        <div class="col-md-6 col-xl-3">
+            <a asp-action="QuanLyTaiKhoan" class="btn btn-outline-primary w-100 py-3 fw-semibold">
+                <i class="bi bi-people me-2"></i>Quản lý tài khoản
+            </a>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <a asp-action="QuanLyPhanQuyen" class="btn btn-outline-primary w-100 py-3 fw-semibold">
+                <i class="bi bi-shield-lock me-2"></i>Vai trò & quyền
+            </a>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <a asp-action="DanhMucPhuongXa" class="btn btn-outline-primary w-100 py-3 fw-semibold">
+                <i class="bi bi-geo-alt me-2"></i>Danh mục Phường/Xã
+            </a>
+        </div>
+        <div class="col-md-6 col-xl-3">
+            <a asp-action="NhatKyHoatDong" class="btn btn-outline-primary w-100 py-3 fw-semibold">
+                <i class="bi bi-clock-history me-2"></i>Nhật ký hoạt động
+            </a>
+        </div>
+    </div>
+</div>
