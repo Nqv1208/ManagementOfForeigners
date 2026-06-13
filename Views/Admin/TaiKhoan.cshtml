@@ -1,13 +1,13 @@
 @model IEnumerable<ManagementOfForeigners.Models.ViewModels.Admin.AdminAccountRowViewModel>
 @using ManagementOfForeigners.Models.Entities
 @{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Quản lý tài khoản";
     var roles = ViewBag.Roles as List<VaiTro> ?? new List<VaiTro>();
     string? search = ViewBag.Search as string;
     string? status = ViewBag.Status as string;
     int? selectedRole = ViewBag.Role == null ? null : Convert.ToInt32(ViewBag.Role);
 }
-<link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
 
 <section class="admin-page-title">
     <div>

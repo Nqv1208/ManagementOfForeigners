@@ -1,10 +1,10 @@
 @model IEnumerable<ManagementOfForeigners.Models.ViewModels.Admin.AdminReportRowViewModel>
 @using ManagementOfForeigners.Models.Entities
 @{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Quản lý báo cáo vi phạm";
     string? status = ViewBag.Status as string;
 }
-<link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
 
 <section class="admin-page-title">
     <div>

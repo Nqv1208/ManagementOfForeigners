@@ -1,10 +1,10 @@
 @model ManagementOfForeigners.Models.ViewModels.Admin.AdminDashboardViewModel
 @{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Bảng điều khiển quản trị";
     var maxRole = Model.RoleStats.Any() ? Model.RoleStats.Max(x => x.Value) : 1;
     var maxDeclaration = Model.DeclarationStats.Any() ? Model.DeclarationStats.Max(x => x.Value) : 1;
 }
-<link rel="stylesheet" href="~/css/admin.css" asp-append-version="true" />
 
 <section class="admin-hero">
     <div>
