@@ -2,12 +2,13 @@
 @using X.PagedList
 @model IPagedList<ManagementOfForeigners.Models.Entities.HoSoKhaiBaoTamTru>
 @{
+    Layout = "~/Views/Shared/_PoliceLayout.cshtml";
     ViewBag.Title = "Danh sách khai báo tạm trú";
 }
 
-<div class="container py-4">
+<div class="container-fluid">
     <div class="card border-0 shadow-sm" style="border-radius: 16px;">
-        <div class="card-header bg-dark text-white p-4">
+        <div class="card-header bg-success text-white p-4" style="background-color: var(--police-primary) !important;">
             <h5 class="fw-bold mb-0">Quản lý khai báo tạm trú - Địa bàn Phường @ViewBag.TenDiaBan</h5>
             <p class="text-white-50 mb-0 fs-7">Phê duyệt, từ chối và kiểm tra hồ sơ khai báo tạm trú của người nước ngoài</p>
         </div>
@@ -38,21 +39,7 @@
                 </form>
             </div>
 
-            <!-- Alerts -->
-            @if (TempData["SuccessMessage"] != null)
-            {
-                <div class="alert alert-success alert-dismissible fade show shadow-sm mb-4" role="alert" style="border-radius: 12px;">
-                    <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
-            @if (TempData["WarningMessage"] != null)
-            {
-                <div class="alert alert-warning alert-dismissible fade show shadow-sm mb-4" role="alert" style="border-radius: 12px;">
-                    <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["WarningMessage"]
-                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                </div>
-            }
+
 
             @if (!Model.Any())
             {

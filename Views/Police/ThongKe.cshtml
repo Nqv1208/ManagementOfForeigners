@@ -1,4 +1,5 @@
 @{
+    Layout = "~/Views/Shared/_PoliceLayout.cshtml";
     ViewBag.Title = "Thống kê & Báo cáo Địa bàn";
     var wardName = ViewBag.TenDiaBan as string ?? "Địa bàn quản lý";
     var quocTichStats = ViewBag.QuocTichStats as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
@@ -11,11 +12,11 @@
     int totalFacilities = facilityStats.Count();
 }
 
-<div class="container py-4">
+<div class="container-fluid">
     <!-- Header Premium -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden; background: linear-gradient(135deg, #1e293b, #0f172a);">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden; background: linear-gradient(135deg, var(--police-primary), var(--police-primary-dark));">
                 <div class="card-body p-4 text-white">
                     <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
                         <div class="d-flex align-items-center gap-3">
@@ -244,7 +245,7 @@
             <button onclick="window.print();" class="btn btn-outline-dark rounded-pill px-4 shadow-sm">
                 <i class="bi bi-printer me-2"></i>In Báo Cáo Thống Kê
             </button>
-            <a asp-action="Dashboard" class="btn btn-primary rounded-pill px-4 ms-2 shadow-sm">
+            <a asp-action="Dashboard" class="btn btn-success rounded-pill px-4 ms-2 shadow-sm text-white" style="background-color: var(--police-primary) !important; border-color: var(--police-primary) !important;">
                 <i class="bi bi-arrow-left me-2"></i>Quay lại Dashboard
             </a>
         </div>

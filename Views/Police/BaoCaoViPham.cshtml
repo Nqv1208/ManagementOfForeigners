@@ -1,13 +1,14 @@
 @model ManagementOfForeigners.Models.ViewModels.Police.BaoCaoViPhamViewModel
 @{
+    Layout = "~/Views/Shared/_PoliceLayout.cshtml";
     ViewBag.Title = "Báo cáo vi phạm lên XNC";
 }
 
-<div class="container py-4">
+<div class="container-fluid">
     <div class="row justify-content-center">
         <div class="col-lg-8 col-md-10">
             <div class="card border-0 shadow-sm" style="border-radius: 16px;">
-                <div class="card-header bg-dark text-white p-4">
+                <div class="card-header bg-success text-white p-4" style="background-color: var(--police-primary) !important;">
                     <h5 class="fw-bold mb-0">Báo cáo vi phạm lên Cục/Phòng XNC</h5>
                     <p class="text-white-50 mb-0 fs-7">Báo cáo các trường hợp vi phạm nghiêm trọng cần Phòng Xuất Nhập Cảnh xử lý hoặc trục xuất</p>
                 </div>
@@ -38,7 +39,7 @@
                                 <a asp-action="Dashboard" class="btn btn-outline-secondary px-4 fw-semibold" style="border-radius: 8px;">
                                     <i class="bi bi-arrow-left me-1"></i> Quay lại
                                 </a>
-                                <button type="submit" class="btn btn-dark px-4 fw-semibold" style="border-radius: 8px;">
+                                <button type="submit" class="btn btn-success px-4 fw-semibold text-white" style="border-radius: 8px;">
                                     <i class="bi bi-flag me-1"></i> Gửi báo cáo
                                 </button>
                             </div>

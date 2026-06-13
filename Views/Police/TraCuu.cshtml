@@ -2,12 +2,13 @@
 @using X.PagedList
 @model IPagedList<ManagementOfForeigners.Models.Entities.NguoiNuocNgoai>
 @{
+    Layout = "~/Views/Shared/_PoliceLayout.cshtml";
     ViewBag.Title = "Tra cứu địa bàn - Công an";
 }
 
-<div class="container py-4">
+<div class="container-fluid">
     <div class="card border-0 shadow-sm" style="border-radius: 16px;">
-        <div class="card-header bg-dark text-white p-4">
+        <div class="card-header bg-success text-white p-4" style="background-color: var(--police-primary) !important;">
             <h5 class="fw-bold mb-0">Tra cứu người nước ngoài tại @ViewBag.TenDiaBan</h5>
             <p class="text-white-50 mb-0 fs-7">Danh sách người nước ngoài đang sinh sống và cư trú thực tế trong địa bàn phụ trách của Công an phường</p>
         </div>
