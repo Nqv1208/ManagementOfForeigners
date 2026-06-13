@@ -57,23 +57,11 @@ public static class IdGenerator
     }
 
     /// <summary>
-    /// Tạo mã LichSuCuTru mới: CT000001, CT000002...
+    /// Tạo mã LichSuCuTru mới: LS000001, LS000002...
     /// </summary>
     public static string NewMaLichSuCuTru(ApplicationDbContext context)
     {
         var lastId = context.LichSuCuTrus
-            .OrderByDescending(l => l.MaLuuTru)
-            .Select(l => l.MaLuuTru)
-            .FirstOrDefault();
-        return GenerateNext("CT", lastId);
-    }
-
-    /// <summary>
-    /// Tạo mã LichSuLuuTru mới: LS000001, LS000002...
-    /// </summary>
-    public static string NewMaLichSuLuuTru(ApplicationDbContext context)
-    {
-        var lastId = context.LichSuLuuTrus
             .OrderByDescending(l => l.MaLSLuuTru)
             .Select(l => l.MaLSLuuTru)
             .FirstOrDefault();
@@ -81,11 +69,11 @@ public static class IdGenerator
     }
 
     /// <summary>
-    /// Tạo mã LichSuCapNhatThongTin mới: CN000001, CN000002...
+    /// Tạo mã LichSuCapNhatThongTinCaNhan mới: CN000001, CN000002...
     /// </summary>
     public static string NewMaLSCapNhat(ApplicationDbContext context)
     {
-        var lastId = context.LichSuCapNhatThongTins
+        var lastId = context.LichSuCapNhatThongTinCaNhans
             .OrderByDescending(l => l.MaLSCapNhat)
             .Select(l => l.MaLSCapNhat)
             .FirstOrDefault();

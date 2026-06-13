@@ -40,7 +40,8 @@ using (var scope = app.Services.CreateScope())
     var context = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
     try
     {
-        SeedData.Initialize(context);
+        context.Database.Migrate();
+        await SeedData.InitializeAsync(context);
     }
     catch (Exception ex)
     {

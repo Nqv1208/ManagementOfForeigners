@@ -115,25 +115,48 @@
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Officer" asp-action="CanhBaoViPham"><i class="bi bi-exclamation-octagon me-1"></i> Cảnh báo vi phạm</a>
                             </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Officer" asp-action="DanhSachBaoCao"><i class="bi bi-flag me-1"></i> Báo cáo vi phạm</a>
+                            </li>
                         }
 
                         @* ===== Menu cho Công an Phường/Xã ===== *@
                         if (userRole == "CongAn")
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Police" asp-action="PheDuyetKhaiBao"><i class="bi bi-check2-circle me-1"></i> Phê duyệt khai báo</a>
+                                <a class="nav-link" asp-controller="Police" asp-action="DanhSachKhaiBao"><i class="bi bi-check2-circle me-1"></i> Phê duyệt khai báo</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Police" asp-action="TraCuu"><i class="bi bi-shield-shaded me-1"></i> Tra cứu</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Police" asp-action="CanhBao"><i class="bi bi-bell me-1"></i> Cảnh báo</a>
+                                <a class="nav-link" asp-controller="Police" asp-action="CanhBaoViPham"><i class="bi bi-bell me-1"></i> Cảnh báo</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Police" asp-action="BaoCao"><i class="bi bi-file-earmark-break me-1"></i> Báo cáo</a>
+                                <a class="nav-link" asp-controller="Police" asp-action="BaoCaoViPham"><i class="bi bi-file-earmark-break me-1"></i> Báo cáo</a>
                             </li>
                             <li class="nav-item">
                                 <a class="nav-link" asp-controller="Police" asp-action="ThongKe"><i class="bi bi-graph-up me-1"></i> Thống kê</a>
+                            </li>
+                        }
+
+                        @* ===== Menu cho Quản trị viên ===== *@
+                        if (userRole == "Admin")
+                        {
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="Dashboard"><i class="bi bi-shield-lock me-1"></i> Dashboard QTV</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="QuanLyTaiKhoan"><i class="bi bi-people me-1"></i> Quản lý TK</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="QuanLyPhanQuyen"><i class="bi bi-shield-check me-1"></i> Phân quyền</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="DanhMucPhuongXa"><i class="bi bi-geo-alt me-1"></i> Phường/Xã</a>
+                            </li>
+                            <li class="nav-item">
+                                <a class="nav-link" asp-controller="Admin" asp-action="NhatKyHoatDong"><i class="bi bi-clock-history me-1"></i> Nhật ký</a>
                             </li>
                         }
                     }
@@ -170,6 +193,7 @@
                                     else if (userRole == "ChuLuuTru") dashboardUrl = "/Accommodation/Dashboard";
                                     else if (userRole == "CanBoXNC") dashboardUrl = "/Officer/Dashboard";
                                     else if (userRole == "CongAn") dashboardUrl = "/Police/Dashboard";
+                                    else if (userRole == "Admin") dashboardUrl = "/Admin/Dashboard";
                                 }
                                 <span class="badge @roleBadgeClass">@roleDisplayName</span>
                             </div>
