@@ -1,0 +1,295 @@
+@model ManagementOfForeigners.Models.ViewModels.DangKyUnifiedViewModel
+
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Đăng ký tài khoản";
+}
+
+@section Styles {
+    <link rel="stylesheet" href="~/css/register-unified.css" asp-append-version="true" />
+}
+
+<div class="register-page">
+    <div class="register-shell">
+        <!-- Header -->
+        <div class="register-header">
+            <h2>Đăng ký tài khoản dịch vụ công</h2>
+            <div class="subtitle">Cổng thông tin điện tử — Công an Thành phố Đà Nẵng</div>
+        </div>
+
+        <!-- Segmented Tab Selection -->
+        <div class="register-type-switch">
+            <button type="button" class="register-type-tab active" data-type="Foreigner" id="tabForeigner">
+                <i class="bi bi-person-badge"></i>Người nước ngoài
+            </button>
+            <button type="button" class="register-type-tab" data-type="LodgingOwner" id="tabLodgingOwner">
+                <i class="bi bi-building"></i>Cơ sở lưu trú
+            </button>
+        </div>
+
+        <!-- Form Body -->
+        <div class="register-body">
+            <form asp-action="DangKy" asp-controller="TaiKhoan" method="post" id="registerForm">
+                @Html.AntiForgeryToken()
+                <div asp-validation-summary="ModelOnly" class="text-danger small mb-2"></div>
+
+                <!-- Hidden Input for AccountType -->
+                <input type="hidden" asp-for="AccountType" id="AccountType" />
+
+                <!-- ═══ 1. THÔNG TIN TÀI KHOẢN ═══ -->
+                <div class="register-section-title">
+                    <i class="bi bi-shield-lock-fill"></i> Thông tin tài khoản
+                </div>
+                <div class="register-grid">
+                    <div class="form-group span-1">
+                        <label asp-for="TenDangNhap" class="required"></label>
+                        <input asp-for="TenDangNhap" class="form-control" autocomplete="username" placeholder="Tên đăng nhập" />
+                        <span asp-validation-for="TenDangNhap" class="field-validation-error"></span>
+                    </div>
+                    <div class="form-group span-1">
+                        <label asp-for="Email" class="required"></label>
+                        <input asp-for="Email" class="form-control" type="email" autocomplete="email" placeholder="email@example.com" />
+                        <span asp-validation-for="Email" class="field-validation-error"></span>
+                    </div>
+                    <div class="form-group span-1">
+                        <label asp-for="SoDienThoai" class="required"></label>
+                        <input asp-for="SoDienThoai" class="form-control" placeholder="Số điện thoại" />
+                        <span asp-validation-for="SoDienThoai" class="field-validation-error"></span>
+                    </div>
+                    <div class="form-group span-1">
+                        <label asp-for="MatKhau" class="required"></label>
+                        <input asp-for="MatKhau" class="form-control" type="password" autocomplete="new-password" placeholder="Tối thiểu 6 ký tự" />
+                        <span asp-validation-for="MatKhau" class="field-validation-error"></span>
+                    </div>
+                    <div class="form-group span-1">
+                        <label asp-for="XacNhanMatKhau" class="required"></label>
+                        <input asp-for="XacNhanMatKhau" class="form-control" type="password" autocomplete="new-password" placeholder="Nhập lại mật khẩu" />
+                        <span asp-validation-for="XacNhanMatKhau" class="field-validation-error"></span>
+                    </div>
+                </div>
+
+                <!-- ═══ 2. NGƯỜI NƯỚC NGOÀI ═══ -->
+                <div id="foreignerFields" class="fade-in">
+                    <div class="register-section-title">
+                        <i class="bi bi-person-fill"></i> Thông tin cá nhân
+                    </div>
+                    <div class="register-grid">
+                        <div class="form-group span-1">
+                            <label asp-for="HoTen" class="required"></label>
+                            <input asp-for="HoTen" class="form-control" placeholder="Họ và tên đầy đủ" />
+                            <span asp-validation-for="HoTen" class="field-validation-error"></span>
+                        </div>
+                        <div class="form-group span-1">
+                            <label asp-for="NgaySinh" class="required"></label>
+                            <input asp-for="NgaySinh" class="form-control" type="date" />
+                            <span asp-validation-for="NgaySinh" class="field-validation-error"></span>
+                        </div>
+                        <div class="form-group span-1">
+                            <label asp-for="GioiTinh" class="required"></label>
+                            <select asp-for="GioiTinh" class="form-select">
+                                <option value="">-- Chọn --</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                            <span asp-validation-for="GioiTinh" class="field-validation-error"></span>
+                        </div>
+                        <div class="form-group span-1">
+                            <label asp-for="QuocTich" class="required"></label>
+                            <input asp-for="QuocTich" class="form-control" placeholder="Ví dụ: Hàn Quốc" />
+                            <span asp-validation-for="QuocTich" class="field-validation-error"></span>
+                        </div>
+                        <div class="form-group span-1">
+                            <label asp-for="SoHoChieu" class="required"></label>
+                            <input asp-for="SoHoChieu" class="form-control" placeholder="Số hộ chiếu" />
+                            <span asp-validation-for="SoHoChieu" class="field-validation-error"></span>
+                        </div>
+                        <div class="form-group span-1">
+                            <label asp-for="LoaiHoChieu"></label>
+                            <input asp-for="LoaiHoChieu" class="form-control" placeholder="Phổ thông / Ngoại giao" />
+                            <span asp-validation-for="LoaiHoChieu" class="field-validation-error"></span>
+                        </div>
+                        <div class="form-group span-1">
+                            <label asp-for="HanHoChieu"></label>
+                            <input asp-for="HanHoChieu" class="form-control" type="date" />
+                            <span asp-validation-for="HanHoChieu" class="field-validation-error"></span>
+                        </div>
+                        <div class="form-group span-2">
+                            <label asp-for="DiaChiLienHe"></label>
+                            <input asp-for="DiaChiLienHe" class="form-control" placeholder="Địa chỉ liên hệ hiện tại" />
+                            <span asp-validation-for="DiaChiLienHe" class="field-validation-error"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ 3. CƠ SỞ LƯU TRÚ ═══ -->
+                <div id="lodgingFields" style="display: none;" class="fade-in">
+                    <!-- Người đại diện -->
+                    <div class="register-section-title">
+                        <i class="bi bi-person-vcard"></i> Người đại diện / Chủ cơ sở
+                    </div>
+                    <div class="register-grid">
+                        <div class="form-group span-1">
+                            <label asp-for="HoTenNguoiDaiDien" class="required"></label>
+                            <input asp-for="HoTenNguoiDaiDien" class="form-control" placeholder="Họ tên người đại diện" />
+                            <span asp-validation-for="HoTenNguoiDaiDien" class="field-validation-error"></span>
+                        </div>
+                        <div class="form-group span-1">
+                            <label asp-for="SoGiayToNguoiDaiDien" class="required"></label>
+                            <input asp-for="SoGiayToNguoiDaiDien" class="form-control" placeholder="CCCD / CMND / Hộ chiếu" />
+                            <span asp-validation-for="SoGiayToNguoiDaiDien" class="field-validation-error"></span>
+                        </div>
+                        <div class="form-group span-1">
+                            <label asp-for="NgaySinhNguoiDaiDien"></label>
+                            <input asp-for="NgaySinhNguoiDaiDien" class="form-control" type="date" />
+                            <span asp-validation-for="NgaySinhNguoiDaiDien" class="field-validation-error"></span>
+                        </div>
+                        <div class="form-group span-1">
+                            <label asp-for="GioiTinhNguoiDaiDien"></label>
+                            <select asp-for="GioiTinhNguoiDaiDien" class="form-select">
+                                <option value="">-- Chọn --</option>
+                                <option value="Nam">Nam</option>
+                                <option value="Nữ">Nữ</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                            <span asp-validation-for="GioiTinhNguoiDaiDien" class="field-validation-error"></span>
+                        </div>
+                        <div class="form-group span-1">
+                            <label asp-for="ChucVu"></label>
+                            <input asp-for="ChucVu" class="form-control" placeholder="Chủ hộ / Quản lý..." />
+                            <span asp-validation-for="ChucVu" class="field-validation-error"></span>
+                        </div>
+                    </div>
+
+                    <!-- Cơ sở lưu trú -->
+                    <div class="register-section-title">
+                        <i class="bi bi-house-door-fill"></i> Thông tin cơ sở lưu trú
+                    </div>
+                    <div class="register-grid">
+                        <div class="form-group span-1">
+                            <label asp-for="TenCoSoLuuTru" class="required"></label>
+                            <input asp-for="TenCoSoLuuTru" class="form-control" placeholder="Tên cơ sở" />
+                            <span asp-validation-for="TenCoSoLuuTru" class="field-validation-error"></span>
+                        </div>
+                        <div class="form-group span-1">
+                            <label asp-for="LoaiCoSoLuuTru" class="required"></label>
+                            <select asp-for="LoaiCoSoLuuTru" class="form-select">
+                                <option value="">-- Chọn loại hình --</option>
+                                <option value="Khách sạn">Khách sạn</option>
+                                <option value="Nhà khách">Nhà khách</option>
+                                <option value="Nhà trọ">Nhà trọ</option>
+                                <option value="Homestay">Homestay</option>
+                                <option value="Biệt thự du lịch">Biệt thự du lịch</option>
+                                <option value="Khác">Khác</option>
+                            </select>
+                            <span asp-validation-for="LoaiCoSoLuuTru" class="field-validation-error"></span>
+                        </div>
+                        <div class="form-group span-1">
+                            <label asp-for="MaSoThue"></label>
+                            <input asp-for="MaSoThue" class="form-control" placeholder="Mã số thuế / kinh doanh" />
+                            <span asp-validation-for="MaSoThue" class="field-validation-error"></span>
+                        </div>
+                        <div class="form-group span-1">
+                            <label asp-for="SoDienThoaiCoSo" class="required"></label>
+                            <input asp-for="SoDienThoaiCoSo" class="form-control" placeholder="SĐT cơ sở" />
+                            <span asp-validation-for="SoDienThoaiCoSo" class="field-validation-error"></span>
+                        </div>
+                        <div class="form-group span-1">
+                            <label asp-for="EmailCoSo"></label>
+                            <input asp-for="EmailCoSo" class="form-control" type="email" placeholder="Email cơ sở" />
+                            <span asp-validation-for="EmailCoSo" class="field-validation-error"></span>
+                        </div>
+                        <div class="form-group span-1">
+                            <label asp-for="TinhThanh"></label>
+                            <input asp-for="TinhThanh" class="form-control" readonly />
+                        </div>
+                        <div class="form-group span-1">
+                            <label asp-for="PhuongXaId" class="required"></label>
+                            <select asp-for="PhuongXaId" asp-items="ViewBag.PhuongXas" class="form-select">
+                                <option value="">-- Chọn Phường/Xã --</option>
+                            </select>
+                            <span asp-validation-for="PhuongXaId" class="field-validation-error"></span>
+                        </div>
+                        <div class="form-group span-2">
+                            <label asp-for="DiaChiCoSo" class="required"></label>
+                            <input asp-for="DiaChiCoSo" class="form-control" placeholder="Số nhà, tên đường, tổ dân phố..." />
+                            <span asp-validation-for="DiaChiCoSo" class="field-validation-error"></span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- ═══ 4. CAM KẾT ═══ -->
+                <div class="agreement-row">
+                    <div class="form-check d-flex align-items-start gap-2">
+                        <input asp-for="CamKetThongTin" class="form-check-input" type="checkbox" />
+                        <label asp-for="CamKetThongTin" class="form-check-label">
+                            Tôi xin cam đoan các thông tin khai báo trên đây là đúng sự thật và chịu trách nhiệm trước pháp luật.
+                        </label>
+                    </div>
+                    <span asp-validation-for="CamKetThongTin" class="field-validation-error d-block"></span>
+                </div>
+
+                <!-- ═══ 5. NÚT HÀNH ĐỘNG ═══ -->
+                <div class="action-buttons-row">
+                    <a asp-controller="TrangChu" asp-action="Index" class="btn-gov btn-gov-secondary text-decoration-none">
+                        <i class="bi bi-x-circle"></i> Hủy bỏ
+                    </a>
+                    <button type="button" id="btnReset" class="btn-gov btn-gov-warning">
+                        <i class="bi bi-arrow-counterclockwise"></i> Làm mới
+                    </button>
+                    <button type="submit" class="btn-gov btn-gov-primary">
+                        <i class="bi bi-check2-circle"></i> Đăng ký
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+
+    <script type="text/javascript">
+        $(document).ready(function () {
+            function toggleRegistrationType(type) {
+                // Toggle active tab
+                $('.register-type-tab').removeClass('active');
+                if (type === "Foreigner") {
+                    $('#tabForeigner').addClass('active');
+                    $('#foreignerFields').show();
+                    $('#lodgingFields').hide();
+                    $('#foreignerFields').find('input, select, textarea').prop('disabled', false);
+                    $('#lodgingFields').find('input, select, textarea').prop('disabled', true);
+                } else {
+                    $('#tabLodgingOwner').addClass('active');
+                    $('#foreignerFields').hide();
+                    $('#lodgingFields').show();
+                    $('#foreignerFields').find('input, select, textarea').prop('disabled', true);
+                    $('#lodgingFields').find('input, select, textarea').prop('disabled', false);
+                }
+                $('#AccountType').val(type);
+
+                // Reset validation
+                var validator = $('#registerForm').validate();
+                if (validator) { validator.resetForm(); }
+                $('.field-validation-error').text('');
+            }
+
+            // Tab click
+            $('.register-type-tab').click(function () {
+                toggleRegistrationType($(this).data('type'));
+            });
+
+            // Init
+            toggleRegistrationType($('#AccountType').val() || "Foreigner");
+
+            // Reset button
+            $('#btnReset').click(function () {
+                var currentType = $('#AccountType').val();
+                $('#registerForm')[0].reset();
+                $('#AccountType').val(currentType);
+                toggleRegistrationType(currentType);
+            });
+        });
+    </script>
+}

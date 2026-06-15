@@ -1,0 +1,176 @@
+@model ManagementOfForeigners.Models.ViewModels.QuanTri.TongQuanViewModel
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Bảng điều khiển quản trị";
+    var maxRole = Model.RoleStats.Any() ? Model.RoleStats.Max(x => x.Value) : 1;
+    var maxDeclaration = Model.DeclarationStats.Any() ? Model.DeclarationStats.Max(x => x.Value) : 1;
+}
+
+<section class="admin-hero">
+    <div>
+        <span class="admin-eyebrow">Trung tâm điều hành hệ thống</span>
+        <h1>Quản trị hệ thống quản lý người nước ngoài</h1>
+        <p>Theo dõi tài khoản, hồ sơ tạm trú, cơ sở lưu trú, cảnh báo và báo cáo vi phạm trên toàn thành phố.</p>
+    </div>
+    <div class="admin-hero-actions">
+        <a class="btn btn-light" asp-controller="QuanTri" asp-action="TaiKhoan">Quản lý tài khoản</a>
+        <a class="btn btn-outline-light" asp-controller="QuanTri" asp-action="BaoCaoViPham">Xử lý báo cáo</a>
+    </div>
+</section>
+
+<section class="admin-kpi-grid">
+    <article class="admin-kpi-card">
+        <span>Tài khoản</span>
+        <strong>@Model.TotalAccounts</strong>
+        <small>@Model.ActiveAccounts hoạt động · @Model.LockedAccounts bị khoá</small>
+    </article>
+    <article class="admin-kpi-card warning">
+        <span>Visa sắp hết hạn</span>
+        <strong>@Model.VisaExpiring30Days</strong>
+        <small>Trong 30 ngày tới</small>
+    </article>
+    <article class="admin-kpi-card info">
+        <span>Hồ sơ chờ duyệt</span>
+        <strong>@Model.PendingDeclarations</strong>
+        <small>@Model.ApprovedDeclarations đã duyệt · @Model.RejectedDeclarations từ chối</small>
+    </article>
+    <article class="admin-kpi-card success">
+        <span>Cơ sở lưu trú</span>
+        <strong>@Model.TotalFacilities</strong>
+        <small>@Model.ActiveFacilities đang hoạt động</small>
+    </article>
+    <article class="admin-kpi-card danger">
+        <span>Báo cáo chưa xong</span>
+        <strong>@Model.OpenReports</strong>
+        <small>@Model.TotalWarnings cảnh báo đã ghi nhận</small>
+    </article>
+    <article class="admin-kpi-card neutral">
+        <span>Tài khoản mới tháng này</span>
+        <strong>@Model.NewAccountsThisMonth</strong>
+        <small>Tự đăng ký hoặc được tạo mới</small>
+    </article>
+</section>
+
+<section class="admin-grid-two">
+    <div class="admin-panel">
+        <div class="admin-panel-header">
+            <div>
+                <h2>Cơ cấu tài khoản theo vai trò</h2>
+                <p>Giúp rà soát nhanh quyền truy cập hệ thống.</p>
+            </div>
+        </div>
+        @foreach (var item in Model.RoleStats)
+        {
+            var width = Math.Max(8, item.Value * 100 / maxRole);
+            <div class="admin-progress-row">
+                <div><span>@item.Label</span><b>@item.Value</b></div>
+                <div class="admin-progress"><span style="width:@width%"></span></div>
+            </div>
+        }
+    </div>
+
+    <div class="admin-panel">
+        <div class="admin-panel-header">
+            <div>
+                <h2>Trạng thái khai báo tạm trú</h2>
+                <p>Theo dõi luồng hồ sơ toàn hệ thống.</p>
+            </div>
+        </div>
+        @foreach (var item in Model.DeclarationStats)
+        {
+            var width = Math.Max(8, item.Value * 100 / maxDeclaration);
+            <div class="admin-progress-row">
+                <div><span>@item.Label</span><b>@item.Value</b></div>
+                <div class="admin-progress"><span style="width:@width%"></span></div>
+            </div>
+        }
+    </div>
+</section>
+
+<section class="admin-panel">
+    <div class="admin-panel-header">
+        <div>
+            <h2>Tài khoản mới nhất</h2>
+            <p>Ưu tiên kiểm tra tài khoản mới đăng ký và trạng thái hoạt động.</p>
+        </div>
+        <a class="btn btn-sm btn-primary" asp-controller="QuanTri" asp-action="TaiKhoan">Xem tất cả</a>
+    </div>
+    <div class="table-responsive">
+        <table class="table admin-table align-middle">
+            <thead>
+                <tr>
+                    <th>Tài khoản</th>
+                    <th>Chủ thể</th>
+                    <th>Vai trò</th>
+                    <th>Trạng thái</th>
+                    <th>Ngày tạo</th>
+                    <th>Đăng nhập cuối</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model.LatestAccounts)
+            {
+                <tr>
+                    <td><strong>@item.TenDangNhap</strong><br /><small>@item.Email</small></td>
+                    <td>@item.OwnerDisplayName</td>
+                    <td><span class="admin-chip">@item.VaiTro</span></td>
+                    <td>@await Html.PartialAsync("_StatusBadge", item.TrangThai)</td>
+                    <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
+                    <td>@(item.LanDangNhapCuoi?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa có")</td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>
+
+<section class="admin-grid-two">
+    <div class="admin-panel">
+        <div class="admin-panel-header">
+            <div>
+                <h2>Hồ sơ tạm trú gần đây</h2>
+                <p>Các khai báo mới nhất từ người nước ngoài và cơ sở lưu trú.</p>
+            </div>
+        </div>
+        <div class="admin-list">
+            @foreach (var item in Model.LatestDeclarations)
+            {
+                <article>
+                    <div>
+                        <strong>@item.HoTenNguoiNuocNgoai</strong>
+                        <span>HC: @item.SoHoChieu · @(item.TenCoSo ?? "Cư trú tự do")</span>
+                    </div>
+                    <div class="text-end">
+                        @await Html.PartialAsync("_StatusBadge", item.TrangThai)
+                        <small>@item.NgayKhaiBao.ToString("dd/MM/yyyy")</small>
+                    </div>
+                </article>
+            }
+        </div>
+    </div>
+
+    <div class="admin-panel">
+        <div class="admin-panel-header">
+            <div>
+                <h2>Báo cáo vi phạm mới</h2>
+                <p>Ưu tiên các báo cáo chưa xử lý hoặc đang xử lý.</p>
+            </div>
+            <a class="btn btn-sm btn-outline-primary" asp-controller="QuanTri" asp-action="BaoCaoViPham">Mở danh sách</a>
+        </div>
+        <div class="admin-list">
+            @foreach (var item in Model.LatestReports)
+            {
+                <article>
+                    <div>
+                        <strong>@item.HoTenNguoiNuocNgoai</strong>
+                        <span>@item.NoiDungBaoCao</span>
+                    </div>
+                    <div class="text-end">
+                        @await Html.PartialAsync("_StatusBadge", item.TrangThaiXuLy)
+                        <small>@item.NgayBaoCao.ToString("dd/MM/yyyy")</small>
+                    </div>
+                </article>
+            }
+        </div>
+    </div>
+</section>

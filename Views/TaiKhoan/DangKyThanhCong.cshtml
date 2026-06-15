@@ -1,0 +1,39 @@
+@{
+    ViewBag.Title = "Đăng ký thành công";
+}
+
+<div class="row justify-content-center py-5">
+    <div class="col-md-8 col-lg-6">
+        <div class="card shadow border-0 text-center p-5 rounded-4">
+            <div class="card-body">
+                <div class="mb-4 text-success">
+                    <i class="bi bi-check-circle-fill" style="font-size: 5rem; display: inline-block;"></i>
+                </div>
+                
+                <h2 class="fw-bold text-success mb-3">Đăng Ký Thành Công!</h2>
+                
+                <p class="fs-5 text-muted mb-4">
+                    Yêu cầu đăng ký tài khoản chủ cơ sở và cơ sở lưu trú của bạn đã được tiếp nhận thành công.
+                </p>
+                
+                <div class="alert alert-info py-3 px-4 mb-5 text-start border-0 border-start border-4 border-info shadow-sm bg-light">
+                    <h6 class="fw-bold text-info"><i class="bi bi-info-circle-fill me-2"></i>Lưu ý về quy trình phê duyệt:</h6>
+                    <ul class="mb-0 small ps-3">
+                        <li class="mb-1">Cán bộ quản lý sẽ tiến hành thẩm định thông tin cơ sở và người đại diện.</li>
+                        <li class="mb-1">Tài khoản của bạn sẽ được kích hoạt ngay khi hồ sơ được phê duyệt.</li>
+                        <li>Thông thường quy trình phê duyệt sẽ diễn ra trong vòng 24 giờ làm việc.</li>
+                    </ul>
+                </div>
+                
+                <div class="d-flex flex-column flex-sm-row gap-3 justify-content-center">
+                    <a asp-controller="TaiKhoan" asp-action="DangNhap" class="btn btn-success btn-lg px-4 py-3 fw-bold text-white shadow-sm">
+                        <i class="bi bi-box-arrow-in-right me-2"></i> Đi đến Đăng nhập
+                    </a>
+                    <a asp-controller="TrangChu" asp-action="Index" class="btn btn-outline-secondary btn-lg px-4 py-3 fw-bold shadow-sm">
+                        <i class="bi bi-house-door me-2"></i> Về Trang chủ
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

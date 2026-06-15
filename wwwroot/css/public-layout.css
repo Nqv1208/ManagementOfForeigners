@@ -1,0 +1,488 @@
+/* ===== PUBLIC LAYOUT - HEADER & FOOTER CSS ===== */
+
+/* Base container for public pages */
+.public-page {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.public-main {
+    flex: 1 0 auto;
+}
+
+.public-footer {
+    flex-shrink: 0;
+}
+
+/* Common container */
+.public-container {
+    max-width: 1360px;
+    margin: 0 auto;
+    padding: 0 24px;
+    width: 100%;
+    box-sizing: border-box;
+}
+
+/* ==================================================
+   1. PUBLIC HEADER
+   ================================================== */
+.public-header {
+    width: 100%;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    background: var(--primary-darker);
+}
+
+/* A. Top utility bar */
+.public-topbar {
+    background-color: var(--primary-darker);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+    color: rgba(255, 255, 255, 0.8);
+    font-size: 11px;
+    height: 36px;
+    display: flex;
+    align-items: center;
+}
+
+.public-topbar-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    height: 100%;
+}
+
+.portal-title {
+    font-weight: 500;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+.portal-meta {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.portal-meta a {
+    color: rgba(255, 255, 255, 0.8);
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.portal-meta a:hover {
+    color: #ffffff;
+}
+
+.portal-meta .flag-vn {
+    display: inline-block;
+    width: 16px;
+    height: 11px;
+    background-color: #da251d;
+    position: relative;
+    vertical-align: middle;
+    margin-right: 4px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+}
+
+.portal-meta .flag-vn::before {
+    content: "★";
+    color: #ffff00;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 8px;
+    line-height: 1;
+}
+
+/* B. Brand header */
+.public-brandbar {
+    background: linear-gradient(135deg, var(--primary-dark) 0%, var(--primary-darker) 100%);
+    color: #ffffff;
+    padding: 16px 0;
+    border-bottom: 3px solid var(--accent);
+}
+
+.public-brandbar-inner {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 24px;
+}
+
+.brand-left {
+    display: flex;
+    align-items: center;
+}
+
+.brand-right {
+    text-align: right;
+    font-size: 12px;
+}
+
+.brand-right .version {
+    display: block;
+    color: rgba(255, 255, 255, 0.65);
+    font-family: monospace;
+    margin-bottom: 2px;
+}
+
+.brand-right .greeting {
+    color: var(--accent);
+    font-weight: 500;
+}
+
+.brand-left .portal-logo-container {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+}
+
+.brand-left .portal-emblem {
+    width: 60px;
+    height: 60px;
+    background-color: rgba(255, 255, 255, 0.1);
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid var(--accent);
+    box-shadow: 0 0 12px rgba(242, 161, 0, 0.25);
+    flex-shrink: 0;
+}
+
+.brand-left .portal-emblem i {
+    font-size: 32px;
+    color: var(--accent);
+}
+
+.brand-left .portal-titles {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.brand-left .portal-title-gov {
+    font-size: 0.85rem;
+    font-weight: 700;
+    letter-spacing: 1px;
+    color: #dff4d9;
+    text-transform: uppercase;
+}
+
+.brand-left .portal-title-main {
+    font-size: 1.25rem;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #ffffff;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+
+.brand-left .portal-title-sub {
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: #cbd5e1;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* C. Main navigation bar */
+.public-navbar {
+    background-color: var(--primary) !important;
+    padding: 0 !important;
+    border: none;
+}
+
+.public-navbar-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 24px;
+    width: 100%;
+}
+
+.public-navbar .navbar-collapse {
+    display: flex !important;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.public-nav-menu {
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    flex: 1 1 auto;
+    min-width: 0;
+    list-style: none;
+    padding: 0;
+    margin: 0;
+}
+
+.public-nav-link {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    width: auto;
+    flex: 0 0 auto;
+    padding: 14px 18px;
+    color: rgba(255, 255, 255, 0.9);
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    text-decoration: none;
+    white-space: nowrap;
+    transition: all 0.15s ease;
+}
+
+.public-nav-link i {
+    font-size: 1rem;
+}
+
+.public-nav-link.active,
+.public-nav-link:hover {
+    background: rgba(0, 0, 0, 0.16);
+    color: #ffffff !important;
+}
+
+.public-auth-actions {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex: 0 0 auto;
+    margin-left: auto;
+    padding-left: 24px;
+    list-style: none;
+    margin-top: 0;
+    margin-bottom: 0;
+}
+
+.public-auth-actions .user-greeting {
+    color: rgba(255, 255, 255, 0.9);
+    font-size: 0.85rem;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    white-space: nowrap;
+}
+
+.btn-auth {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: auto;
+    min-width: unset;
+    flex: 0 0 auto;
+    white-space: nowrap;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-weight: 700;
+    font-size: 0.85rem;
+    text-transform: uppercase;
+    text-decoration: none;
+    transition: all 0.15s ease;
+}
+
+.btn-login {
+    background: var(--accent);
+    color: #102a0b !important;
+}
+
+.btn-login:hover {
+    background: var(--accent-dark);
+    box-shadow: 0 2px 8px rgba(242, 161, 0, 0.4);
+}
+
+.btn-register {
+    background: transparent;
+    color: #ffffff !important;
+    border: 1px solid rgba(255, 255, 255, 0.75);
+}
+
+.btn-register:hover {
+    background: rgba(255, 255, 255, 0.12);
+    border-color: #ffffff;
+}
+
+/* ==================================================
+   2. PUBLIC FOOTER
+   ================================================== */
+.public-footer {
+    width: 100%;
+    background: var(--primary-darker);
+    color: rgba(255, 255, 255, 0.8);
+    margin-top: 48px;
+    border-top: 4px solid var(--accent);
+}
+
+.footer-main {
+    display: grid;
+    grid-template-columns: 1.4fr 1fr 1fr;
+    gap: 48px;
+    padding: 40px 0 30px;
+}
+
+.footer-col h5 {
+    color: #ffffff;
+    font-size: 15px;
+    font-weight: 800;
+    margin-bottom: 18px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    display: inline-block;
+}
+
+.footer-col .footer-title-underline {
+    display: block;
+    width: 42px;
+    height: 3px;
+    background: var(--accent);
+    margin-top: 8px;
+    border-radius: 99px;
+}
+
+.footer-col p,
+.footer-col a,
+.footer-col li {
+    font-size: 13px;
+    line-height: 1.8;
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.footer-col ul {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.footer-col a {
+    text-decoration: none;
+    transition: color 0.15s ease;
+}
+
+.footer-col a:hover {
+    color: #ffffff;
+}
+
+.footer-col i {
+    color: var(--accent);
+}
+
+.footer-bottom {
+    background: rgba(0, 0, 0, 0.22);
+    padding: 16px 0;
+    text-align: center;
+    font-size: 12px;
+    color: rgba(255, 255, 255, 0.55);
+    border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.footer-bottom p {
+    margin: 0;
+}
+
+/* ==================================================
+   3. RESPONSIVE FOR PUBLIC LAYOUT
+   ================================================== */
+@media (max-width: 992px) {
+    /* Brandbar */
+    .public-brandbar-inner {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 12px;
+    }
+    
+    .brand-right {
+        text-align: left;
+    }
+
+    /* Navbar collapsing */
+    .public-navbar {
+        padding: 8px 0 !important;
+    }
+
+    .public-navbar-inner {
+        flex-wrap: wrap;
+    }
+
+    .public-navbar .navbar-collapse {
+        display: none !important; /* Mặc định ẩn trên mobile */
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        margin-top: 10px;
+    }
+    
+    .public-navbar .navbar-collapse.show {
+        display: flex !important; /* Hiển thị khi được collapse */
+    }
+
+    .public-nav-menu {
+        flex-direction: column;
+        align-items: stretch;
+        width: 100%;
+        gap: 0;
+    }
+
+    .public-nav-link {
+        width: 100%;
+        padding: 12px 16px;
+        border-right: none;
+        border-bottom: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    .public-auth-actions {
+        width: 100%;
+        flex-direction: column;
+        align-items: stretch;
+        margin-left: 0;
+        padding-left: 0;
+        border-left: none;
+        padding-top: 16px;
+        gap: 10px;
+        margin-top: 10px;
+    }
+
+    .public-auth-actions .user-greeting {
+        padding: 0 16px 8px;
+    }
+
+    .btn-auth {
+        width: 100%;
+        justify-content: center;
+        padding: 10px 16px;
+    }
+
+    /* Footer responsive */
+    .footer-main {
+        grid-template-columns: 1fr;
+        gap: 32px;
+        padding: 32px 0;
+    }
+
+    .public-footer {
+        margin-top: 36px;
+}
+
+/* Sticky Navbar Styles */
+.public-navbar.fixed-top {
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2) !important;
+    background-color: var(--primary-darker) !important;
+    border-bottom: 2px solid var(--accent);
+    animation: slideDownSticky 0.25s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+@keyframes slideDownSticky {
+    from {
+        transform: translateY(-100%);
+    }
+    to {
+        transform: translateY(0);
+    }
+}
+

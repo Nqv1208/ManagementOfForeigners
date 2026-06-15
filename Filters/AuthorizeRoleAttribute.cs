@@ -28,7 +28,7 @@ public class AuthorizeRoleAttribute : Attribute, IAuthorizationFilter
         // Kiểm tra đã đăng nhập chưa
         if (user?.Identity == null || !user.Identity.IsAuthenticated)
         {
-            context.Result = new RedirectToActionResult("Login", "Account", new { returnUrl = context.HttpContext.Request.Path });
+            context.Result = new RedirectToActionResult("DangNhap", "TaiKhoan", new { returnUrl = context.HttpContext.Request.Path });
             return;
         }
 
@@ -40,7 +40,7 @@ public class AuthorizeRoleAttribute : Attribute, IAuthorizationFilter
         var userRole = user.FindFirst(ClaimTypes.Role)?.Value;
         if (string.IsNullOrEmpty(userRole) || !_roles.Contains(userRole))
         {
-            context.Result = new RedirectToActionResult("AccessDenied", "Account", null);
+            context.Result = new RedirectToActionResult("TuChoiTruyCap", "TaiKhoan", null);
         }
     }
 }

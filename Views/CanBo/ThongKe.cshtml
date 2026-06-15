@@ -1,0 +1,158 @@
+@{
+    ViewBag.Title = "Thống kê báo cáo xuất nhập cảnh";
+    var quocTichStats = ViewBag.QuocTichStats as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    var visaStats = ViewBag.VisaStats as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    var facilityStats = ViewBag.FacilityStats as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+
+    int maxQuocTichCount = quocTichStats.FirstOrDefault()?.Count ?? 1;
+    int maxVisaCount = visaStats.FirstOrDefault()?.Count ?? 1;
+    int maxFacilityCount = facilityStats.FirstOrDefault()?.Count ?? 1;
+}
+
+<div class="container py-4">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                <div class="card-body p-4 bg-success text-white rounded-3">
+                    <div class="d-flex align-items-center gap-3">
+                        <div class="bg-primary text-white rounded-circle p-3 fs-3 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                            <i class="bi bi-graph-up-arrow"></i>
+                        </div>
+                        <div>
+                            <h4 class="fw-bold mb-1">Thống kê & Báo cáo Tổng hợp</h4>
+                            <p class="text-white-50 mb-0">Biểu đồ cơ cấu quốc tịch, phân loại thị thực và mật độ lưu trú thực tế tại TP. Đà Nẵng</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Quốc tịch -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 16px;">
+                <div class="card-header bg-white border-0 p-4 pb-0">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-globe me-2 text-primary"></i>Cơ cấu Quốc tịch</h5>
+                    <p class="text-muted mb-0 fs-8">Tỷ lệ phân bố công dân nước ngoài theo quốc gia</p>
+                </div>
+                <div class="card-body p-4">
+                    @if (!quocTichStats.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-bar-chart text-muted" style="font-size: 2.5rem;"></i>
+                            <p class="text-muted mt-2 mb-0">Chưa có dữ liệu thống kê.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-column gap-3">
+                            @foreach (var item in quocTichStats)
+                            {
+                                int percentage = (int)Math.Round((double)item.Count * 100 / maxQuocTichCount);
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="fw-bold text-dark fs-7">@item.Key</span>
+                                        <span class="badge bg-success">@item.Count người</span>
+                                    </div>
+                                    <div class="progress" style="height: 10px; border-radius: 5px;">
+                                        <div class="progress-bar bg-primary" role="progressbar" style="width: @percentage%; border-radius: 5px;" aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Loại Visa -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 16px;">
+                <div class="card-header bg-white border-0 p-4 pb-0">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-shield-lock me-2 text-success"></i>Cơ cấu Thị thực (Visa)</h5>
+                    <p class="text-muted mb-0 fs-8">Phân loại theo mục đích nhập cảnh (Du lịch, Doanh nghiệp...)</p>
+                </div>
+                <div class="card-body p-4">
+                    @if (!visaStats.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-pie-chart text-muted" style="font-size: 2.5rem;"></i>
+                            <p class="text-muted mt-2 mb-0">Chưa có dữ liệu thống kê.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-column gap-3">
+                            @foreach (var item in visaStats)
+                            {
+                                int percentage = (int)Math.Round((double)item.Count * 100 / maxVisaCount);
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
+                                        <span class="fw-bold text-dark fs-7">@item.Key</span>
+                                        <span class="badge bg-success">@item.Count người</span>
+                                    </div>
+                                    <div class="progress" style="height: 10px; border-radius: 5px;">
+                                        <div class="progress-bar bg-success" role="progressbar" style="width: @percentage%; border-radius: 5px;" aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Mật độ lưu trú -->
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                <div class="card-header bg-white border-0 p-4 pb-0">
+                    <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-building me-2 text-warning"></i>Top Cơ sở lưu trú có mật độ khách cao nhất</h5>
+                    <p class="text-muted mb-0 fs-8">Các cơ sở có lượng khách nước ngoài đang ở nhiều nhất tại Đà Nẵng</p>
+                </div>
+                <div class="card-body p-4">
+                    @if (!facilityStats.Any())
+                    {
+                        <div class="text-center py-5">
+                            <i class="bi bi-house-exclamation text-muted" style="font-size: 2.5rem;"></i>
+                            <p class="text-muted mt-2 mb-0">Không có dữ liệu lưu trú hoạt động.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0 fs-7">
+                                <thead>
+                                    <tr class="table-light">
+                                        <th>Hạng</th>
+                                        <th>Tên cơ sở lưu trú</th>
+                                        <th>Đang lưu trú</th>
+                                        <th>Cơ cấu mật độ trực quan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ int rank = 1; }
+                                    @foreach (var item in facilityStats)
+                                    {
+                                        int percentage = (int)Math.Round((double)item.Count * 100 / maxFacilityCount);
+                                        <tr>
+                                            <td class="fw-bold"><span class="badge bg-success rounded-circle p-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">@rank</span></td>
+                                            <td class="fw-bold">@item.Key</td>
+                                            <td><span class="text-dark fw-bold">@item.Count</span> khách đang ở</td>
+                                            <td style="width: 50%;">
+                                                <div class="progress" style="height: 12px; border-radius: 6px;">
+                                                    <div class="progress-bar bg-warning progress-bar-striped" role="progressbar" style="width: @percentage%; border-radius: 6px;" aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        rank++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

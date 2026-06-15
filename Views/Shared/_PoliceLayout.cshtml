@@ -40,33 +40,33 @@
             </div>
 
             <ul class="police-sidebar-menu">
-                <li class="police-menu-item @(actionName == "Dashboard" ? "active" : "")">
-                    <a asp-controller="Police" asp-action="Dashboard">
+                <li class="police-menu-item @(actionName == "TongQuan" ? "active" : "")">
+                    <a asp-controller="CongAn" asp-action="TongQuan">
                         <i class="bi bi-grid-fill"></i> Tổng quan
                     </a>
                 </li>
                 <li class="police-menu-item @(actionName == "DanhSachKhaiBao" || actionName == "ChiTietKhaiBao" ? "active" : "")">
-                    <a asp-controller="Police" asp-action="DanhSachKhaiBao">
+                    <a asp-controller="CongAn" asp-action="DanhSachKhaiBao">
                         <i class="bi bi-file-earmark-check-fill"></i> Phê duyệt khai báo
                     </a>
                 </li>
                 <li class="police-menu-item @(actionName == "TraCuu" ? "active" : "")">
-                    <a asp-controller="Police" asp-action="TraCuu">
+                    <a asp-controller="CongAn" asp-action="TraCuu">
                         <i class="bi bi-person-badge-fill"></i> Tra cứu địa bàn
                     </a>
                 </li>
                 <li class="police-menu-item @(actionName == "CanhBaoViPham" ? "active" : "")">
-                    <a asp-controller="Police" asp-action="CanhBaoViPham">
+                    <a asp-controller="CongAn" asp-action="CanhBaoViPham">
                         <i class="bi bi-exclamation-triangle-fill"></i> Cảnh báo vi phạm
                     </a>
                 </li>
                 <li class="police-menu-item @(actionName == "BaoCaoViPham" ? "active" : "")">
-                    <a asp-controller="Police" asp-action="BaoCaoViPham">
+                    <a asp-controller="CongAn" asp-action="BaoCaoViPham">
                         <i class="bi bi-megaphone-fill"></i> Báo cáo vi phạm
                     </a>
                 </li>
                 <li class="police-menu-item @(actionName == "ThongKe" ? "active" : "")">
-                    <a asp-controller="Police" asp-action="ThongKe">
+                    <a asp-controller="CongAn" asp-action="ThongKe">
                         <i class="bi bi-graph-up-arrow"></i> Thống kê báo cáo
                     </a>
                 </li>
@@ -90,7 +90,7 @@
                         <span class="police-user-name">@officerName</span>
                         <span class="police-user-role">Cán bộ Phường/Xã</span>
                     </div>
-                    <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline m-0">
+                    <form asp-controller="TaiKhoan" asp-action="DangXuat" method="post" class="d-inline m-0">
                         @Html.AntiForgeryToken()
                         <button type="submit" class="btn btn-outline-danger btn-sm rounded-1 px-3">
                             <i class="bi bi-box-arrow-right me-1"></i> Đăng xuất
@@ -101,27 +101,22 @@
 
             <!-- KHU VỰC CHỨA NỘI DUNG VÀ WATERMARK -->
             <main class="police-content" role="main">
-                <!-- TempData Alerts -->
+                <!-- TempData Toast Alerts -->
                 @if (TempData["SuccessMessage"] != null)
                 {
-                    <div class="alert alert-success alert-dismissible fade show border-0 border-start border-5 border-success shadow-sm" role="alert">
-                        <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-                    </div>
+                    <div class="temp-data-alert d-none" data-message="@TempData["SuccessMessage"]" data-type="success"></div>
                 }
                 @if (TempData["ErrorMessage"] != null)
                 {
-                    <div class="alert alert-danger alert-dismissible fade show border-0 border-start border-5 border-danger shadow-sm" role="alert">
-                        <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-                    </div>
+                    <div class="temp-data-alert d-none" data-message="@TempData["ErrorMessage"]" data-type="danger"></div>
                 }
                 @if (TempData["WarningMessage"] != null)
                 {
-                    <div class="alert alert-warning alert-dismissible fade show border-0 border-start border-5 border-warning shadow-sm" role="alert">
-                        <i class="bi bi-exclamation-circle-fill me-2"></i> @TempData["WarningMessage"]
-                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-                    </div>
+                    <div class="temp-data-alert d-none" data-message="@TempData["WarningMessage"]" data-type="warning"></div>
+                }
+                @if (TempData["InfoMessage"] != null)
+                {
+                    <div class="temp-data-alert d-none" data-message="@TempData["InfoMessage"]" data-type="info"></div>
                 }
 
                 @RenderBody()
@@ -133,6 +128,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/police-layout.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

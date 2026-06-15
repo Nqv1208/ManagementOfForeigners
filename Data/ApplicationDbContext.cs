@@ -132,7 +132,7 @@ public class ApplicationDbContext : DbContext
             e.ToTable("NguoiNuocNgoai");
             e.HasKey(x => x.MaNguoiNuocNgoai);
             e.Property(x => x.MaNguoiNuocNgoai).HasColumnType("char(9)").IsFixedLength();
-            e.Property(x => x.MaTaiKhoan).HasColumnType("char(9)").IsFixedLength();
+            e.Property(x => x.MaTaiKhoan).HasColumnType("char(9)").IsFixedLength().IsRequired(false);
             e.Property(x => x.HoTen).HasMaxLength(100).IsRequired();
             e.Property(x => x.NgaySinh).HasColumnType("date");
             e.Property(x => x.GioiTinh).HasMaxLength(10).IsRequired();
@@ -143,7 +143,7 @@ public class ApplicationDbContext : DbContext
             e.Property(x => x.LoaiVisa).HasMaxLength(20).IsRequired();
             e.Property(x => x.NgayHetHanVisa).HasColumnType("date");
             e.HasIndex(x => x.SoHoChieu).IsUnique();
-            e.HasIndex(x => x.MaTaiKhoan).IsUnique();
+            e.HasIndex(x => x.MaTaiKhoan).IsUnique().HasFilter("[MaTaiKhoan] IS NOT NULL");
             e.HasOne(x => x.TaiKhoan)
                 .WithOne(t => t.NguoiNuocNgoai)
                 .HasForeignKey<NguoiNuocNgoai>(x => x.MaTaiKhoan)
@@ -182,6 +182,13 @@ public class ApplicationDbContext : DbContext
             e.Property(x => x.SoDienThoai).HasMaxLength(15).IsRequired();
             e.Property(x => x.Email).HasMaxLength(100).IsRequired();
             e.Property(x => x.TrangThai).HasMaxLength(20).IsRequired();
+            e.Property(x => x.LoaiHinh).HasMaxLength(50);
+            e.Property(x => x.MaSoKinhDoanh).HasMaxLength(50);
+            e.Property(x => x.SoPhong).HasColumnType("int");
+            e.Property(x => x.SucChuaToiDa).HasColumnType("int");
+            e.Property(x => x.GhiChu).HasMaxLength(500);
+            e.Property(x => x.CreatedAt).HasColumnType("datetime");
+            e.Property(x => x.UpdatedAt).HasColumnType("datetime");
             e.HasOne(x => x.ChuCoSoLuuTru)
                 .WithMany(c => c.CoSoLuuTrus)
                 .HasForeignKey(x => x.MaChuCoSo)

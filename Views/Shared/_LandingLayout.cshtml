@@ -10,209 +10,45 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/public-layout.css" asp-append-version="true" />
 </head>
-<body>
-    @{
-        var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
-        var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
-        var userName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
-    }
+<body class="bg-light">
+    <div class="public-page">
+        <!-- Header -->
+        @await Html.PartialAsync("_PublicHeader")
 
-    <!-- 1. TOPBAR HÀNH CHÍNH QUỐC GIA -->
-    <div class="portal-topbar">
-        <div class="container d-flex flex-wrap justify-content-between align-items-center">
-            <div class="d-flex align-items-center gap-2">
-                <span class="flag-vn"></span>
-                <span class="fw-semibold text-white">CỔNG THÔNG TIN ĐIỆN TỬ CHÍNH THỨC NƯỚC CỘNG HÒA XÃ HỘI CHỦ NGHĨA VIỆT NAM</span>
-            </div>
-            <div class="d-flex align-items-center gap-3">
-                <span id="portal-realtime" class="me-2"><i class="bi bi-clock me-1"></i>Đang tải thời gian...</span>
-                <div class="d-flex gap-2 border-start border-secondary ps-3">
-                    <a href="#" id="lang-vi" class="fw-bold text-white">VI</a>
-                    <span class="text-secondary">|</span>
-                    <a href="#" id="lang-en" class="text-white-50 text-decoration-none">EN</a>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- 2. BANNER HÀNH CHÍNH TP ĐÀ NẴNG -->
-    <header class="portal-header-banner">
-        <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
-            <div class="portal-logo-container">
-                <div class="portal-emblem">
-                    <i class="bi bi-shield-shaded"></i>
-                </div>
-                <div class="portal-titles">
-                    <span class="portal-title-gov">Ủy ban nhân dân thành phố Đà Nẵng</span>
-                    <span class="portal-title-main">Công an thành phố Đà Nẵng</span>
-                    <span class="portal-title-sub">Cổng khai báo tạm trú & lưu trú người nước ngoài</span>
-                </div>
-            </div>
-            <div class="d-none d-lg-block text-end">
-                <span class="d-block text-white-50 small font-monospace">Phiên bản: 2.1.0</span>
-                <span id="portal-greeting" class="fw-medium text-warning small">Đang tải thông tin hỗ trợ...</span>
-            </div>
-        </div>
-    </header>
-
-    <!-- 3. THANH ĐIỀU HƯỚNG PHẲNG HÀNH CHÍNH -->
-    <nav class="navbar navbar-expand-lg navbar-dark portal-navbar">
-        <div class="container">
-            <button class="navbar-toggler my-2 ms-auto" type="button" data-bs-toggle="collapse"
-                    data-bs-target="#landingNavbar" aria-controls="landingNavbar"
-                    aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="landingNavbar">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item active">
-                        <a class="nav-link" asp-controller="Home" asp-action="Index"><i class="bi bi-house-door-fill me-1"></i> Trang chủ</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#quy-trinh"><i class="bi bi-journal-check me-1"></i> Quy trình khai báo</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#phap-luat"><i class="bi bi-card-checklist me-1"></i> Quy định pháp luật</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#thong-ke"><i class="bi bi-bar-chart-line me-1"></i> Số liệu công khai</a>
-                    </li>
-                    <li class="nav-item">
-                        <a class="nav-link" href="#lien-he"><i class="bi bi-telephone-inbound me-1"></i> Hotline hỗ trợ</a>
-                    </li>
-                </ul>
-
-                <ul class="navbar-nav ms-auto align-items-center">
-                    @if (isAuthenticated)
-                    {
-                        <li class="nav-item d-flex align-items-center me-3">
-                            <div class="d-flex align-items-center gap-2 py-2 py-lg-0">
-                                <span class="text-white-50 small">Xin chào,</span>
-                                <span class="text-white fw-bold">@userName</span>
-                                @{
-                                    var roleBadgeClass = userRole switch
-                                    {
-                                        "NguoiNuocNgoai" => "bg-primary",
-                                        "ChuLuuTru" => "bg-success",
-                                        "CanBoXNC" => "bg-warning text-dark",
-                                        "CongAn" => "bg-danger",
-                                        "Admin" => "bg-dark text-white border border-secondary",
-                                        _ => "bg-secondary"
-                                    };
-                                    var roleDisplayName = userRole switch
-                                    {
-                                        "NguoiNuocNgoai" => "Người nước ngoài",
-                                        "ChuLuuTru" => "Chủ lưu trú",
-                                        "CanBoXNC" => "Cán bộ XNC",
-                                        "CongAn" => "Công an",
-                                        "Admin" => "Quản trị",
-                                        _ => userRole ?? ""
-                                    };
-                                    var dashboardUrl = "/";
-                                    if (userRole == "NguoiNuocNgoai") dashboardUrl = "/Foreigner/Dashboard";
-                                    else if (userRole == "ChuLuuTru") dashboardUrl = "/Accommodation/Dashboard";
-                                    else if (userRole == "CanBoXNC") dashboardUrl = "/Officer/Dashboard";
-                                    else if (userRole == "CongAn") dashboardUrl = "/Police/Dashboard";
-                                    else if (userRole == "Admin") dashboardUrl = "/Admin/Dashboard";
-                                }
-                                <span class="badge @roleBadgeClass">@roleDisplayName</span>
-                            </div>
-                        </li>
-                        <li class="nav-item me-2">
-                            <a href="@dashboardUrl" class="btn btn-outline-warning btn-sm px-3 rounded-1"><i class="bi bi-speedometer2 me-1"></i> Trang quản trị</a>
-                        </li>
-                        <li class="nav-item">
-                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline m-0">
-                                @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-outline-danger btn-sm px-3 rounded-1">Đăng xuất</button>
-                            </form>
-                        </li>
-                    }
-                    else
-                    {
-                        <li class="nav-item">
-                            <a class="nav-link text-warning fw-bold" asp-controller="Account" asp-action="Login"><i class="bi bi-box-arrow-in-right me-1"></i> Đăng nhập</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Account" asp-action="Register"><i class="bi bi-person-plus me-1"></i> Đăng ký tài khoản</a>
-                        </li>
-                    }
-                </ul>
-            </div>
-        </div>
-    </nav>
-
-    <!-- 4. TEMP DATA ALERTS -->
-    <div class="container mt-3">
+        <!-- TempData Toast Alerts -->
         @if (TempData["SuccessMessage"] != null)
         {
-            <div class="alert alert-success alert-dismissible fade show border-0 border-start border-5 border-success shadow-sm" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-            </div>
+            <div class="temp-data-alert d-none" data-message="@TempData["SuccessMessage"]" data-type="success"></div>
         }
         @if (TempData["ErrorMessage"] != null)
         {
-            <div class="alert alert-danger alert-dismissible fade show border-0 border-start border-5 border-danger shadow-sm" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-            </div>
+            <div class="temp-data-alert d-none" data-message="@TempData["ErrorMessage"]" data-type="danger"></div>
         }
+        @if (TempData["WarningMessage"] != null)
+        {
+            <div class="temp-data-alert d-none" data-message="@TempData["WarningMessage"]" data-type="warning"></div>
+        }
+        @if (TempData["InfoMessage"] != null)
+        {
+            <div class="temp-data-alert d-none" data-message="@TempData["InfoMessage"]" data-type="info"></div>
+        }
+
+        <!-- Main Content -->
+        <main role="main" class="public-main">
+            @RenderBody()
+        </main>
+
+        <!-- Footer -->
+        @await Html.PartialAsync("_PublicFooter")
     </div>
-
-    <!-- 5. MAIN CONTENT -->
-    <main role="main">
-        @RenderBody()
-    </main>
-
-    <!-- 6. FOOTER HÀNH CHÍNH ĐIỆN TỬ -->
-    <footer class="portal-footer">
-        <div class="container">
-            <div class="row g-4">
-                <div class="col-lg-6">
-                    <div class="d-flex align-items-center gap-2 mb-3">
-                        <div class="bg-white bg-opacity-10 text-white rounded-circle p-2 d-inline-flex align-items-center justify-content-center" style="width: 36px; height: 36px;">
-                            <i class="bi bi-shield-shaded text-warning"></i>
-                        </div>
-                        <h5 class="m-0 border-0 p-0 text-white fw-bold">PHÒNG QUẢN LÝ XUẤT NHẬP CẢNH - CÔNG AN TP ĐÀ NẴNG</h5>
-                    </div>
-                    <p class="text-white-50 small mb-2"><i class="bi bi-geo-alt-fill text-warning me-2"></i>Địa chỉ: 78 Lê Lợi, Phường Thạch Thang, Quận Hải Châu, TP. Đà Nẵng</p>
-                    <p class="text-white-50 small mb-2"><i class="bi bi-telephone-fill text-warning me-2"></i>Điện thoại tiếp nhận hồ sơ: 0236.3822.464</p>
-                    <p class="text-white-50 small mb-2"><i class="bi bi-envelope-fill text-warning me-2"></i>Email hỗ trợ: qlxnc@danang.gov.vn</p>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <h5>LIÊN KẾT HỆ THỐNG</h5>
-                    <ul class="list-unstyled d-flex flex-column gap-2 small">
-                        <li><a href="https://dichvucong.gov.vn" target="_blank"><i class="bi bi-link-45deg me-1"></i> Cổng Dịch vụ công Quốc gia</a></li>
-                        <li><a href="https://dichvucong.bocongan.gov.vn" target="_blank"><i class="bi bi-link-45deg me-1"></i> Cổng Dịch vụ công Bộ Công an</a></li>
-                        <li><a href="https://danang.gov.vn" target="_blank"><i class="bi bi-link-45deg me-1"></i> Cổng TTĐT TP. Đà Nẵng</a></li>
-                        <li><a href="https://congan.danang.gov.vn" target="_blank"><i class="bi bi-link-45deg me-1"></i> Cổng thông tin Công an TP. Đà Nẵng</a></li>
-                    </ul>
-                </div>
-                <div class="col-md-6 col-lg-3">
-                    <h5>THỦ TỤC HÀNH CHÍNH</h5>
-                    <ul class="list-unstyled d-flex flex-column gap-2 small">
-                        <li><a href="#quy-trinh"><i class="bi bi-chevron-right me-1"></i> Quy trình đăng ký tài khoản</a></li>
-                        <li><a href="#quy-trinh"><i class="bi bi-chevron-right me-1"></i> Khai báo tạm trú cho người nước ngoài</a></li>
-                        <li><a href="#quy-trinh"><i class="bi bi-chevron-right me-1"></i> Hướng dẫn chủ cơ sở lưu trú</a></li>
-                        <li><a href="#phap-luat"><i class="bi bi-chevron-right me-1"></i> Văn bản quy phạm pháp luật liên quan</a></li>
-                    </ul>
-                </div>
-            </div>
-        </div>
-        <div class="portal-footer-bottom text-center">
-            <div class="container text-white-50 small">
-                <p class="mb-1">&copy; 2026 - Bản quyền thuộc về Công an Thành phố Đà Nẵng. Bảo lưu mọi quyền.</p>
-                <p class="mb-0 text-secondary" style="font-size: 0.75rem;">Phát triển và bảo trì kỹ thuật bởi Phòng Công nghệ thông tin - Công an Thành phố Đà Nẵng.</p>
-            </div>
-        </div>
-    </footer>
 
     <!-- Thư viện Javascript -->
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/landing.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

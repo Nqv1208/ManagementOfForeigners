@@ -24,6 +24,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 3. Tự động hiển thị lời chào theo thời gian trong ngày
     showTimeGreeting();
+
+    // 4. Ghim thanh menu điều hướng khi scroll trang
+    initStickyHeader();
 });
 
 /**
@@ -88,4 +91,32 @@ function setLanguage(lang) {
         alert("System interface language changed to English");
         // Trong hệ thống thực tế sẽ reload với văn hoá en-US hoặc redirect sang route tiếng Anh.
     }
+}
+
+/**
+ * Khởi tạo hiệu ứng ghim thanh menu điều hướng khi scroll trang
+ */
+function initStickyHeader() {
+    const navbar = document.querySelector(".public-navbar");
+    const header = document.querySelector(".public-header");
+    if (!navbar || !header) return;
+
+    // Lấy vị trí offset ban đầu của thanh navbar
+    const stickyThreshold = navbar.offsetTop;
+
+    function handleScroll() {
+        const currentScroll = window.scrollY !== undefined ? window.scrollY : window.pageYOffset;
+        if (currentScroll > stickyThreshold) {
+            navbar.classList.add("fixed-top");
+            // Thêm padding-bottom bằng đúng chiều cao navbar để tránh giật trang
+            header.style.paddingBottom = navbar.offsetHeight + "px";
+        } else {
+            navbar.classList.remove("fixed-top");
+            header.style.paddingBottom = "0";
+        }
+    }
+
+    window.addEventListener("scroll", handleScroll);
+    // Chạy thử lúc load trang phòng trường hợp trang được tải lại khi đang ở giữa trang
+    handleScroll();
 }

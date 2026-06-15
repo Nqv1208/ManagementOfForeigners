@@ -246,6 +246,9 @@ namespace ManagementOfForeigners.Migrations
                         .HasColumnType("char(9)")
                         .IsFixedLength();
 
+                    b.Property<DateTime?>("CreatedAt")
+                        .HasColumnType("datetime");
+
                     b.Property<string>("DiaChi")
                         .IsRequired()
                         .HasMaxLength(255)
@@ -256,6 +259,14 @@ namespace ManagementOfForeigners.Migrations
                         .HasMaxLength(100)
                         .HasColumnType("nvarchar(100)");
 
+                    b.Property<string>("GhiChu")
+                        .HasMaxLength(500)
+                        .HasColumnType("nvarchar(500)");
+
+                    b.Property<string>("LoaiHinh")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("MaChuCoSo")
                         .IsRequired()
                         .HasColumnType("char(9)")
@@ -264,10 +275,20 @@ namespace ManagementOfForeigners.Migrations
                     b.Property<int>("MaPhuongXa")
                         .HasColumnType("int");
 
+                    b.Property<string>("MaSoKinhDoanh")
+                        .HasMaxLength(50)
+                        .HasColumnType("nvarchar(50)");
+
                     b.Property<string>("SoDienThoai")
                         .IsRequired()
                         .HasMaxLength(15)
                         .HasColumnType("nvarchar(15)");
+
+                    b.Property<int?>("SoPhong")
+                        .HasColumnType("int");
+
+                    b.Property<int?>("SucChuaToiDa")
+                        .HasColumnType("int");
 
                     b.Property<string>("TenCoSo")
                         .IsRequired()
@@ -278,6 +299,9 @@ namespace ManagementOfForeigners.Migrations
                         .IsRequired()
                         .HasMaxLength(20)
                         .HasColumnType("nvarchar(20)");
+
+                    b.Property<DateTime?>("UpdatedAt")
+                        .HasColumnType("datetime");
 
                     b.HasKey("MaCoSoLuuTru");
 
@@ -458,7 +482,6 @@ namespace ManagementOfForeigners.Migrations
                         .HasColumnType("nvarchar(20)");
 
                     b.Property<string>("MaTaiKhoan")
-                        .IsRequired()
                         .HasColumnType("char(9)")
                         .IsFixedLength();
 
@@ -487,7 +510,8 @@ namespace ManagementOfForeigners.Migrations
                     b.HasKey("MaNguoiNuocNgoai");
 
                     b.HasIndex("MaTaiKhoan")
-                        .IsUnique();
+                        .IsUnique()
+                        .HasFilter("[MaTaiKhoan] IS NOT NULL");
 
                     b.HasIndex("SoHoChieu")
                         .IsUnique();
@@ -764,8 +788,7 @@ namespace ManagementOfForeigners.Migrations
                     b.HasOne("ManagementOfForeigners.Models.Entities.TaiKhoan", "TaiKhoan")
                         .WithOne("NguoiNuocNgoai")
                         .HasForeignKey("ManagementOfForeigners.Models.Entities.NguoiNuocNgoai", "MaTaiKhoan")
-                        .OnDelete(DeleteBehavior.Restrict)
-                        .IsRequired();
+                        .OnDelete(DeleteBehavior.Restrict);
 
                     b.Navigation("TaiKhoan");
                 });

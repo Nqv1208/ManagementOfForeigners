@@ -1,9 +1,9 @@
 :root {
     --police-sidebar-width: 280px;
-    --police-primary: #0a5c36;
-    --police-primary-dark: #053d23;
-    --police-accent: #d4af37;
-    --police-bg: #f4f6f9;
+    --police-primary: var(--primary-dark);
+    --police-primary-dark: var(--primary-darker);
+    --police-accent: var(--accent);
+    --police-bg: var(--bg);
 }
 
 body {
@@ -115,7 +115,7 @@ body {
 
 .police-topbar {
     background-color: white;
-    border-bottom: 1px solid #e3e6f0;
+    border-bottom: 1px solid var(--border);
     padding: 15px 30px;
     display: flex;
     justify-content: space-between;
@@ -160,7 +160,7 @@ body {
 
 .police-user-role {
     font-size: 0.72rem;
-    color: #198754;
+    color: var(--primary-dark);
     font-weight: 600;
 }
 
@@ -169,7 +169,7 @@ body {
     flex-grow: 1;
     padding: 30px;
     background-image: 
-        linear-gradient(rgba(245, 247, 250, 0.94), rgba(245, 247, 250, 0.94)),
+        linear-gradient(rgba(246, 248, 247, 0.94), rgba(246, 248, 247, 0.94)),
         url('/images/police/police-logo.png');
     background-repeat: no-repeat;
     background-position: center 40%;

@@ -10,6 +10,13 @@ public class CoSoLuuTru
     public string SoDienThoai { get; set; } = string.Empty;
     public string Email { get; set; } = string.Empty;
     public string TrangThai { get; set; } = "Đang hoạt động";
+    public string? LoaiHinh { get; set; }
+    public string? MaSoKinhDoanh { get; set; }
+    public int? SoPhong { get; set; }
+    public int? SucChuaToiDa { get; set; }
+    public string? GhiChu { get; set; }
+    public DateTime? CreatedAt { get; set; }
+    public DateTime? UpdatedAt { get; set; }
 
     public ChuCoSoLuuTru ChuCoSoLuuTru { get; set; } = null!;
     public PhuongXa PhuongXa { get; set; } = null!;
@@ -21,4 +28,5 @@ public static class TrangThaiCoSo
 {
     public const string DangHoatDong = "Đang hoạt động";
     public const string DaNgungHoatDong = "Đã ngừng hoạt động";
+    public const string ChoDuyet = "Chờ duyệt";
 }

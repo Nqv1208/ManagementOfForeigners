@@ -1,0 +1,84 @@
+@model IEnumerable<ManagementOfForeigners.Models.ViewModels.QuanTri.AdminReportRowViewModel>
+@using ManagementOfForeigners.Models.Entities
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Quản lý báo cáo vi phạm";
+    string? status = ViewBag.Status as string;
+}
+
+<section class="admin-page-title">
+    <div>
+        <span class="admin-eyebrow">Điều phối xử lý vi phạm</span>
+        <h1>Quản lý báo cáo vi phạm</h1>
+        <p>Cập nhật trạng thái xử lý báo cáo do công an phường/xã gửi lên.</p>
+    </div>
+    <a class="btn btn-outline-secondary" asp-controller="QuanTri" asp-action="TongQuan">Về dashboard</a>
+</section>
+
+<form method="get" class="admin-filter-card">
+    <div class="row g-3">
+        <div class="col-md-8">
+            <label class="form-label">Trạng thái xử lý</label>
+            <select class="form-select" name="status">
+                <option value="">Tất cả trạng thái</option>
+                <option value="@TrangThaiXuLyConst.ChuaXuLy" selected="@(status == TrangThaiXuLyConst.ChuaXuLy)">Chưa xử lý</option>
+                <option value="@TrangThaiXuLyConst.DangXuLy" selected="@(status == TrangThaiXuLyConst.DangXuLy)">Đang xử lý</option>
+                <option value="@TrangThaiXuLyConst.DaXuLy" selected="@(status == TrangThaiXuLyConst.DaXuLy)">Đã xử lý</option>
+            </select>
+        </div>
+        <div class="col-md-4 d-flex align-items-end gap-2">
+            <button class="btn btn-primary" type="submit">Lọc báo cáo</button>
+            <a class="btn btn-light" asp-controller="QuanTri" asp-action="BaoCaoViPham">Xoá lọc</a>
+        </div>
+    </div>
+</form>
+
+<section class="admin-panel">
+    <div class="admin-panel-header">
+        <div>
+            <h2>Danh sách báo cáo</h2>
+            <p>Ưu tiên cập nhật những báo cáo chưa xử lý để không bỏ sót vi phạm.</p>
+        </div>
+        <span class="admin-chip">@Model.Count() kết quả</span>
+    </div>
+    <div class="table-responsive">
+        <table class="table admin-table align-middle">
+            <thead>
+                <tr>
+                    <th>Mã báo cáo</th>
+                    <th>Người nước ngoài</th>
+                    <th>Nội dung</th>
+                    <th>Cán bộ báo cáo</th>
+                    <th>Ngày báo cáo</th>
+                    <th>Trạng thái</th>
+                    <th class="text-end">Cập nhật</th>
+                </tr>
+            </thead>
+            <tbody>
+            @foreach (var item in Model)
+            {
+                <tr>
+                    <td><strong>@item.MaBaoCao</strong></td>
+                    <td>@item.HoTenNguoiNuocNgoai<br /><small>HC: @item.SoHoChieu</small></td>
+                    <td>@item.NoiDungBaoCao</td>
+                    <td>@item.CanBoBaoCao</td>
+                    <td>@item.NgayBaoCao.ToString("dd/MM/yyyy HH:mm")</td>
+                    <td>@await Html.PartialAsync("_StatusBadge", item.TrangThaiXuLy)</td>
+                    <td class="text-end">
+                        <form asp-controller="QuanTri" asp-action="CapNhatTrangThaiBaoCao" method="post" class="admin-inline-form">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="id" value="@item.MaBaoCao" />
+                            <select class="form-select form-select-sm" name="trangThai">
+                                <option value="@TrangThaiXuLyConst.ChuaXuLy" selected="@(item.TrangThaiXuLy == TrangThaiXuLyConst.ChuaXuLy)">Chưa xử lý</option>
+                                <option value="@TrangThaiXuLyConst.DangXuLy" selected="@(item.TrangThaiXuLy == TrangThaiXuLyConst.DangXuLy)">Đang xử lý</option>
+                                <option value="@TrangThaiXuLyConst.DaXuLy" selected="@(item.TrangThaiXuLy == TrangThaiXuLyConst.DaXuLy)">Đã xử lý</option>
+                            </select>
+                            <button class="btn btn-sm btn-primary" type="submit">Lưu</button>
+                        </form>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</section>

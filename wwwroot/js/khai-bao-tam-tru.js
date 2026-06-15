@@ -9,6 +9,21 @@ document.addEventListener("DOMContentLoaded", function () {
     const commitCheckbox = document.getElementById("CommitCheckbox");
     const submitBtn = document.getElementById("SubmitDeclarationBtn");
 
+    const ngayBatDauInput = document.getElementById("NgayBatDau");
+    const ngayKetThucInput = document.getElementById("NgayKetThuc");
+
+    // Summary Elements
+    const summaryWard = document.getElementById("SumWard");
+    const summaryFacility = document.getElementById("SumFacility");
+    const summaryDates = document.getElementById("SumDates");
+    const summaryPurpose = document.getElementById("SumPurpose");
+
+    // Checklist Elements
+    const chkWard = document.getElementById("ChkWard");
+    const chkFacility = document.getElementById("ChkFacility");
+    const chkDates = document.getElementById("ChkDates");
+    const chkCommit = document.getElementById("ChkCommit");
+
     let debounceTimeout = null;
 
     // 1. Clear selected facility when ward changes
@@ -16,23 +31,29 @@ document.addEventListener("DOMContentLoaded", function () {
         phuongXaSelect.addEventListener("change", function () {
             clearSelectedFacility();
             hideResults();
+            updateSummaryAndChecklist();
         });
     }
 
     // 2. Autocomplete for Lodging Facility search
     if (searchInput) {
+        // Trigger fetch when user focuses or clicks on the input
+        searchInput.addEventListener("focus", function () {
+            const query = this.value.trim();
+            fetchFacilities(query);
+        });
+
+        searchInput.addEventListener("click", function () {
+            const query = this.value.trim();
+            fetchFacilities(query);
+        });
+
         searchInput.addEventListener("input", function () {
             const query = this.value.trim();
             clearTimeout(debounceTimeout);
 
             // Clear hidden ID to ensure user picks from autocomplete list
             coSoIdInput.value = "";
-            searchInput.classList.remove("is-valid");
-
-            if (query.length < 2) {
-                hideResults();
-                return;
-            }
 
             debounceTimeout = setTimeout(() => {
                 fetchFacilities(query);
@@ -44,6 +65,7 @@ document.addEventListener("DOMContentLoaded", function () {
             if (!searchInput.contains(e.target) && !resultsContainer.contains(e.target)) {
                 hideResults();
                 validateFacilitySelection();
+                updateSummaryAndChecklist();
             }
         });
     }
@@ -108,7 +130,6 @@ document.addEventListener("DOMContentLoaded", function () {
     function selectFacility(facility) {
         searchInput.value = facility.tenCoSo;
         coSoIdInput.value = facility.id;
-        searchInput.classList.add("is-valid");
         searchInput.classList.remove("is-invalid");
         
         const errorSpan = document.getElementById("CoSoLuuTruId-error-custom");
@@ -122,12 +143,13 @@ document.addEventListener("DOMContentLoaded", function () {
         if (addressDetailInput && !addressDetailInput.value.trim()) {
             addressDetailInput.value = facility.diaChi;
         }
+        
+        updateSummaryAndChecklist();
     }
 
     function clearSelectedFacility() {
         if (searchInput) {
             searchInput.value = "";
-            searchInput.classList.remove("is-valid");
             searchInput.classList.remove("is-invalid");
         }
         if (coSoIdInput) {
@@ -179,7 +201,10 @@ document.addEventListener("DOMContentLoaded", function () {
             }
         }
 
-        mucDichSelect.addEventListener("change", toggleMucDichKhac);
+        mucDichSelect.addEventListener("change", function () {
+            toggleMucDichKhac();
+            updateSummaryAndChecklist();
+        });
         toggleMucDichKhac(); // Initial state
     }
 
@@ -187,7 +212,97 @@ document.addEventListener("DOMContentLoaded", function () {
     if (commitCheckbox && submitBtn) {
         commitCheckbox.addEventListener("change", function () {
             submitBtn.disabled = !this.checked;
+            updateSummaryAndChecklist();
         });
         submitBtn.disabled = !commitCheckbox.checked; // Initial state
     }
+
+    // 5. Update summary panel and checklist
+    function updateSummaryAndChecklist() {
+        // A. Update Ward
+        if (phuongXaSelect && summaryWard && chkWard) {
+            const selectedText = phuongXaSelect.options[phuongXaSelect.selectedIndex]?.text || "";
+            if (phuongXaSelect.value) {
+                // Remove district suffix for cleaner look in summary
+                summaryWard.textContent = selectedText.split('(')[0].trim();
+                chkWard.classList.add("checked");
+                chkWard.querySelector("i").className = "bi bi-check-circle-fill text-success";
+            } else {
+                summaryWard.textContent = "Chưa chọn";
+                chkWard.classList.remove("checked");
+                chkWard.querySelector("i").className = "bi bi-circle";
+            }
+        }
+
+        // B. Update Facility
+        if (coSoIdInput && searchInput && summaryFacility && chkFacility) {
+            if (coSoIdInput.value) {
+                summaryFacility.textContent = searchInput.value;
+                chkFacility.classList.add("checked");
+                chkFacility.querySelector("i").className = "bi bi-check-circle-fill text-success";
+            } else {
+                summaryFacility.textContent = "Chưa chọn";
+                chkFacility.classList.remove("checked");
+                chkFacility.querySelector("i").className = "bi bi-circle";
+            }
+        }
+
+        // C. Update Dates
+        if (ngayBatDauInput && ngayKetThucInput && summaryDates && chkDates) {
+            if (ngayBatDauInput.value && ngayKetThucInput.value) {
+                summaryDates.textContent = `${formatDate(ngayBatDauInput.value)} - ${formatDate(ngayKetThucInput.value)}`;
+                chkDates.classList.add("checked");
+                chkDates.querySelector("i").className = "bi bi-check-circle-fill text-success";
+            } else {
+                summaryDates.textContent = "Chưa nhập";
+                chkDates.classList.remove("checked");
+                chkDates.querySelector("i").className = "bi bi-circle";
+            }
+        }
+
+        // D. Update Purpose
+        if (mucDichSelect && summaryPurpose) {
+            if (mucDichSelect.value) {
+                if (mucDichSelect.value === "Khác" && mucDichKhacInput && mucDichKhacInput.value.trim()) {
+                    summaryPurpose.textContent = `Khác (${mucDichKhacInput.value.trim()})`;
+                } else {
+                    summaryPurpose.textContent = mucDichSelect.value;
+                }
+            } else {
+                summaryPurpose.textContent = "Chưa chọn";
+            }
+        }
+
+        // E. Update Commitment
+        if (commitCheckbox && chkCommit) {
+            if (commitCheckbox.checked) {
+                chkCommit.classList.add("checked");
+                chkCommit.querySelector("i").className = "bi bi-check-circle-fill text-success";
+            } else {
+                chkCommit.classList.remove("checked");
+                chkCommit.querySelector("i").className = "bi bi-circle";
+            }
+        }
+    }
+
+    function formatDate(dateString) {
+        if (!dateString) return "";
+        const parts = dateString.split("-");
+        if (parts.length === 3) {
+            return `${parts[2]}/${parts[1]}/${parts[0]}`;
+        }
+        return dateString;
+    }
+
+    // Register event listeners
+    if (phuongXaSelect) phuongXaSelect.addEventListener("change", updateSummaryAndChecklist);
+    if (searchInput) searchInput.addEventListener("input", updateSummaryAndChecklist);
+    if (ngayBatDauInput) ngayBatDauInput.addEventListener("change", updateSummaryAndChecklist);
+    if (ngayKetThucInput) ngayKetThucInput.addEventListener("change", updateSummaryAndChecklist);
+    if (mucDichSelect) mucDichSelect.addEventListener("change", updateSummaryAndChecklist);
+    if (mucDichKhacInput) mucDichKhacInput.addEventListener("input", updateSummaryAndChecklist);
+    if (commitCheckbox) commitCheckbox.addEventListener("change", updateSummaryAndChecklist);
+
+    // Initial load
+    updateSummaryAndChecklist();
 });

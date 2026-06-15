@@ -25,9 +25,7 @@
     <header class="portal-header-banner">
         <div class="container d-flex flex-wrap align-items-center justify-content-between gap-3">
             <div class="portal-logo-container">
-                <div class="portal-emblem">
-                    <i class="bi bi-shield-shaded"></i>
-                </div>
+                <img class="portal-emblem" src="~/images/bo-cong-an-logo.png" alt="Logo Bộ Công an" style="object-fit: contain; padding: 4px;" />
                 <div class="portal-titles">
                     <span class="portal-title-gov">Ủy ban nhân dân thành phố Đà Nẵng</span>
                     <span class="portal-title-main">Công an thành phố Đà Nẵng</span>
@@ -44,7 +42,7 @@
     <!-- 3. THANH ĐIỀU HƯỚNG PHẲNG HÀNH CHÍNH -->
     <nav class="navbar navbar-expand-lg navbar-dark portal-navbar mb-4">
         <div class="container">
-            <a class="navbar-brand d-lg-none" asp-controller="Home" asp-action="Index">
+            <a class="navbar-brand d-lg-none" asp-controller="TrangChu" asp-action="Index">
                 🌐 QL Người nước ngoài
             </a>
             <button class="navbar-toggler my-2 ms-auto" type="button" data-bs-toggle="collapse"
@@ -55,7 +53,7 @@
             <div class="collapse navbar-collapse" id="mainNavbar">
                 <ul class="navbar-nav me-auto mb-2 mb-lg-0">
                     <li class="nav-item">
-                        <a class="nav-link" asp-controller="Home" asp-action="Index"><i class="bi bi-house-door-fill me-1"></i> Trang chủ</a>
+                        <a class="nav-link" asp-controller="TrangChu" asp-action="Index"><i class="bi bi-house-door-fill me-1"></i> Trang chủ</a>
                     </li>
 
                     @if (isAuthenticated)
@@ -64,13 +62,13 @@
                         if (userRole == "NguoiNuocNgoai")
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Foreigner" asp-action="KhaiBaoTamTru"><i class="bi bi-file-earmark-text me-1"></i> Khai báo tạm trú</a>
+                                <a class="nav-link" asp-controller="NguoiNuocNgoai" asp-action="KhaiBaoTamTru"><i class="bi bi-file-earmark-text me-1"></i> Khai báo tạm trú</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Foreigner" asp-action="ThongTinCaNhan"><i class="bi bi-person-bounding-box me-1"></i> Thông tin cá nhân</a>
+                                <a class="nav-link" asp-controller="NguoiNuocNgoai" asp-action="ThongTinCaNhan"><i class="bi bi-person-bounding-box me-1"></i> Thông tin cá nhân</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Foreigner" asp-action="LichSuCuTru"><i class="bi bi-clock-history me-1"></i> Lịch sử cư trú</a>
+                                <a class="nav-link" asp-controller="NguoiNuocNgoai" asp-action="LichSuCuTru"><i class="bi bi-clock-history me-1"></i> Lịch sử cư trú</a>
                             </li>
                         }
 
@@ -78,13 +76,13 @@
                         if (userRole == "ChuLuuTru")
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Accommodation" asp-action="KhaiBaoLuuTru"><i class="bi bi-building-add me-1"></i> Khai báo lưu trú</a>
+                                <a class="nav-link" asp-controller="CoSoLuuTru" asp-action="KhaiBaoLuuTru"><i class="bi bi-building-add me-1"></i> Khai báo lưu trú</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Accommodation" asp-action="DanhSachLuuTru"><i class="bi bi-card-list me-1"></i> Danh sách lưu trú</a>
+                                <a class="nav-link" asp-controller="CoSoLuuTru" asp-action="DanhSachLuuTru"><i class="bi bi-card-list me-1"></i> Danh sách lưu trú</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Accommodation" asp-action="ThongTinCoSo"><i class="bi bi-house-gear me-1"></i> Thông tin cơ sở</a>
+                                <a class="nav-link" asp-controller="CoSoLuuTru" asp-action="ThongTinCoSo"><i class="bi bi-house-gear me-1"></i> Thông tin cơ sở</a>
                             </li>
                         }
 
@@ -92,16 +90,16 @@
                         if (userRole == "CanBoXNC")
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Officer" asp-action="TraCuu"><i class="bi bi-search me-1"></i> Tra cứu</a>
+                                <a class="nav-link" asp-controller="CanBo" asp-action="TraCuu"><i class="bi bi-search me-1"></i> Tra cứu</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Officer" asp-action="ThongKe"><i class="bi bi-bar-chart me-1"></i> Thống kê</a>
+                                <a class="nav-link" asp-controller="CanBo" asp-action="ThongKe"><i class="bi bi-bar-chart me-1"></i> Thống kê</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Officer" asp-action="CanhBaoViPham"><i class="bi bi-exclamation-octagon me-1"></i> Cảnh báo vi phạm</a>
+                                <a class="nav-link" asp-controller="CanBo" asp-action="CanhBaoViPham"><i class="bi bi-exclamation-octagon me-1"></i> Cảnh báo vi phạm</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Officer" asp-action="DanhSachBaoCao"><i class="bi bi-flag me-1"></i> Báo cáo vi phạm</a>
+                                <a class="nav-link" asp-controller="CanBo" asp-action="DanhSachBaoCao"><i class="bi bi-flag me-1"></i> Báo cáo vi phạm</a>
                             </li>
                         }
 
@@ -109,19 +107,19 @@
                         if (userRole == "CongAn")
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Police" asp-action="DanhSachKhaiBao"><i class="bi bi-check2-circle me-1"></i> Phê duyệt khai báo</a>
+                                <a class="nav-link" asp-controller="CongAn" asp-action="DanhSachKhaiBao"><i class="bi bi-check2-circle me-1"></i> Phê duyệt khai báo</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Police" asp-action="TraCuu"><i class="bi bi-shield-shaded me-1"></i> Tra cứu</a>
+                                <a class="nav-link" asp-controller="CongAn" asp-action="TraCuu"><i class="bi bi-shield-shaded me-1"></i> Tra cứu</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Police" asp-action="CanhBaoViPham"><i class="bi bi-bell me-1"></i> Cảnh báo</a>
+                                <a class="nav-link" asp-controller="CongAn" asp-action="CanhBaoViPham"><i class="bi bi-bell me-1"></i> Cảnh báo</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Police" asp-action="BaoCaoViPham"><i class="bi bi-file-earmark-break me-1"></i> Báo cáo</a>
+                                <a class="nav-link" asp-controller="CongAn" asp-action="BaoCaoViPham"><i class="bi bi-file-earmark-break me-1"></i> Báo cáo</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Police" asp-action="ThongKe"><i class="bi bi-graph-up me-1"></i> Thống kê</a>
+                                <a class="nav-link" asp-controller="CongAn" asp-action="ThongKe"><i class="bi bi-graph-up me-1"></i> Thống kê</a>
                             </li>
                         }
 
@@ -129,19 +127,19 @@
                         if (userRole == "Admin")
                         {
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Admin" asp-action="Dashboard"><i class="bi bi-shield-lock me-1"></i> Dashboard QTV</a>
+                                <a class="nav-link" asp-controller="QuanTri" asp-action="TongQuan"><i class="bi bi-shield-lock me-1"></i> Dashboard QTV</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Admin" asp-action="QuanLyTaiKhoan"><i class="bi bi-people me-1"></i> Quản lý TK</a>
+                                <a class="nav-link" asp-controller="QuanTri" asp-action="QuanLyTaiKhoan"><i class="bi bi-people me-1"></i> Quản lý TK</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Admin" asp-action="QuanLyPhanQuyen"><i class="bi bi-shield-check me-1"></i> Phân quyền</a>
+                                <a class="nav-link" asp-controller="QuanTri" asp-action="QuanLyPhanQuyen"><i class="bi bi-shield-check me-1"></i> Phân quyền</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Admin" asp-action="DanhMucPhuongXa"><i class="bi bi-geo-alt me-1"></i> Phường/Xã</a>
+                                <a class="nav-link" asp-controller="QuanTri" asp-action="DanhMucPhuongXa"><i class="bi bi-geo-alt me-1"></i> Phường/Xã</a>
                             </li>
                             <li class="nav-item">
-                                <a class="nav-link" asp-controller="Admin" asp-action="NhatKyHoatDong"><i class="bi bi-clock-history me-1"></i> Nhật ký</a>
+                                <a class="nav-link" asp-controller="QuanTri" asp-action="NhatKyHoatDong"><i class="bi bi-clock-history me-1"></i> Nhật ký</a>
                             </li>
                         }
                     }
@@ -161,7 +159,7 @@
                                         "ChuLuuTru" => "bg-success",
                                         "CanBoXNC" => "bg-warning text-dark",
                                         "CongAn" => "bg-danger",
-                                        "Admin" => "bg-dark text-white border border-secondary",
+                                        "Admin" => "bg-success text-white border border-secondary",
                                         _ => "bg-secondary"
                                     };
                                     var roleDisplayName = userRole switch
@@ -173,12 +171,15 @@
                                         "Admin" => "Quản trị",
                                         _ => userRole ?? ""
                                     };
-                                    var dashboardUrl = "/";
-                                    if (userRole == "NguoiNuocNgoai") dashboardUrl = "/Foreigner/Dashboard";
-                                    else if (userRole == "ChuLuuTru") dashboardUrl = "/Accommodation/Dashboard";
-                                    else if (userRole == "CanBoXNC") dashboardUrl = "/Officer/Dashboard";
-                                    else if (userRole == "CongAn") dashboardUrl = "/Police/Dashboard";
-                                    else if (userRole == "Admin") dashboardUrl = "/Admin/Dashboard";
+                                    var dashboardUrl = userRole switch
+                                    {
+                                        "NguoiNuocNgoai" => Url.Action("TongQuan", "NguoiNuocNgoai"),
+                                        "ChuLuuTru" => Url.Action("TongQuan", "CoSoLuuTru"),
+                                        "CanBoXNC" => Url.Action("TongQuan", "CanBo"),
+                                        "CongAn" => Url.Action("TongQuan", "CongAn"),
+                                        "Admin" => Url.Action("TongQuan", "QuanTri"),
+                                        _ => "/"
+                                    };
                                 }
                                 <span class="badge @roleBadgeClass">@roleDisplayName</span>
                             </div>
@@ -187,7 +188,7 @@
                             <a href="@dashboardUrl" class="btn btn-outline-warning btn-sm px-3 rounded-1"><i class="bi bi-speedometer2 me-1"></i> Trang quản trị</a>
                         </li>
                         <li class="nav-item">
-                            <form asp-controller="Account" asp-action="Logout" method="post" class="d-inline m-0">
+                            <form asp-controller="TaiKhoan" asp-action="DangXuat" method="post" class="d-inline m-0">
                                 @Html.AntiForgeryToken()
                                 <button type="submit" class="btn btn-outline-danger btn-sm px-3 rounded-1">Đăng xuất</button>
                             </form>
@@ -196,10 +197,10 @@
                     else
                     {
                         <li class="nav-item">
-                            <a class="nav-link text-warning fw-bold" asp-controller="Account" asp-action="Login"><i class="bi bi-box-arrow-in-right me-1"></i> Đăng nhập</a>
+                            <a class="nav-link text-warning fw-bold" asp-controller="TaiKhoan" asp-action="DangNhap"><i class="bi bi-box-arrow-in-right me-1"></i> Đăng nhập</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Account" asp-action="Register"><i class="bi bi-person-plus me-1"></i> Đăng ký tài khoản</a>
+                            <a class="nav-link" asp-controller="TaiKhoan" asp-action="DangKy"><i class="bi bi-person-plus me-1"></i> Đăng ký tài khoản</a>
                         </li>
                     }
                 </ul>
@@ -209,34 +210,22 @@
 
     <!-- 4. MAIN CONTAINER -->
     <div class="container pb-5" style="min-height: 60vh; padding-top: 1rem;">
-        <!-- TempData Alerts -->
+        <!-- TempData Toast Alerts -->
         @if (TempData["SuccessMessage"] != null)
         {
-            <div class="alert alert-success alert-dismissible fade show border-0 border-start border-5 border-success shadow-sm" role="alert">
-                <i class="bi bi-check-circle-fill me-2"></i> @TempData["SuccessMessage"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-            </div>
+            <div class="temp-data-alert d-none" data-message="@TempData["SuccessMessage"]" data-type="success"></div>
         }
         @if (TempData["ErrorMessage"] != null)
         {
-            <div class="alert alert-danger alert-dismissible fade show border-0 border-start border-5 border-danger shadow-sm" role="alert">
-                <i class="bi bi-exclamation-triangle-fill me-2"></i> @TempData["ErrorMessage"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-            </div>
+            <div class="temp-data-alert d-none" data-message="@TempData["ErrorMessage"]" data-type="danger"></div>
         }
         @if (TempData["WarningMessage"] != null)
         {
-            <div class="alert alert-warning alert-dismissible fade show border-0 border-start border-5 border-warning shadow-sm" role="alert">
-                <i class="bi bi-exclamation-circle-fill me-2"></i> @TempData["WarningMessage"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-            </div>
+            <div class="temp-data-alert d-none" data-message="@TempData["WarningMessage"]" data-type="warning"></div>
         }
         @if (TempData["InfoMessage"] != null)
         {
-            <div class="alert alert-info alert-dismissible fade show border-0 border-start border-5 border-info shadow-sm" role="alert">
-                <i class="bi bi-info-circle-fill me-2"></i> @TempData["InfoMessage"]
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Đóng"></button>
-            </div>
+            <div class="temp-data-alert d-none" data-message="@TempData["InfoMessage"]" data-type="info"></div>
         }
 
         <main role="main" class="pb-3">
@@ -291,6 +280,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/landing.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>
 </html>

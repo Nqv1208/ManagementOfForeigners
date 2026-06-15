@@ -1,0 +1,382 @@
+/* ===== UNIFIED REGISTRATION - GOVERNMENT PORTAL STYLE =====
+ * Inspired by https://tbltkbtt.bocongan.gov.vn/auth/register
+ * Horizontal 3-column grid layout to fit in a single desktop viewport
+ */
+
+/* ── Variables ── */
+:root {
+    --gov-green: #1f7a1f;
+    --gov-green-dark: #0f5b12;
+    --gov-green-darker: #09420b;
+    --gov-green-soft: #edf8ea;
+    --gov-yellow: #f2a100;
+    --gov-bg: #f6f8f5;
+    --gov-card: #ffffff;
+    --gov-border: #d8e3d5;
+    --gov-text: #1f2937;
+    --gov-muted: #6b7280;
+    --gov-danger: #dc2626;
+}
+
+/* ── Auth layout body ── */
+body.auth-layout-body {
+    background-color: var(--gov-bg);
+    color: var(--gov-text);
+    font-family: 'Inter', 'Segoe UI', Arial, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
+.auth-main-container {
+    flex: 1 0 auto;
+    display: flex;
+    align-items: flex-start;
+    justify-content: center;
+    padding: 12px 16px;
+}
+
+/* ── Page wrapper ── */
+.register-page {
+    width: 100%;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+/* ── Card shell ── */
+.register-shell {
+    background-color: var(--gov-card);
+    border: 1px solid var(--gov-border);
+    border-radius: 8px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+    overflow: hidden;
+}
+
+/* ── Header strip ── */
+.register-header {
+    background: linear-gradient(135deg, var(--gov-green-dark), var(--gov-green-darker));
+    border-bottom: 3px solid var(--gov-yellow);
+    padding: 10px 20px;
+    text-align: center;
+    color: #fff;
+}
+
+.register-header h2 {
+    color: #ffffff;
+    font-size: 1.05rem;
+    font-weight: 700;
+    margin: 0;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+}
+
+.register-header .subtitle {
+    color: rgba(255, 255, 255, 0.75);
+    font-size: 0.75rem;
+    margin-top: 2px;
+}
+
+/* ── Tab switch ── */
+.register-type-switch {
+    display: flex;
+    border-bottom: 1px solid var(--gov-border);
+    background-color: #fafcf9;
+}
+
+.register-type-tab {
+    flex: 1;
+    text-align: center;
+    padding: 9px 12px;
+    font-weight: 600;
+    color: var(--gov-muted);
+    background: none;
+    border: none;
+    border-bottom: 3px solid transparent;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    font-size: 0.88rem;
+}
+
+.register-type-tab:hover {
+    color: var(--gov-green);
+    background-color: rgba(31, 122, 31, 0.03);
+}
+
+.register-type-tab.active {
+    color: #ffffff;
+    background-color: var(--gov-green);
+    border-bottom-color: var(--gov-yellow);
+}
+
+.register-type-tab i {
+    margin-right: 6px;
+}
+
+/* ── Form body ── */
+.register-body {
+    padding: 14px 20px 16px;
+}
+
+/* ── Section title ── */
+.register-section-title {
+    font-size: 0.8rem;
+    font-weight: 700;
+    color: var(--gov-green-dark);
+    margin: 12px 0 8px;
+    padding-bottom: 4px;
+    border-bottom: 1px dashed var(--gov-border);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+
+.register-section-title:first-child {
+    margin-top: 0;
+}
+
+.register-section-title i {
+    font-size: 0.9rem;
+    color: var(--gov-green);
+}
+
+/* ── Grid system — 3 columns by default ── */
+.register-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 8px 14px;
+    margin-bottom: 10px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+    min-width: 0;
+}
+
+/* Column span classes */
+.form-group.span-1 { grid-column: span 1; }
+.form-group.span-2 { grid-column: span 2; }
+.form-group.span-3 { grid-column: span 3; }
+
+/* ── Labels ── */
+.form-group label {
+    font-size: 0.78rem;
+    font-weight: 600;
+    color: #4b5563;
+    margin-bottom: 3px;
+    line-height: 1.2;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.form-group label.required::after {
+    content: " *";
+    color: var(--gov-danger);
+    font-weight: 700;
+}
+
+/* ── Input / select / date ── */
+.form-group .form-control,
+.form-group .form-select {
+    height: 36px;
+    font-size: 0.84rem;
+    padding: 4px 10px;
+    border: 1px solid #c5d2c2;
+    border-radius: 4px;
+    background-color: #ffffff;
+    color: var(--gov-text);
+    transition: border-color 0.15s ease, box-shadow 0.15s ease;
+    min-width: 0;
+    box-sizing: border-box;
+}
+
+/* Fix date input rendering — ensure consistent height and appearance */
+.form-group input[type="date"],
+.form-group input[type="datetime-local"] {
+    height: 36px;
+    line-height: 36px;
+    padding: 0 10px;
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    position: relative;
+}
+
+/* WebKit date picker icon styling */
+.form-group input[type="date"]::-webkit-calendar-picker-indicator {
+    cursor: pointer;
+    opacity: 0.6;
+    padding: 0;
+    margin: 0;
+}
+
+.form-group .form-control:focus,
+.form-group .form-select:focus {
+    border-color: var(--gov-green);
+    outline: 0;
+    box-shadow: 0 0 0 2px rgba(31, 122, 31, 0.12);
+}
+
+.form-group .form-control[readonly] {
+    background-color: #f3f4f6;
+    color: #6b7280;
+    cursor: not-allowed;
+}
+
+/* ── Validation errors ── */
+.form-group .field-validation-error,
+.form-group .text-danger {
+    font-size: 0.72rem;
+    color: var(--gov-danger);
+    margin-top: 2px;
+    line-height: 1.2;
+}
+
+/* ── Agreement row ── */
+.agreement-row {
+    background-color: var(--gov-green-soft);
+    border: 1px solid var(--gov-border);
+    border-radius: 4px;
+    padding: 8px 12px;
+    margin: 10px 0;
+    font-size: 0.8rem;
+}
+
+.agreement-row .form-check {
+    margin: 0;
+}
+
+.agreement-row .form-check-input {
+    margin-top: 3px;
+}
+
+.agreement-row .form-check-label {
+    font-weight: 500;
+    color: var(--gov-text);
+    cursor: pointer;
+    line-height: 1.4;
+    font-size: 0.8rem;
+}
+
+/* ── Action buttons ── */
+.action-buttons-row {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+    padding-top: 10px;
+    border-top: 1px solid var(--gov-border);
+}
+
+.btn-gov {
+    height: 36px;
+    padding: 0 18px;
+    font-size: 0.84rem;
+    font-weight: 600;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+    border: none;
+    text-decoration: none;
+}
+
+.btn-gov-primary {
+    background-color: var(--gov-green);
+    color: #ffffff;
+}
+
+.btn-gov-primary:hover {
+    background-color: var(--gov-green-dark);
+    color: #ffffff;
+}
+
+.btn-gov-secondary {
+    background-color: #ffffff;
+    border: 1px solid #9ca3af;
+    color: #4b5563;
+}
+
+.btn-gov-secondary:hover {
+    background-color: #f3f4f6;
+    border-color: #6b7280;
+    color: #1f2937;
+}
+
+.btn-gov-warning {
+    background-color: var(--gov-yellow);
+    color: #ffffff;
+}
+
+.btn-gov-warning:hover {
+    background-color: #d99000;
+    color: #ffffff;
+}
+
+/* ── Checkbox checked state ── */
+.form-check-input:checked {
+    background-color: var(--gov-green);
+    border-color: var(--gov-green);
+}
+
+/* ── Animations ── */
+.fade-in {
+    animation: regFadeIn 0.15s ease-out forwards;
+}
+
+@keyframes regFadeIn {
+    from { opacity: 0; transform: translateY(3px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* ── Model-only validation summary ── */
+.register-body .text-danger.small {
+    font-size: 0.8rem;
+}
+
+/* ── Responsive ── */
+@media (max-width: 992px) {
+    .register-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+
+    .form-group.span-3 { grid-column: span 2; }
+
+    .auth-main-container {
+        align-items: flex-start;
+        padding: 10px 8px;
+    }
+}
+
+@media (max-width: 576px) {
+    .register-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .form-group.span-2,
+    .form-group.span-3 { grid-column: span 1; }
+
+    .register-body {
+        padding: 10px 12px 14px;
+    }
+
+    .action-buttons-row {
+        flex-direction: column;
+    }
+
+    .btn-gov {
+        width: 100%;
+        justify-content: center;
+    }
+
+    .register-type-tab {
+        font-size: 0.82rem;
+        padding: 8px 8px;
+    }
+}

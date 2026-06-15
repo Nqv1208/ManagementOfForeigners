@@ -1,0 +1,14 @@
+@{
+    ViewBag.Title = "Truy cập bị từ chối";
+}
+
+<div class="access-denied">
+    <h1>403</h1>
+    <h3>Truy cập bị từ chối</h3>
+    <p class="text-muted mb-4">
+        Bạn không có quyền truy cập trang này. Vui lòng liên hệ quản trị viên nếu bạn cho rằng đây là lỗi.
+    </p>
+    <a asp-controller="TrangChu" asp-action="Index" class="btn btn-primary">
+        ← Về trang chủ
+    </a>
+</div>

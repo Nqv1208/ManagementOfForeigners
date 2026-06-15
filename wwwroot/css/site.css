@@ -1,19 +1,50 @@
 /* 
  * SYSTEM PORTAL - SITE OVERRIDES CSS
- * Giao diện và Phong cách hành chính điện tử Đà Nẵng Portal
+ * Giao diện hành chính công tông xanh lá, lấy cảm hứng từ hệ thống Bộ Công an
  */
 
 :root {
-    --portal-primary: #074580;      /* Xanh dương hành chính chính thống */
-    --portal-primary-dark: #053360; /* Xanh dương đậm */
-    --portal-primary-light: #1e64a8;/* Xanh dương sáng */
-    --portal-accent: #d32f2f;       /* Đỏ quốc kỳ / Điểm nhấn thông báo */
-    --portal-gold: #ffb300;         /* Vàng kim điểm nhấn */
-    --portal-bg: #f8fafc;           /* Nền xám nhạt */
-    --portal-surface: #ffffff;      /* Nền trắng */
-    --portal-text: #1e293b;         /* Chữ tối màu chính */
-    --portal-text-muted: #64748b;   /* Chữ phụ mờ */
-    --portal-border: #cbd5e1;       /* Đường viền */
+    --primary: #2f8f1f;
+    --primary-dark: #1f6f12;
+    --primary-darker: #15530d;
+    --primary-soft: #eaf7e6;
+    --primary-soft-2: #f4fbf2;
+
+    --accent: #f2a100;
+    --accent-dark: #d48806;
+    --accent-soft: #fff4db;
+
+    --bg: #f6f8f7;
+    --card: #ffffff;
+    --border: #d8e3d5;
+    --text: #1f2937;
+    --muted: #6b7280;
+
+    --success: #2e7d32;
+    --warning: #f59e0b;
+    --danger: #dc2626;
+    --info: #2f8f1f;
+
+    --portal-primary: var(--primary);
+    --portal-primary-dark: var(--primary-dark);
+    --portal-primary-light: var(--primary-soft);
+    --portal-accent: var(--accent);
+    --portal-gold: var(--accent);
+    --portal-bg: var(--bg);
+    --portal-surface: var(--card);
+    --portal-text: var(--text);
+    --portal-text-muted: var(--muted);
+    --portal-border: var(--border);
+    --bs-primary: var(--primary);
+    --bs-primary-rgb: 47, 143, 31;
+    --bs-success: var(--success);
+    --bs-success-rgb: 46, 125, 50;
+    --bs-info: var(--info);
+    --bs-info-rgb: 47, 143, 31;
+    --bs-warning: var(--warning);
+    --bs-danger: var(--danger);
+    --bs-link-color: var(--primary-dark);
+    --bs-link-hover-color: var(--primary-darker);
     --font-administrative: 'Inter', 'Segoe UI', Arial, sans-serif;
 }
 
@@ -31,7 +62,7 @@ html {
 }
 
 body {
-    margin-bottom: 60px;
+    margin-bottom: 0;
     font-family: var(--font-administrative);
     background-color: var(--portal-bg);
     color: var(--portal-text);
@@ -50,7 +81,24 @@ body {
 .btn-primary:active {
     background-color: var(--portal-primary-dark) !important;
     border-color: var(--portal-primary-dark) !important;
-    box-shadow: 0 4px 6px rgba(7, 69, 128, 0.2) !important;
+    box-shadow: 0 4px 10px rgba(47, 143, 31, 0.18) !important;
+}
+
+.btn-success,
+.btn-info {
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+    color: #ffffff !important;
+    font-weight: 600;
+}
+
+.btn-success:hover,
+.btn-success:focus,
+.btn-info:hover,
+.btn-info:focus {
+    background-color: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important;
+    color: #ffffff !important;
 }
 
 .btn-outline-primary {
@@ -68,25 +116,85 @@ body {
     color: #ffffff !important;
 }
 
+.btn-accent {
+    background-color: var(--accent) !important;
+    border-color: var(--accent) !important;
+    color: #1f2937 !important;
+    font-weight: 700;
+}
+
+.btn-accent:hover,
+.btn-accent:focus {
+    background-color: var(--accent-dark) !important;
+    border-color: var(--accent-dark) !important;
+    color: #ffffff !important;
+}
+
+.btn-outline-success,
+.btn-outline-info {
+    color: var(--primary-dark) !important;
+    border-color: var(--primary) !important;
+    font-weight: 600;
+}
+
+.btn-outline-success:hover,
+.btn-outline-info:hover {
+    color: #ffffff !important;
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+
+.bg-primary,
+.bg-success,
+.bg-info {
+    background-color: var(--primary) !important;
+}
+
+.text-primary,
+.text-info,
+.text-success {
+    color: var(--primary-dark) !important;
+}
+
+.text-primary-dark {
+    color: var(--primary-darker) !important;
+}
+
+.border-primary,
+.border-success,
+.border-info {
+    border-color: var(--primary) !important;
+}
+
+.progress-bar.bg-primary,
+.progress-bar.bg-success,
+.progress-bar.bg-info {
+    background-color: var(--primary) !important;
+}
+
 /* ===== Status Badges ===== */
 .badge-cho-duyet {
-    background-color: var(--portal-gold) !important;
-    color: #212529 !important;
+    background-color: var(--accent-soft) !important;
+    color: #92400e !important;
+    border: 1px solid #fde68a;
 }
 
 .badge-da-duyet {
-    background-color: #198754 !important;
-    color: #fff !important;
+    background-color: var(--primary-soft) !important;
+    color: var(--primary-darker) !important;
+    border: 1px solid #bfe5b6;
 }
 
 .badge-tu-choi {
-    background-color: var(--portal-accent) !important;
-    color: #fff !important;
+    background-color: #fee2e2 !important;
+    color: var(--danger) !important;
+    border: 1px solid #fecaca;
 }
 
 .badge-dang-o {
-    background-color: #0dcaf0 !important;
-    color: #212529 !important;
+    background-color: var(--primary-soft) !important;
+    color: var(--primary-darker) !important;
+    border: 1px solid #bfe5b6;
 }
 
 .badge-da-roi {
@@ -95,13 +203,15 @@ body {
 }
 
 .badge-qua-han {
-    background-color: var(--portal-accent) !important;
-    color: #fff !important;
+    background-color: #fee2e2 !important;
+    color: var(--danger) !important;
+    border: 1px solid #fecaca;
 }
 
 .badge-hoat-dong {
-    background-color: #198754 !important;
-    color: #fff !important;
+    background-color: var(--primary-soft) !important;
+    color: var(--primary-darker) !important;
+    border: 1px solid #bfe5b6;
 }
 
 .badge-khoa {
@@ -110,30 +220,73 @@ body {
 }
 
 .badge-da-gui {
-    background-color: #0dcaf0 !important;
-    color: #212529 !important;
+    background-color: var(--primary-soft) !important;
+    color: var(--primary-darker) !important;
+    border: 1px solid #bfe5b6;
 }
 
 .badge-chua-xu-ly {
-    background-color: var(--portal-gold) !important;
-    color: #212529 !important;
+    background-color: var(--accent-soft) !important;
+    color: #92400e !important;
+    border: 1px solid #fde68a;
 }
 
 .badge-dang-xu-ly {
-    background-color: var(--portal-primary-light) !important;
-    color: #fff !important;
+    background-color: var(--accent-soft) !important;
+    color: #92400e !important;
+    border: 1px solid #fde68a;
 }
 
 .badge-da-xu-ly {
-    background-color: #198754 !important;
-    color: #fff !important;
+    background-color: var(--primary-soft) !important;
+    color: var(--primary-darker) !important;
+    border: 1px solid #bfe5b6;
+}
+
+.status-badge,
+.badge-neutral {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.25rem;
+    border-radius: 999px;
+    padding: 0.35rem 0.65rem;
+    font-weight: 700;
+    font-size: 0.78rem;
+    border: 1px solid transparent;
+}
+
+.status-pending,
+.badge-warning-soft {
+    background-color: var(--accent-soft) !important;
+    color: #92400e !important;
+    border-color: #fde68a !important;
+}
+
+.status-approved,
+.badge-success-soft {
+    background-color: var(--primary-soft) !important;
+    color: var(--primary-darker) !important;
+    border-color: #bfe5b6 !important;
+}
+
+.status-rejected,
+.badge-danger-soft {
+    background-color: #fee2e2 !important;
+    color: var(--danger) !important;
+    border-color: #fecaca !important;
+}
+
+.badge-neutral {
+    background-color: #f1f5f9 !important;
+    color: #475569 !important;
+    border-color: #e2e8f0 !important;
 }
 
 /* ===== Form Styling ===== */
 .form-control:focus,
 .form-select:focus {
-    border-color: #86b7fe;
-    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem rgba(7, 69, 128, 0.25) !important;
+    border-color: var(--primary);
+    box-shadow: 0 0 0 0.1rem white, 0 0 0 0.25rem rgba(47, 143, 31, 0.14) !important;
 }
 
 .form-label {
@@ -144,18 +297,18 @@ body {
 }
 
 .validation-summary-errors {
-    color: var(--portal-accent);
+    color: var(--danger);
     font-size: 0.875rem;
 }
 
 .field-validation-error {
-    color: var(--portal-accent);
+    color: var(--danger);
     font-size: 0.85rem;
     margin-top: 0.25rem;
 }
 
 .input-validation-error {
-    border-color: var(--portal-accent) !important;
+    border-color: var(--danger) !important;
 }
 
 /* ===== Card Styling ===== */
@@ -174,6 +327,111 @@ body {
     color: var(--portal-primary);
 }
 
+.gov-card-header {
+    background-color: var(--primary-darker) !important;
+    color: #ffffff !important;
+    border-bottom: 3px solid var(--accent) !important;
+}
+
+.gov-page-header,
+.gov-hero-card {
+    background-color: var(--primary-soft-2) !important;
+    color: var(--primary-darker) !important;
+    border: 1px solid var(--border) !important;
+    border-left: 5px solid var(--primary) !important;
+}
+
+.gov-hero-card {
+    box-shadow: 0 10px 24px rgba(21, 83, 13, 0.08) !important;
+}
+
+.gov-hero-card .text-white,
+.gov-hero-card .text-white-50,
+.gov-hero-card h1,
+.gov-hero-card h2,
+.gov-hero-card h3,
+.gov-hero-card h4,
+.gov-hero-card h5,
+.gov-hero-card h6,
+.gov-hero-card p {
+    color: var(--primary-darker) !important;
+}
+
+.gov-hero-card .text-white-50 {
+    color: var(--muted) !important;
+    opacity: 1 !important;
+}
+
+.gov-hero-card .btn-outline-light {
+    color: var(--primary-dark) !important;
+    border-color: var(--primary) !important;
+}
+
+.gov-hero-card .btn-outline-light:hover,
+.gov-hero-card .btn-outline-light:focus {
+    color: #ffffff !important;
+    background-color: var(--primary) !important;
+    border-color: var(--primary) !important;
+}
+
+.gov-stat-card {
+    background-color: var(--card) !important;
+    color: var(--text) !important;
+    border: 1px solid var(--border) !important;
+    border-top: 4px solid var(--primary) !important;
+    box-shadow: 0 10px 24px rgba(21, 83, 13, 0.08) !important;
+}
+
+.gov-stat-card .text-white,
+.gov-stat-card .text-white-50,
+.gov-stat-card h1,
+.gov-stat-card h2,
+.gov-stat-card h3,
+.gov-stat-card h4,
+.gov-stat-card h5,
+.gov-stat-card h6,
+.gov-stat-card p {
+    color: var(--text) !important;
+}
+
+.gov-stat-card .text-white-50 {
+    color: var(--muted) !important;
+    opacity: 1 !important;
+}
+
+.gov-stat-card .bg-white.bg-opacity-10,
+.gov-stat-card .bg-white.bg-opacity-20 {
+    background-color: var(--primary-soft) !important;
+    color: var(--primary-dark) !important;
+    border: 1px solid #bfe5b6 !important;
+    opacity: 1 !important;
+}
+
+.gov-soft-panel {
+    background-color: var(--primary-soft-2) !important;
+    border: 1px solid var(--border) !important;
+    color: var(--text) !important;
+}
+
+.gov-icon-box {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    background-color: var(--primary-soft) !important;
+    color: var(--primary-dark) !important;
+    border: 1px solid #bfe5b6 !important;
+}
+
+.gov-icon-box-accent {
+    background-color: var(--accent-soft) !important;
+    color: #92400e !important;
+    border-color: #fde68a !important;
+}
+
+.gov-icon-box .text-white {
+    color: var(--primary-dark) !important;
+}
+
 /* ===== Table Styling ===== */
 .table-responsive {
     border-radius: 6px;
@@ -186,7 +444,7 @@ body {
 }
 
 .table thead th {
-    background-color: #eff6ff !important;
+    background-color: var(--primary-soft-2) !important;
     color: var(--portal-primary) !important;
     border-bottom: 2px solid var(--portal-border) !important;
     font-weight: 700;
@@ -194,6 +452,13 @@ body {
     white-space: nowrap;
     vertical-align: middle;
     padding: 12px 16px;
+}
+
+.table-gov thead th,
+.table-gov-header th {
+    background-color: var(--primary-soft-2) !important;
+    color: var(--primary-darker) !important;
+    border-bottom: 2px solid var(--border) !important;
 }
 
 .table tbody td {
@@ -204,7 +469,7 @@ body {
 }
 
 .table-hover tbody tr:hover {
-    background-color: rgba(7, 69, 128, 0.03);
+    background-color: rgba(47, 143, 31, 0.04);
 }
 
 /* ===== Login / Register Card ===== */
@@ -242,13 +507,13 @@ body {
 }
 
 .alert-success {
-    border-left-color: #198754 !important;
+    border-left-color: var(--success) !important;
     background-color: #f0fdf4 !important;
     color: #14532d !important;
 }
 
 .alert-danger {
-    border-left-color: var(--portal-accent) !important;
+    border-left-color: var(--danger) !important;
     background-color: #fef2f2 !important;
     color: #7f1d1d !important;
 }
@@ -260,7 +525,7 @@ body {
 }
 
 .alert-info {
-    border-left-color: #0dcaf0 !important;
+    border-left-color: var(--primary) !important;
     background-color: #ecfeff !important;
     color: #083344 !important;
 }
@@ -333,4 +598,102 @@ body {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
+}
+
+/* ===== Toast Portal Styles ===== */
+.toast-portal-container {
+    position: fixed;
+    top: 24px;
+    right: 24px;
+    z-index: 10000;
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    max-width: 380px;
+    width: 100%;
+    pointer-events: none;
+}
+
+.toast-portal {
+    pointer-events: auto;
+    background-color: var(--portal-surface);
+    border: 1px solid var(--portal-border);
+    border-left: 5px solid transparent;
+    border-radius: 6px;
+    padding: 12px 16px;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.08), 0 4px 6px -2px rgba(0, 0, 0, 0.04);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    animation: slideInDown 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    transition: all 0.3s ease;
+}
+
+.toast-portal.fade-out {
+    animation: fadeOutRight 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+}
+
+.toast-portal-success {
+    border-left-color: #10b981;
+}
+
+.toast-portal-danger {
+    border-left-color: var(--portal-accent);
+}
+
+.toast-portal-warning {
+    border-left-color: var(--portal-gold);
+}
+
+.toast-portal-info {
+    border-left-color: var(--primary);
+}
+
+.toast-portal-icon {
+    font-size: 1.25rem;
+    flex-shrink: 0;
+}
+
+.toast-portal-success .toast-portal-icon {
+    color: #10b981;
+}
+
+.toast-portal-danger .toast-portal-icon {
+    color: var(--portal-accent);
+}
+
+.toast-portal-warning .toast-portal-icon {
+    color: var(--portal-gold);
+}
+
+.toast-portal-info .toast-portal-icon {
+    color: var(--primary);
+}
+
+.toast-portal-content {
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--portal-text);
+}
+
+@keyframes slideInDown {
+    from {
+        transform: translateY(-50px);
+        opacity: 0;
+    }
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@keyframes fadeOutRight {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(50px);
+        opacity: 0;
+    }
 }

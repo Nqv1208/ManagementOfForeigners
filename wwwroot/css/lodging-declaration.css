@@ -1,0 +1,192 @@
+/* LODGING OWNER DECLARATION STYLES */
+
+.lodging-declaration-page {
+    font-family: 'Inter', sans-serif;
+    background-color: #f8fafc;
+}
+
+.lodging-declaration-shell {
+    max-width: 1140px;
+    margin: 0 auto;
+    padding: 0 15px;
+}
+
+.lodging-declaration-shell .card {
+    border: 1px solid #e2e8f0;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #ffffff;
+}
+
+.declaration-header {
+    background-color: var(--primary, #2f8f1f) !important;
+    border-bottom: 3px solid var(--accent, #eab308);
+}
+
+.declaration-section {
+    background: #ffffff;
+    border: 1px solid #f1f5f9;
+    border-radius: 8px;
+    padding: 20px;
+    margin-bottom: 24px;
+}
+
+.section-title {
+    font-size: 1.05rem;
+    font-weight: 700;
+    color: var(--primary-dark, #1b5e11);
+    border-bottom: 2px solid #f1f5f9;
+    padding-bottom: 8px;
+    margin-bottom: 20px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+/* Readonly facility styling */
+.readonly-facility {
+    background-color: #f8fafc;
+    border: 1px dashed #cbd5e1;
+}
+
+.readonly-facility span.text-muted {
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: #64748b !important;
+}
+
+.readonly-facility span.fw-semibold {
+    font-size: 0.95rem;
+    color: #1e293b !important;
+}
+
+/* Grid layout for form fields */
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(3, 1fr);
+    gap: 20px;
+}
+
+.form-group {
+    display: flex;
+    flex-direction: column;
+}
+
+.form-group.span-2 {
+    grid-column: span 2;
+}
+
+.form-group.full {
+    grid-column: span 3;
+}
+
+/* Form Controls Custom Style */
+.lodging-declaration-shell .form-control,
+.lodging-declaration-shell .form-select {
+    border: 1px solid #cbd5e1;
+    border-radius: 6px;
+    padding: 10px 12px;
+    font-size: 0.9rem;
+    transition: all 0.2s ease-in-out;
+}
+
+.lodging-declaration-shell .form-control:focus,
+.lodging-declaration-shell .form-select:focus {
+    border-color: var(--primary, #2f8f1f);
+    box-shadow: 0 0 0 3px rgba(47, 143, 31, 0.15);
+    outline: none;
+}
+
+/* Red border for input errors */
+.lodging-declaration-shell .input-validation-error {
+    border-color: #ef4444 !important;
+    background-color: #fef2f2;
+}
+
+.lodging-declaration-shell .input-validation-error:focus {
+    box-shadow: 0 0 0 3px rgba(239, 68, 68, 0.15) !important;
+}
+
+.passport-search-row {
+    position: relative;
+}
+
+.passport-search-row input {
+    border-top-right-radius: 0 !important;
+    border-bottom-right-radius: 0 !important;
+}
+
+.passport-search-row button {
+    border-top-left-radius: 0 !important;
+    border-bottom-left-radius: 0 !important;
+    background-color: var(--primary, #2f8f1f) !important;
+    border-color: var(--primary, #2f8f1f) !important;
+}
+
+.passport-search-row button:hover {
+    background-color: var(--primary-dark, #1b5e11) !important;
+    border-color: var(--primary-dark, #1b5e11) !important;
+}
+
+/* Commitment Box */
+.commitment-box {
+    background-color: #f0fdf4;
+    border: 1px solid #bbf7d0;
+}
+
+.commitment-box label {
+    cursor: pointer;
+}
+
+.commitment-box .form-check-input:checked {
+    background-color: var(--primary, #2f8f1f);
+    border-color: var(--primary, #2f8f1f);
+}
+
+/* Actions footer */
+.declaration-actions button.btn-success {
+    background-color: var(--primary, #2f8f1f) !important;
+    border-color: var(--primary, #2f8f1f) !important;
+}
+
+.declaration-actions button.btn-success:hover:not(:disabled) {
+    background-color: var(--primary-dark, #1b5e11) !important;
+    border-color: var(--primary-dark, #1b5e11) !important;
+}
+
+.declaration-actions button.btn-success:disabled {
+    opacity: 0.65;
+    cursor: not-allowed;
+}
+
+/* Responsive Grid */
+@media (max-width: 992px) {
+    .form-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+    .form-group.full {
+        grid-column: span 2;
+    }
+}
+
+@media (max-width: 576px) {
+    .form-grid {
+        grid-template-columns: 1fr;
+    }
+    .form-group.span-2,
+    .form-group.full {
+        grid-column: span 1;
+    }
+    .declaration-actions {
+        flex-direction: column-reverse;
+        gap: 15px;
+    }
+    .declaration-actions div {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+    }
+    .declaration-actions button[type="submit"] {
+        width: 100%;
+    }
+}

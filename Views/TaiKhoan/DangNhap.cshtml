@@ -1,0 +1,101 @@
+@model DangNhapViewModel
+
+@{
+    ViewBag.Title = "Đăng nhập";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6 col-lg-5">
+        <div class="card auth-card">
+            <div class="card-header">
+                <h4>Đăng nhập</h4>
+                <p class="mb-0 small opacity-75">Hệ thống Quản lý Người nước ngoài TP Đà Nẵng</p>
+            </div>
+            <div class="card-body">
+                <form asp-action="DangNhap" asp-controller="TaiKhoan" method="post">
+                    @Html.AntiForgeryToken()
+                    <input type="hidden" name="returnUrl" value="@ViewData["ReturnUrl"]" />
+
+                    <div asp-validation-summary="ModelOnly" class="alert alert-danger" role="alert"></div>
+
+                    <div class="mb-3">
+                        <label asp-for="TenDangNhap" class="form-label"></label>
+                        <input asp-for="TenDangNhap" class="form-control" placeholder="Nhập tên đăng nhập" autofocus />
+                        <span asp-validation-for="TenDangNhap" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3">
+                        <label asp-for="MatKhau" class="form-label"></label>
+                        <input asp-for="MatKhau" class="form-control" placeholder="Nhập mật khẩu" />
+                        <span asp-validation-for="MatKhau" class="text-danger"></span>
+                    </div>
+
+                    <div class="mb-3 form-check">
+                        <input asp-for="GhiNho" class="form-check-input" />
+                        <label asp-for="GhiNho" class="form-check-label"></label>
+                    </div>
+
+                    <div class="d-grid mb-3">
+                        <button type="submit" class="btn btn-primary btn-lg">Đăng nhập</button>
+                    </div>
+
+                    <div class="text-center">
+                        <p class="mb-0">
+                            Chưa có tài khoản?
+                            <a asp-controller="TaiKhoan" asp-action="DangKy" class="text-decoration-none fw-semibold">Đăng ký ngay</a>
+                        </p>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <!-- Seeded test accounts info card -->
+        <div class="card border-0 shadow-sm mt-3" style="border-top: 3px solid #f2a100 !important;">
+            <div class="card-body p-3" style="background-color: #fafcf9; font-size: 0.8rem;">
+                <h6 class="fw-bold mb-2 text-success"><i class="bi bi-info-circle-fill me-1"></i> Tài khoản kiểm thử gợi ý</h6>
+                <div class="table-responsive">
+                    <table class="table table-sm table-borderless mb-0" style="font-size: 0.78rem; line-height: 1.5;">
+                        <thead>
+                            <tr class="text-secondary border-bottom">
+                                <th>Vai trò</th>
+                                <th>Username</th>
+                                <th>Mật khẩu</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td class="text-success fw-semibold">Chủ cơ sở lưu trú</td>
+                                <td class="fw-bold text-dark">khachsan01</td>
+                                <td><code>KhachSan@@123</code></td>
+                            </tr>
+                            <tr>
+                                <td class="text-primary fw-semibold">Người nước ngoài</td>
+                                <td class="fw-bold text-dark">john.smith</td>
+                                <td><code>User@@123</code></td>
+                            </tr>
+                            <tr>
+                                <td class="text-warning fw-semibold">Công an Phường</td>
+                                <td class="fw-bold text-dark">congan01</td>
+                                <td><code>CongAn@@123</code></td>
+                            </tr>
+                            <tr>
+                                <td class="text-info fw-semibold">Cán bộ XNC</td>
+                                <td class="fw-bold text-dark">canbo01</td>
+                                <td><code>CanBo@@123</code></td>
+                            </tr>
+                            <tr>
+                                <td class="text-danger fw-semibold">Quản trị hệ thống</td>
+                                <td class="fw-bold text-dark">admin</td>
+                                <td><code>Admin@@123</code></td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    @await Html.PartialAsync("_ValidationScriptsPartial")
+}

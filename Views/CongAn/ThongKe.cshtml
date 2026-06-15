@@ -1,0 +1,253 @@
+@{
+    Layout = "~/Views/Shared/_PoliceLayout.cshtml";
+    ViewBag.Title = "Thống kê & Báo cáo Địa bàn";
+    var wardName = ViewBag.TenDiaBan as string ?? "Địa bàn quản lý";
+    var quocTichStats = ViewBag.QuocTichStats as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    var facilityStats = ViewBag.FacilityStats as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+
+    int maxQuocTichCount = quocTichStats.FirstOrDefault()?.Count ?? 1;
+    int maxFacilityCount = facilityStats.FirstOrDefault()?.Count ?? 1;
+
+    int totalForeigners = quocTichStats.Sum(item => (int)item.Count);
+    int totalFacilities = facilityStats.Count();
+}
+
+<div class="container-fluid">
+    <!-- Header Premium -->
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden; background: linear-gradient(135deg, var(--police-primary), var(--police-primary-dark));">
+                <div class="card-body p-4 text-white">
+                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-primary bg-opacity-20 text-primary rounded-circle p-3 fs-3 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px; border: 1px solid rgba(47, 143, 31, 0.3);">
+                                <i class="bi bi-shield-shaded"></i>
+                            </div>
+                            <div>
+                                <h4 class="fw-bold mb-1">Thống kê & Kiểm soát Địa bàn</h4>
+                                <p class="text-white-50 mb-0">Hệ thống phân tích số liệu tạm trú và lưu trú tại phường phụ trách</p>
+                            </div>
+                        </div>
+                        <div>
+                            <span class="badge bg-primary px-3 py-2 fs-6 rounded-pill">
+                                <i class="bi bi-geo-alt-fill me-1"></i> Địa bàn: @wardName
+                            </span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Quick Stats Bento Rows -->
+    <div class="row g-4 mb-4">
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px; border-left: 5px solid var(--primary);">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1 fs-7 fw-semibold text-uppercase">Khách Đang Tạm Trú</h6>
+                            <h3 class="fw-bold text-dark mb-0">@totalForeigners</h3>
+                        </div>
+                        <div class="bg-primary bg-opacity-10 text-primary rounded-3 p-3 fs-4">
+                            <i class="bi bi-people-fill"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-muted fs-8">
+                        Tổng số người nước ngoài đang cư trú trong địa bàn
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px; border-left: 5px solid var(--success);">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1 fs-7 fw-semibold text-uppercase">Cơ Sở Hoạt Động</h6>
+                            <h3 class="fw-bold text-dark mb-0">@totalFacilities</h3>
+                        </div>
+                        <div class="bg-success bg-opacity-10 text-success rounded-3 p-3 fs-4">
+                            <i class="bi bi-building"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-muted fs-8">
+                        Cơ sở đang tiếp nhận và khai báo lưu trú thực tế
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px; border-left: 5px solid #ffc107;">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1 fs-7 fw-semibold text-uppercase">Quốc Tịch Đăng Ký</h6>
+                            <h3 class="fw-bold text-dark mb-0">@quocTichStats.Count()</h3>
+                        </div>
+                        <div class="bg-warning bg-opacity-10 text-warning rounded-3 p-3 fs-4">
+                            <i class="bi bi-globe2"></i>
+                        </div>
+                    </div>
+                    <div class="mt-2 text-muted fs-8">
+                        Số lượng các quốc tịch khác nhau đang hiện diện
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-6 col-lg-3">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px; border-left: 5px solid var(--danger);">
+                <div class="card-body p-3">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h6 class="text-muted mb-1 fs-7 fw-semibold text-uppercase">Thời Gian Cập Nhật</h6>
+                            <h3 class="fw-bold text-dark mb-0 fs-5 mt-2">@DateTime.Now.ToString("dd/MM/yyyy HH:mm")</h3>
+                        </div>
+                        <div class="bg-danger bg-opacity-10 text-danger rounded-3 p-3 fs-4">
+                            <i class="bi bi-clock-history"></i>
+                        </div>
+                    </div>
+                    <div class="mt-1 text-muted fs-8">
+                        Dữ liệu thời gian thực được đồng bộ tự động
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Phân tích sâu Bento Grid -->
+    <div class="row g-4">
+        <!-- Quốc tịch -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 16px;">
+                <div class="card-header bg-white border-0 p-4 pb-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark">
+                                <i class="bi bi-compass me-2 text-primary"></i>Phân Bố Quốc Tịch
+                            </h5>
+                            <p class="text-muted mb-0 fs-8">Cơ cấu tỷ lệ các quốc gia hiện cư trú trên địa bàn</p>
+                        </div>
+                        <span class="badge bg-light text-dark">Top @quocTichStats.Count() Quốc gia</span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    @if (!quocTichStats.Any())
+                    {
+                        <div class="text-center py-5">
+                            <div class="bg-light text-muted rounded-circle p-3 d-inline-flex mb-3">
+                                <i class="bi bi-globe fs-2"></i>
+                            </div>
+                            <p class="text-muted fw-semibold mb-0">Chưa có người nước ngoài cư trú trên địa bàn</p>
+                            <p class="text-muted fs-8">Hệ thống sẽ cập nhật khi có hồ sơ được phê duyệt.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="d-flex flex-column gap-4">
+                            @foreach (var item in quocTichStats)
+                            {
+                                int percentage = (int)Math.Round((double)item.Count * 100 / maxQuocTichCount);
+                                double globalRatio = (double)item.Count * 100 / totalForeigners;
+                                
+                                <div>
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <span class="fw-bold text-dark fs-7">@item.Key</span>
+                                        </div>
+                                        <div class="text-end">
+                                            <span class="fw-bold text-primary fs-7">@item.Count người</span>
+                                            <span class="text-muted fs-8 ms-1">(@globalRatio.ToString("0.0")%)</span>
+                                        </div>
+                                    </div>
+                                    <div class="progress" style="height: 10px; border-radius: 5px; background-color: #f1f5f9;">
+                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: @percentage%; border-radius: 5px;" aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                    </div>
+                                </div>
+                            }
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+
+        <!-- Mật độ cơ sở lưu trú -->
+        <div class="col-lg-6">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 16px;">
+                <div class="card-header bg-white border-0 p-4 pb-0">
+                    <div class="d-flex justify-content-between align-items-center">
+                        <div>
+                            <h5 class="fw-bold mb-0 text-dark">
+                                <i class="bi bi-houses-fill me-2 text-success"></i>Mật Độ Lưu Trú Theo Cơ Sở
+                            </h5>
+                            <p class="text-muted mb-0 fs-8">Các cơ sở lưu trú có lượng khách nước ngoài đang ở thực tế</p>
+                        </div>
+                        <span class="badge bg-light text-dark">Cơ sở hoạt động</span>
+                    </div>
+                </div>
+                <div class="card-body p-4">
+                    @if (!facilityStats.Any())
+                    {
+                        <div class="text-center py-5">
+                            <div class="bg-light text-muted rounded-circle p-3 d-inline-flex mb-3">
+                                <i class="bi bi-building-fill-exclamation fs-2"></i>
+                            </div>
+                            <p class="text-muted fw-semibold mb-0">Chưa ghi nhận cơ sở lưu trú có khách nước ngoài cư trú</p>
+                            <p class="text-muted fs-8">Đang đồng bộ dữ liệu hoặc hiện không có hoạt động lưu trú.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0 fs-7">
+                                <thead>
+                                    <tr class="table-light">
+                                        <th class="border-0">Thứ tự</th>
+                                        <th class="border-0">Cơ sở lưu trú</th>
+                                        <th class="border-0 text-end">Số khách đang ở</th>
+                                        <th class="border-0 text-center" style="width: 45%;">Tỷ trọng trực quan</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @{ int rank = 1; }
+                                    @foreach (var item in facilityStats)
+                                    {
+                                        int percentage = (int)Math.Round((double)item.Count * 100 / maxFacilityCount);
+                                        <tr>
+                                            <td class="fw-bold border-0">
+                                                <span class="badge rounded-circle p-2 bg-success bg-opacity-10 text-dark d-inline-flex align-items-center justify-content-center" style="width: 26px; height: 26px;">@rank</span>
+                                            </td>
+                                            <td class="fw-bold text-dark border-0">@item.Key</td>
+                                            <td class="text-end fw-semibold text-success border-0">@item.Count người</td>
+                                            <td class="border-0">
+                                                <div class="progress" style="height: 10px; border-radius: 5px; background-color: #f1f5f9;">
+                                                    <div class="progress-bar bg-success" role="progressbar" style="width: @percentage%; border-radius: 5px;" aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                                </div>
+                                            </td>
+                                        </tr>
+                                        rank++;
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Action buttons footer -->
+    <div class="row mt-4 mb-2">
+        <div class="col-12 text-end">
+            <button onclick="window.print();" class="btn btn-outline-primary rounded-pill px-4 shadow-sm">
+                <i class="bi bi-printer me-2"></i>In Báo Cáo Thống Kê
+            </button>
+            <a asp-action="TongQuan" class="btn btn-success rounded-pill px-4 ms-2 shadow-sm text-white" style="background-color: var(--police-primary) !important; border-color: var(--police-primary) !important;">
+                <i class="bi bi-arrow-left me-2"></i>Quay lại Dashboard
+            </a>
+        </div>
+    </div>
+</div>
