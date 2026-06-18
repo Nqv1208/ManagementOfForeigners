@@ -5,42 +5,49 @@
 }
 
 <div class="container-fluid">
-    <div class="row justify-content-center">
-        <div class="col-lg-8 col-md-10">
-            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
-                <div class="card-header bg-success text-white p-4" style="background-color: var(--police-primary) !important;">
-                    <h5 class="fw-bold mb-0">Báo cáo vi phạm lên Cục/Phòng XNC</h5>
-                    <p class="text-white-50 mb-0 fs-7">Báo cáo các trường hợp vi phạm nghiêm trọng cần Phòng Xuất Nhập Cảnh xử lý hoặc trục xuất</p>
-                </div>
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px; border-left: 4px solid var(--danger) !important;">
+        <div class="card-body p-4">
+            <h5 class="fw-bold text-dark mb-1">Báo cáo vi phạm lên Cục/Phòng XNC</h5>
+            <p class="text-muted mb-0 fs-7">Báo cáo các trường hợp vi phạm cư trú nghiêm trọng cần Phòng Quản lý Xuất Nhập Cảnh xử lý trực tiếp hoặc trục xuất</p>
+        </div>
+    </div>
 
+    <div class="row g-4">
+        <!-- Left Column: Input Form -->
+        <div class="col-lg-8">
+            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
                 <div class="card-body p-4">
-                    <form asp-action="BaoCaoViPham" method="post" class="needs-validation">
+                    <form asp-action="BaoCaoViPham" method="post" id="reportForm" class="needs-validation" novalidate>
                         @Html.AntiForgeryToken()
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3 small"></div>
 
                         <div class="row g-3">
-                            <!-- Người nước ngoài -->
+                            <!-- Search & Select Foreigner -->
                             <div class="col-md-12">
-                                <label asp-for="MaNguoiNuocNgoai" class="form-label fw-semibold text-dark fs-7"></label>
-                                <select asp-for="MaNguoiNuocNgoai" asp-items="ViewBag.NguoiNuocNgoais" class="form-select" style="border-radius: 8px;">
-                                    <option value="">-- Chọn người nước ngoài liên quan --</option>
+                                <label class="form-label fw-semibold text-dark fs-7">Tìm kiếm nhanh người nước ngoài</label>
+                                <input type="text" id="foreignerSearch" class="form-control mb-2" placeholder="Nhập tên hoặc số hộ chiếu để lọc nhanh..." style="border-radius: 8px;" />
+                                
+                                <label asp-for="MaNguoiNuocNgoai" class="form-label fw-semibold text-dark fs-7">Người nước ngoài liên quan <span class="text-danger">*</span></label>
+                                <select asp-for="MaNguoiNuocNgoai" asp-items="ViewBag.NguoiNuocNgoais" class="form-select" id="MaNguoiNuocNgoai" style="border-radius: 8px;" required>
+                                    <option value="">-- Chọn người nước ngoài --</option>
                                 </select>
                                 <span asp-validation-for="MaNguoiNuocNgoai" class="text-danger small"></span>
                             </div>
 
-                            <!-- Nội dung báo cáo -->
+                            <!-- Report Content -->
                             <div class="col-12">
-                                <label asp-for="NoiDungBaoCao" class="form-label fw-semibold text-dark fs-7"></label>
-                                <textarea asp-for="NoiDungBaoCao" class="form-control" rows="5" placeholder="Mô tả chi tiết hành vi vi phạm nghiêm trọng (Ví dụ: Cư trú bất hợp pháp, sử dụng Visa sai mục đích, lao động trái phép...)" style="border-radius: 8px;"></textarea>
+                                <label asp-for="NoiDungBaoCao" class="form-label fw-semibold text-dark fs-7">Nội dung báo cáo chi tiết <span class="text-danger">*</span></label>
+                                <textarea asp-for="NoiDungBaoCao" class="form-control" rows="5" placeholder="Mô tả cụ thể hành vi vi phạm nghiêm trọng (Ví dụ: Cư trú bất hợp pháp, lao động trái phép, sử dụng Visa sai mục đích, có hoạt động nguy hiểm...)" style="border-radius: 8px;" required></textarea>
                                 <span asp-validation-for="NoiDungBaoCao" class="text-danger small"></span>
                             </div>
 
+                            <!-- Buttons -->
                             <div class="col-12 d-flex justify-content-between mt-4">
-                                <a asp-action="TongQuan" class="btn btn-outline-secondary px-4 fw-semibold" style="border-radius: 8px;">
+                                <a asp-action="TongQuan" class="btn btn-outline-secondary btn-sm px-3 fw-semibold" style="border-radius: 6px;">
                                     <i class="bi bi-arrow-left me-1"></i> Quay lại
                                 </a>
-                                <button type="submit" class="btn btn-success px-4 fw-semibold text-white" style="border-radius: 8px;">
-                                    <i class="bi bi-flag me-1"></i> Gửi báo cáo
+                                <button type="button" id="btnSubmitConfirm" class="btn btn-danger btn-sm px-4 fw-semibold text-white" style="border-radius: 6px;">
+                                    <i class="bi bi-flag me-1"></i> Gửi báo cáo vi phạm
                                 </button>
                             </div>
                         </div>
@@ -48,9 +55,178 @@
                 </div>
             </div>
         </div>
+
+        <!-- Right Column: Foreigner Info Card & Severe Violation Details -->
+        <div class="col-lg-4">
+            <!-- Dynamic Info Card -->
+            <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px;">
+                <div class="card-header bg-light border-0 py-3 px-4">
+                    <h6 class="fw-bold text-dark mb-0"><i class="bi bi-person-badge me-2 text-primary"></i>Thông tin người nước ngoài</h6>
+                </div>
+                <div class="card-body p-4" id="foreignerDetailsCard">
+                    <div class="text-center py-4 text-muted" id="noForeignerSelected">
+                        <i class="bi bi-person-slash fs-1 d-block mb-2 text-secondary"></i>
+                        <small>Vui lòng chọn một người nước ngoài bên trái để xem thông tin chi tiết.</small>
+                    </div>
+                    <div class="d-none text-start" id="foreignerSelectedInfo">
+                        <div class="mb-3">
+                            <label class="text-muted fs-8 d-block">Họ và tên</label>
+                            <span class="fw-bold text-dark fs-6" id="infoName"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted fs-8 d-block">Số hộ chiếu</label>
+                            <span class="fw-bold text-dark fs-6" id="infoPassport"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="text-muted fs-8 d-block">Quốc tịch</label>
+                            <span class="fw-bold text-dark fs-6" id="infoNationality"></span>
+                        </div>
+                        <div class="mb-0">
+                            <label class="text-muted fs-8 d-block">Địa bàn theo dõi</label>
+                            <span class="badge bg-success bg-opacity-10 text-success fw-semibold">Phường Hải Châu, Đà Nẵng</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Severe Violation Guidelines -->
+            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+                <div class="card-header bg-light border-0 py-3 px-4">
+                    <h6 class="fw-bold text-dark mb-0"><i class="bi bi-shield-slash me-2 text-danger"></i>Quy chế vi phạm nghiêm trọng</h6>
+                </div>
+                <div class="card-body p-4 text-start fs-8">
+                    <p class="text-muted mb-2">Các trường hợp cần báo cáo khẩn cấp lên cấp quản lý Xuất Nhập Cảnh cấp Thành phố gồm:</p>
+                    <ul class="ps-3 text-muted mb-0 d-flex flex-column gap-2">
+                        <li>Sử dụng hộ chiếu giả mạo hoặc giấy tờ cư trú không hợp pháp.</li>
+                        <li>Visa quá hạn cư trú dài ngày nhưng không khai báo gia hạn.</li>
+                        <li>Hoạt động thương mại, lao động, kinh doanh bất hợp pháp không có giấy phép.</li>
+                        <li>Vi phạm pháp luật hình sự, gây mất an ninh trật tự công cộng.</li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Submit Confirm Modal -->
+<div class="modal fade" id="submitConfirmModal" tabindex="-1" aria-labelledby="submitConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0" style="border-radius: 16px; overflow: hidden;">
+            <div class="modal-header bg-danger text-white border-0 p-4">
+                <h5 class="modal-title fw-bold" id="submitConfirmModalLabel"><i class="bi bi-exclamation-octagon-fill me-2"></i>Xác nhận báo cáo vi phạm</h5>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-start fs-7">
+                <p class="mb-3 text-danger fw-semibold"><i class="bi bi-shield-fill-exclamation me-1"></i> Chú ý: Báo cáo này sẽ được chuyển trực tiếp lên Cục/Phòng Quản lý Xuất Nhập Cảnh.</p>
+                <ul class="list-group list-group-flush mb-3">
+                    <li class="list-group-item d-flex justify-content-between px-0 py-2 border-0 bg-transparent">
+                        <span class="text-muted">Người vi phạm:</span>
+                        <span class="fw-bold text-dark" id="modalForeignerName"></span>
+                    </li>
+                    <li class="list-group-item px-0 py-2 border-0 bg-transparent text-start">
+                        <span class="text-muted d-block mb-1">Nội dung báo cáo tóm tắt:</span>
+                        <span class="fw-bold text-dark style-multiline-ellipsis" id="modalReportSummary"></span>
+                    </li>
+                </ul>
+                <p class="mb-0 text-muted small">Cán bộ lập báo cáo chịu trách nhiệm hoàn toàn về tính xác thực của thông tin cung cấp.</p>
+            </div>
+            <div class="modal-footer border-0 p-4 pt-0 justify-content-between">
+                <button type="button" class="btn btn-secondary btn-sm px-3 fw-semibold" data-bs-dismiss="modal" style="border-radius: 6px;">Hủy bỏ</button>
+                <button type="button" id="btnConfirmSubmitForm" class="btn btn-danger btn-sm px-4 fw-semibold text-white" style="border-radius: 6px;">Xác nhận báo cáo</button>
+            </div>
+        </div>
     </div>
 </div>
 
 @section Scripts {
     @await Html.PartialAsync("_ValidationScriptsPartial")
+    
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // 1. Filter dropdown list
+            const searchInput = document.getElementById("foreignerSearch");
+            const select = document.getElementById("MaNguoiNuocNgoai");
+            if (searchInput && select) {
+                const originalOptions = Array.from(select.options);
+
+                searchInput.addEventListener("input", function () {
+                    const query = searchInput.value.toLowerCase().trim();
+                    select.innerHTML = "";
+                    const filtered = originalOptions.filter((opt, index) => {
+                        if (index === 0) return true;
+                        return opt.text.toLowerCase().includes(query);
+                    });
+                    filtered.forEach(opt => select.appendChild(opt));
+                    triggerForeignerDetailsChange();
+                });
+            }
+
+            // 2. Dynamic Info Card
+            const foreignerSelectedInfo = document.getElementById("foreignerSelectedInfo");
+            const noForeignerSelected = document.getElementById("noForeignerSelected");
+            const infoName = document.getElementById("infoName");
+            const infoPassport = document.getElementById("infoPassport");
+            const infoNationality = document.getElementById("infoNationality");
+
+            function triggerForeignerDetailsChange() {
+                if (!select || select.value === "") {
+                    if (foreignerSelectedInfo) foreignerSelectedInfo.classList.add("d-none");
+                    if (noForeignerSelected) noForeignerSelected.classList.remove("d-none");
+                } else {
+                    const selectedText = select.options[select.selectedIndex].text;
+                    const parts = selectedText.split(" - Hộ chiếu: ");
+                    const name = parts[0];
+                    const subParts = parts[1] ? parts[1].split(" (") : [];
+                    const passport = subParts[0] || "";
+                    const nationality = subParts[1] ? subParts[1].replace(")", "") : "";
+
+                    if (infoName) infoName.textContent = name;
+                    if (infoPassport) infoPassport.textContent = passport;
+                    if (infoNationality) infoNationality.textContent = nationality;
+
+                    if (noForeignerSelected) noForeignerSelected.classList.add("d-none");
+                    if (foreignerSelectedInfo) foreignerSelectedInfo.classList.remove("d-none");
+                }
+            }
+
+            if (select) {
+                select.addEventListener("change", triggerForeignerDetailsChange);
+                triggerForeignerDetailsChange();
+            }
+
+            // 3. Modal confirm
+            const btnSubmitConfirm = document.getElementById("btnSubmitConfirm");
+            const submitConfirmModalEl = document.getElementById("submitConfirmModal");
+            const modalForeignerName = document.getElementById("modalForeignerName");
+            const modalReportSummary = document.getElementById("modalReportSummary");
+            const reportForm = document.getElementById("reportForm");
+
+            if (btnSubmitConfirm && submitConfirmModalEl && reportForm) {
+                const modal = new bootstrap.Modal(submitConfirmModalEl);
+
+                btnSubmitConfirm.addEventListener("click", function () {
+                    if (!reportForm.checkValidity()) {
+                        reportForm.classList.add("was-validated");
+                        reportForm.reportValidity();
+                        return;
+                    }
+
+                    // Populate modal data
+                    modalForeignerName.textContent = infoName.textContent || "Chưa xác định";
+                    
+                    const content = document.getElementById("NoiDungBaoCao").value;
+                    modalReportSummary.textContent = content.length > 150 ? content.substring(0, 150) + "..." : content;
+
+                    modal.show();
+                });
+
+                const btnConfirmSubmitForm = document.getElementById("btnConfirmSubmitForm");
+                if (btnConfirmSubmitForm) {
+                    btnConfirmSubmitForm.addEventListener("click", function () {
+                        reportForm.submit();
+                    });
+                }
+            }
+        });
+    </script>
 }
