@@ -697,3 +697,75 @@ body {
         opacity: 0;
     }
 }
+
+/* PORTAL TOPBAR */
+:root {
+    --portal-topbar-height: 28px;
+}
+
+.portal-topbar {
+    height: var(--portal-topbar-height);
+    min-height: var(--portal-topbar-height);
+    width: 100%;
+    background-color: var(--primary-darker);
+    color: rgba(255, 255, 255, 0.92);
+    font-size: 12px;
+    font-weight: 600;
+    position: relative;
+    z-index: 1100;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.12);
+    display: flex;
+    align-items: center;
+}
+
+.portal-topbar a {
+    color: rgba(255, 255, 255, 0.78);
+    text-decoration: none;
+    transition: color 0.2s;
+}
+
+.portal-topbar a:hover {
+    color: #ffffff;
+}
+
+.portal-topbar a.fw-bold {
+    color: #ffffff;
+}
+
+.flag-vn {
+    display: inline-block;
+    width: 18px;
+    height: 12px;
+    background-color: #da251d;
+    position: relative;
+    vertical-align: middle;
+    margin-right: 6px;
+    box-shadow: 0 1px 2px rgba(0,0,0,0.2);
+    flex-shrink: 0;
+}
+
+.flag-vn::before {
+    content: "★";
+    color: #ffff00;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 8px;
+    line-height: 1;
+}
+
+@media (max-width: 768px) {
+    .portal-topbar {
+        height: auto;
+        min-height: var(--portal-topbar-height);
+        padding: 4px 0;
+    }
+}
+
+/* Extra Small Button Utility */
+.btn-xs {
+    padding: 2px 8px !important;
+    font-size: 0.75rem !important;
+    line-height: 1.5 !important;
+}

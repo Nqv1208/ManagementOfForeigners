@@ -1,0 +1,205 @@
+/* ============================================================
+   nav-user.css
+   Avatar dropdown menu — shared between public header
+   and foreigner portal topbar.
+   ============================================================ */
+
+/* --- Trigger container --- */
+.nav-user {
+    position: relative;
+    margin-left: auto;
+}
+
+/* --- Pill-shaped toggle button --- */
+.nav-user-trigger {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    height: 38px;
+    padding: 0 14px 0 6px;
+    background: transparent;
+    border: 1px solid rgba(255, 255, 255, 0.25);
+    border-radius: 999px;
+    color: #fff;
+    cursor: pointer;
+    outline: none;
+    transition: border-color 0.2s, background 0.2s;
+}
+
+.nav-user-trigger:hover {
+    border-color: rgba(255, 255, 255, 0.45);
+    background: rgba(255, 255, 255, 0.08);
+}
+
+/* --- Avatar circle with initials --- */
+.nav-avatar {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    background: var(--accent, #f2a100);
+    color: #102a0b;
+    font-size: 12px;
+    font-weight: 800;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    line-height: 1;
+    letter-spacing: 0.5px;
+    text-transform: uppercase;
+}
+
+/* --- User name next to avatar --- */
+.nav-user-name {
+    font-weight: 600;
+    color: #fff;
+    max-width: 120px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 13px;
+    line-height: 1.2;
+}
+
+/* --- Chevron icon --- */
+.nav-user-trigger .chevron-icon {
+    font-size: 12px;
+    opacity: 0.7;
+    transition: transform 0.2s;
+}
+
+.nav-user-trigger[aria-expanded="true"] .chevron-icon {
+    transform: rotate(180deg);
+}
+
+/* ============================================================
+   Dropdown menu
+   ============================================================ */
+.nav-user-menu {
+    display: none;
+    position: absolute;
+    top: calc(100% + 8px);
+    right: 0;
+    width: 260px;
+    background: #fff;
+    border: 1px solid var(--border, #d8e3d5);
+    border-radius: 12px;
+    box-shadow: 0 14px 34px rgba(0, 0, 0, 0.14);
+    padding: 8px;
+    z-index: 1200;
+}
+
+.nav-user-menu.show {
+    display: block;
+    animation: fadeInDropdown 0.18s ease-out;
+}
+
+/* --- User summary at the top --- */
+.nav-user-summary {
+    padding: 12px;
+    border-bottom: 1px solid #eee;
+    margin-bottom: 4px;
+}
+
+.nav-user-summary strong {
+    display: block;
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--text, #1f2937);
+    margin-bottom: 2px;
+}
+
+.nav-user-summary .nav-user-role {
+    font-size: 12px;
+    font-weight: 600;
+    color: var(--primary, #2f8f1f);
+}
+
+/* --- Menu links --- */
+.nav-user-menu a {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 12px;
+    border-radius: 8px;
+    color: var(--text, #1f2937);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    transition: background 0.15s;
+}
+
+.nav-user-menu a:hover {
+    background: var(--primary-soft, #eaf7e6);
+}
+
+.nav-user-menu a i {
+    font-size: 16px;
+    color: var(--muted, #6b7280);
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+}
+
+/* --- Separator --- */
+.nav-user-menu hr {
+    margin: 4px 8px;
+    border: none;
+    border-top: 1px solid #eee;
+}
+
+/* --- Logout form button (styled like a link) --- */
+.nav-user-menu form {
+    margin: 0;
+}
+
+.nav-user-menu form button {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 10px 12px;
+    border: none;
+    border-radius: 8px;
+    background: transparent;
+    color: var(--text, #1f2937);
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background 0.15s, color 0.15s;
+    text-align: left;
+    font-family: inherit;
+}
+
+.nav-user-menu form button:hover {
+    background: #fef2f2;
+    color: var(--danger, #dc2626);
+}
+
+.nav-user-menu form button i {
+    font-size: 16px;
+    color: var(--muted, #6b7280);
+    width: 20px;
+    text-align: center;
+    flex-shrink: 0;
+    transition: color 0.15s;
+}
+
+.nav-user-menu form button:hover i {
+    color: var(--danger, #dc2626);
+}
+
+/* ============================================================
+   Animation
+   ============================================================ */
+@keyframes fadeInDropdown {
+    from {
+        opacity: 0;
+        transform: translateY(-8px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}

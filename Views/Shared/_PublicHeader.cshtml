@@ -2,6 +2,10 @@
     var isAuthenticated = User.Identity?.IsAuthenticated ?? false;
     var userRole = User.FindFirst(System.Security.Claims.ClaimTypes.Role)?.Value;
     var userName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value;
+    
+    var currentController = ViewContext.RouteData.Values["Controller"]?.ToString();
+    var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
+    var isHomePage = currentController == "TrangChu" && currentAction == "Index";
 }
 
 <header class="public-header">
@@ -54,55 +58,67 @@
             
             <div class="collapse navbar-collapse" id="publicNavbar">
                 <div class="public-nav-menu">
-                    <a class="public-nav-link active" asp-controller="TrangChu" asp-action="Index"><i class="bi bi-house-door-fill me-1"></i> Trang chủ</a>
-                    <a class="public-nav-link" href="#quy-trinh"><i class="bi bi-journal-check me-1"></i> Quy trình khai báo</a>
-                    <a class="public-nav-link" href="#phap-luat"><i class="bi bi-card-checklist me-1"></i> Quy định pháp luật</a>
-                    <a class="public-nav-link" href="#thong-ke"><i class="bi bi-bar-chart-line me-1"></i> Số liệu công khai</a>
-                    <a class="public-nav-link" href="#lien-he"><i class="bi bi-telephone-inbound me-1"></i> Hotline hỗ trợ</a>
+                    <a class="public-nav-link @(isHomePage ? "active" : "")" asp-controller="TrangChu" asp-action="Index"><i class="bi bi-house-door-fill me-1"></i> Trang chủ</a>
+                    <a class="public-nav-link" href="@(isHomePage ? "#quy-trinh" : Url.Action("Index", "TrangChu") + "#quy-trinh")"><i class="bi bi-journal-check me-1"></i> Quy trình khai báo</a>
+                    <a class="public-nav-link" href="@(isHomePage ? "#phap-luat" : Url.Action("Index", "TrangChu") + "#phap-luat")"><i class="bi bi-card-checklist me-1"></i> Quy định pháp luật</a>
+                    <a class="public-nav-link" href="@(isHomePage ? "#thong-ke" : Url.Action("Index", "TrangChu") + "#thong-ke")"><i class="bi bi-bar-chart-line me-1"></i> Số liệu công khai</a>
+                    <a class="public-nav-link" href="@(isHomePage ? "#lien-he" : Url.Action("Index", "TrangChu") + "#lien-he")"><i class="bi bi-telephone-inbound me-1"></i> Hotline hỗ trợ</a>
                 </div>
 
                 <div class="public-auth-actions">
                     @if (isAuthenticated)
                     {
-                        <div class="user-greeting">
-                            <span class="text-white-50">Xin chào,</span>
-                            <span class="text-white fw-bold">@userName</span>
-                            @{
-                                var roleBadgeClass = userRole switch
+                        var roleDisplayName = userRole switch
+                        {
+                            "NguoiNuocNgoai" => "Người nước ngoài",
+                            "ChuLuuTru" => "Chủ lưu trú",
+                            "CanBoXNC" => "Cán bộ XNC",
+                            "CongAn" => "Công an",
+                            "Admin" => "Quản trị",
+                            _ => userRole ?? ""
+                        };
+                        var dashboardUrl = userRole switch
+                        {
+                            "NguoiNuocNgoai" => Url.Action("ThongTinCaNhan", "NguoiNuocNgoai"),
+                            "ChuLuuTru" => Url.Action("TongQuan", "CoSoLuuTru"),
+                            "CanBoXNC" => Url.Action("TongQuan", "CanBo"),
+                            "CongAn" => Url.Action("TongQuan", "CongAn"),
+                            "Admin" => Url.Action("TongQuan", "QuanTri"),
+                            _ => "/"
+                        };
+                        var nameParts = (userName ?? "U").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                        var initials = nameParts.Length >= 2
+                            ? $"{nameParts[0][0]}{nameParts[^1][0]}"
+                            : (nameParts.Length == 1 ? nameParts[0][..1] : "U");
+                        initials = initials.ToUpper();
+
+                        <div class="nav-user">
+                            <button class="nav-user-trigger" type="button" aria-label="Menu người dùng">
+                                <span class="nav-avatar">@initials</span>
+                                <span class="nav-user-name d-none d-md-inline">@userName</span>
+                                <i class="bi bi-chevron-down"></i>
+                            </button>
+                            <div class="nav-user-menu">
+                                <div class="nav-user-summary">
+                                    <strong>@userName</strong>
+                                    <span>@roleDisplayName</span>
+                                </div>
+                                @if (userRole == "NguoiNuocNgoai")
                                 {
-                                    "NguoiNuocNgoai" => "bg-primary border border-primary",
-                                    "ChuLuuTru" => "bg-success border border-success",
-                                    "CanBoXNC" => "bg-warning text-dark border border-warning",
-                                    "CongAn" => "bg-danger border border-danger",
-                                    "Admin" => "bg-light text-dark border border-secondary",
-                                    _ => "bg-secondary"
-                                };
-                                var roleDisplayName = userRole switch
+                                    <a href="@dashboardUrl"><i class="bi bi-person"></i> Hồ sơ cá nhân</a>
+                                    <a asp-controller="NguoiNuocNgoai" asp-action="DanhSachKhaiBao"><i class="bi bi-clock-history"></i> Lịch sử khai báo</a>
+                                }
+                                else
                                 {
-                                    "NguoiNuocNgoai" => "Người nước ngoài",
-                                    "ChuLuuTru" => "Chủ lưu trú",
-                                    "CanBoXNC" => "Cán bộ XNC",
-                                    "CongAn" => "Công an",
-                                    "Admin" => "Quản trị",
-                                    _ => userRole ?? ""
-                                };
-                                var dashboardUrl = userRole switch
-                                {
-                                    "NguoiNuocNgoai" => Url.Action("TongQuan", "NguoiNuocNgoai"),
-                                    "ChuLuuTru" => Url.Action("TongQuan", "CoSoLuuTru"),
-                                    "CanBoXNC" => Url.Action("TongQuan", "CanBo"),
-                                    "CongAn" => Url.Action("TongQuan", "CongAn"),
-                                    "Admin" => Url.Action("TongQuan", "QuanTri"),
-                                    _ => "/"
-                                };
-                            }
-                            <span class="badge @roleBadgeClass">@roleDisplayName</span>
+                                    <a href="@dashboardUrl"><i class="bi bi-speedometer2"></i> Bảng điều khiển</a>
+                                }
+                                <hr />
+                                <form asp-controller="TaiKhoan" asp-action="DangXuat" method="post">
+                                    @Html.AntiForgeryToken()
+                                    <button type="submit"><i class="bi bi-box-arrow-right"></i> Đăng xuất</button>
+                                </form>
+                            </div>
                         </div>
-                        <a href="@dashboardUrl" class="btn-auth btn-login"><i class="bi bi-speedometer2 me-1"></i> Trang quản trị</a>
-                        <form asp-controller="TaiKhoan" asp-action="DangXuat" method="post" class="d-inline m-0">
-                            @Html.AntiForgeryToken()
-                            <button type="submit" class="btn-auth btn-register">Đăng xuất</button>
-                        </form>
                     }
                     else
                     {

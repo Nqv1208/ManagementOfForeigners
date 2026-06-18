@@ -4,8 +4,8 @@ namespace ManagementOfForeigners.Models.ViewModels;
 
 public class DangNhapViewModel
 {
-    [Required(ErrorMessage = "Tên đăng nhập không được để trống")]
-    [Display(Name = "Tên đăng nhập")]
+    [Required(ErrorMessage = "Tên đăng nhập hoặc email không được để trống")]
+    [Display(Name = "Tên đăng nhập hoặc email")]
     public string TenDangNhap { get; set; } = string.Empty;
 
     [Required(ErrorMessage = "Mật khẩu không được để trống")]

@@ -4,51 +4,12 @@
  */
 
 document.addEventListener("DOMContentLoaded", function () {
-    // 1. Cập nhật ngày giờ thời gian thực trên Topbar
-    updateDateTime();
-    setInterval(updateDateTime, 1000);
-
-    // 2. Chức năng đổi ngôn ngữ giao diện (Giả lập chuyển đổi nhanh trên UI)
-    const btnLangVi = document.getElementById("lang-vi");
-    const btnLangEn = document.getElementById("lang-en");
-    if (btnLangVi && btnLangEn) {
-        btnLangVi.addEventListener("click", function (e) {
-            e.preventDefault();
-            setLanguage("vi");
-        });
-        btnLangEn.addEventListener("click", function (e) {
-            e.preventDefault();
-            setLanguage("en");
-        });
-    }
-
-    // 3. Tự động hiển thị lời chào theo thời gian trong ngày
+    // 1. Tự động hiển thị lời chào theo thời gian trong ngày
     showTimeGreeting();
 
-    // 4. Ghim thanh menu điều hướng khi scroll trang
+    // 2. Ghim thanh menu điều hướng khi scroll trang
     initStickyHeader();
 });
-
-/**
- * Cập nhật thời gian thực tế dạng hành chính Việt Nam
- */
-function updateDateTime() {
-    const timeDisplay = document.getElementById("portal-realtime");
-    if (!timeDisplay) return;
-
-    const now = new Date();
-    const days = ["Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"];
-    const dayName = days[now.getDay()];
-    
-    const dateStr = padZero(now.getDate()) + "/" + padZero(now.getMonth() + 1) + "/" + now.getFullYear();
-    const timeStr = padZero(now.getHours()) + ":" + padZero(now.getMinutes()) + ":" + padZero(now.getSeconds());
-
-    timeDisplay.innerHTML = `<i class="bi bi-clock me-1"></i> ${dayName}, ngày ${dateStr} - ${timeStr}`;
-}
-
-function padZero(num) {
-    return num < 10 ? "0" + num : num;
-}
 
 /**
  * Lời chào thông báo động

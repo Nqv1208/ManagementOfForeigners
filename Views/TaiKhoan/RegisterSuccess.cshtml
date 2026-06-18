@@ -1,0 +1,39 @@
+@{
+    Layout = "_AuthLayout";
+    ViewData["Title"] = "Đăng ký thành công";
+}
+
+<div class="auth-status-page">
+    <div class="auth-status-wrap">
+        <section class="auth-card auth-status-card" aria-labelledby="register-success-title">
+            <div class="auth-card-body">
+                <div class="auth-status-icon" aria-hidden="true">
+                    <i class="bi bi-check2-circle"></i>
+                </div>
+                <h1 class="auth-status-title" id="register-success-title">Yêu cầu đăng ký đã được tiếp nhận</h1>
+                <p class="auth-status-text">
+                    Tài khoản của bạn đã được tiếp nhận và đang chờ xét duyệt theo quy trình quản lý.
+                    Vui lòng theo dõi thông báo hoặc đăng nhập lại sau khi có kết quả xử lý.
+                </p>
+
+                <div class="auth-status-note">
+                    <h2>Thông tin cần lưu ý</h2>
+                    <ul>
+                        <li>Cán bộ quản lý sẽ kiểm tra thông tin người đại diện và cơ sở lưu trú.</li>
+                        <li>Tài khoản được kích hoạt sau khi hồ sơ đăng ký được phê duyệt.</li>
+                        <li>Nếu gặp khó khăn, vui lòng liên hệ bộ phận hỗ trợ của Công an thành phố Đà Nẵng.</li>
+                    </ul>
+                </div>
+
+                <div class="auth-status-actions">
+                    <a asp-controller="TaiKhoan" asp-action="DangNhap" class="btn btn-primary">
+                        <i class="bi bi-box-arrow-in-right me-2" aria-hidden="true"></i>Về trang đăng nhập
+                    </a>
+                    <a asp-controller="TrangChu" asp-action="Index" class="btn btn-outline-primary">
+                        <i class="bi bi-house-door me-2" aria-hidden="true"></i>Trang chủ
+                    </a>
+                </div>
+            </div>
+        </section>
+    </div>
+</div>

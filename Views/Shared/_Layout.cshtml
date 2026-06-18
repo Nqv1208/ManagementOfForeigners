@@ -10,6 +10,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nav-user.css" asp-append-version="true" />
 </head>
 <body>
     @{
@@ -148,50 +149,58 @@
                 <ul class="navbar-nav ms-auto align-items-center">
                     @if (isAuthenticated)
                     {
-                        <li class="nav-item d-flex align-items-center me-3">
-                            <div class="d-flex align-items-center gap-2 py-2 py-lg-0">
-                                <span class="text-white-50 small">Xin chào,</span>
-                                <span class="text-white fw-bold">@userName</span>
-                                @{
-                                    var roleBadgeClass = userRole switch
-                                    {
-                                        "NguoiNuocNgoai" => "bg-primary",
-                                        "ChuLuuTru" => "bg-success",
-                                        "CanBoXNC" => "bg-warning text-dark",
-                                        "CongAn" => "bg-danger",
-                                        "Admin" => "bg-success text-white border border-secondary",
-                                        _ => "bg-secondary"
-                                    };
-                                    var roleDisplayName = userRole switch
-                                    {
-                                        "NguoiNuocNgoai" => "Người nước ngoài",
-                                        "ChuLuuTru" => "Chủ lưu trú",
-                                        "CanBoXNC" => "Cán bộ XNC",
-                                        "CongAn" => "Công an",
-                                        "Admin" => "Quản trị",
-                                        _ => userRole ?? ""
-                                    };
-                                    var dashboardUrl = userRole switch
-                                    {
-                                        "NguoiNuocNgoai" => Url.Action("TongQuan", "NguoiNuocNgoai"),
-                                        "ChuLuuTru" => Url.Action("TongQuan", "CoSoLuuTru"),
-                                        "CanBoXNC" => Url.Action("TongQuan", "CanBo"),
-                                        "CongAn" => Url.Action("TongQuan", "CongAn"),
-                                        "Admin" => Url.Action("TongQuan", "QuanTri"),
-                                        _ => "/"
-                                    };
-                                }
-                                <span class="badge @roleBadgeClass">@roleDisplayName</span>
-                            </div>
-                        </li>
-                        <li class="nav-item me-2">
-                            <a href="@dashboardUrl" class="btn btn-outline-warning btn-sm px-3 rounded-1"><i class="bi bi-speedometer2 me-1"></i> Trang quản trị</a>
-                        </li>
+                        var roleDisplayName = userRole switch
+                        {
+                            "NguoiNuocNgoai" => "Người nước ngoài",
+                            "ChuLuuTru" => "Chủ lưu trú",
+                            "CanBoXNC" => "Cán bộ XNC",
+                            "CongAn" => "Công an",
+                            "Admin" => "Quản trị",
+                            _ => userRole ?? ""
+                        };
+                        var dashboardUrl = userRole switch
+                        {
+                            "NguoiNuocNgoai" => Url.Action("ThongTinCaNhan", "NguoiNuocNgoai"),
+                            "ChuLuuTru" => Url.Action("TongQuan", "CoSoLuuTru"),
+                            "CanBoXNC" => Url.Action("TongQuan", "CanBo"),
+                            "CongAn" => Url.Action("TongQuan", "CongAn"),
+                            "Admin" => Url.Action("TongQuan", "QuanTri"),
+                            _ => "/"
+                        };
+                        var nameParts = (userName ?? "U").Split(' ', StringSplitOptions.RemoveEmptyEntries);
+                        var initials = nameParts.Length >= 2
+                            ? $"{nameParts[0][0]}{nameParts[^1][0]}"
+                            : (nameParts.Length == 1 ? nameParts[0][..1] : "U");
+                        initials = initials.ToUpper();
+
                         <li class="nav-item">
-                            <form asp-controller="TaiKhoan" asp-action="DangXuat" method="post" class="d-inline m-0">
-                                @Html.AntiForgeryToken()
-                                <button type="submit" class="btn btn-outline-danger btn-sm px-3 rounded-1">Đăng xuất</button>
-                            </form>
+                            <div class="nav-user">
+                                <button class="nav-user-trigger" type="button" aria-label="Menu người dùng">
+                                    <span class="nav-avatar">@initials</span>
+                                    <span class="nav-user-name d-none d-md-inline">@userName</span>
+                                    <i class="bi bi-chevron-down"></i>
+                                </button>
+                                <div class="nav-user-menu">
+                                    <div class="nav-user-summary">
+                                        <strong>@userName</strong>
+                                        <span>@roleDisplayName</span>
+                                    </div>
+                                    @if (userRole == "NguoiNuocNgoai")
+                                    {
+                                        <a href="@dashboardUrl"><i class="bi bi-person"></i> Hồ sơ cá nhân</a>
+                                        <a asp-controller="NguoiNuocNgoai" asp-action="DanhSachKhaiBao"><i class="bi bi-clock-history"></i> Lịch sử khai báo</a>
+                                    }
+                                    else
+                                    {
+                                        <a href="@dashboardUrl"><i class="bi bi-speedometer2"></i> Bảng điều khiển</a>
+                                    }
+                                    <hr />
+                                    <form asp-controller="TaiKhoan" asp-action="DangXuat" method="post">
+                                        @Html.AntiForgeryToken()
+                                        <button type="submit"><i class="bi bi-box-arrow-right"></i> Đăng xuất</button>
+                                    </form>
+                                </div>
+                            </div>
                         </li>
                     }
                     else
@@ -280,6 +289,7 @@
     <script src="~/lib/jquery/dist/jquery.min.js"></script>
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/landing.js" asp-append-version="true"></script>
+    <script src="~/js/nav-user.js" asp-append-version="true"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
 </body>

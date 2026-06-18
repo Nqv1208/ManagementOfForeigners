@@ -55,3 +55,57 @@ function escapeHtml(text) {
         .replace(/"/g, "&quot;")
         .replace(/'/g, "&#039;");
 }
+
+// Portal Topbar Clock & Language Switcher
+document.addEventListener("DOMContentLoaded", function () {
+    const timeDisplay = document.getElementById("portal-realtime");
+    if (timeDisplay) {
+        updatePortalTime();
+        setInterval(updatePortalTime, 1000);
+    }
+
+    const btnLangVi = document.getElementById("lang-vi");
+    const btnLangEn = document.getElementById("lang-en");
+    if (btnLangVi && btnLangEn) {
+        btnLangVi.addEventListener("click", function (e) {
+            e.preventDefault();
+            setPortalLanguage("vi");
+        });
+        btnLangEn.addEventListener("click", function (e) {
+            e.preventDefault();
+            setPortalLanguage("en");
+        });
+    }
+});
+
+function updatePortalTime() {
+    const timeDisplay = document.getElementById("portal-realtime");
+    if (!timeDisplay) return;
+
+    const now = new Date();
+    const days = ["Chủ nhật", "Thứ hai", "Thứ ba", "Thứ tư", "Thứ năm", "Thứ sáu", "Thứ bảy"];
+    const dayName = days[now.getDay()];
+    
+    const pad = (num) => num < 10 ? "0" + num : num;
+    const dateStr = pad(now.getDate()) + "/" + pad(now.getMonth() + 1) + "/" + now.getFullYear();
+    const timeStr = pad(now.getHours()) + ":" + pad(now.getMinutes()) + ":" + pad(now.getSeconds());
+
+    timeDisplay.innerHTML = `<i class="bi bi-clock me-1"></i> ${dayName}, ngày ${dateStr} - ${timeStr}`;
+}
+
+function setPortalLanguage(lang) {
+    const activeClass = "fw-bold text-white";
+    const btnVi = document.getElementById("lang-vi");
+    const btnEn = document.getElementById("lang-en");
+    if (!btnVi || !btnEn) return;
+
+    if (lang === "vi") {
+        btnVi.className = activeClass;
+        btnEn.className = "text-white-50 text-decoration-none";
+        alert("Đã chuyển đổi ngôn ngữ hiển thị sang Tiếng Việt");
+    } else {
+        btnEn.className = activeClass;
+        btnVi.className = "text-white-50 text-decoration-none";
+        alert("System interface language changed to English");
+    }
+}

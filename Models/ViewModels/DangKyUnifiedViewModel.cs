@@ -87,12 +87,6 @@ namespace ManagementOfForeigners.Models.ViewModels
         [Display(Name = "Tên cơ sở lưu trú")]
         public string? TenCoSoLuuTru { get; set; }
 
-        [Display(Name = "Loại cơ sở lưu trú")]
-        public string? LoaiCoSoLuuTru { get; set; }
-
-        [Display(Name = "Mã số thuế / kinh doanh")]
-        public string? MaSoThue { get; set; }
-
         [Phone(ErrorMessage = "Số điện thoại cơ sở không đúng định dạng")]
         [Display(Name = "Số điện thoại cơ sở")]
         public string? SoDienThoaiCoSo { get; set; }

@@ -48,9 +48,12 @@ public class TaiKhoanController : Controller
             return View(model);
         }
 
+        var loginKey = model.TenDangNhap.Trim();
+        model.TenDangNhap = loginKey;
+
         var taiKhoan = await _context.TaiKhoans
             .Include(t => t.VaiTro)
-            .FirstOrDefaultAsync(t => t.TenDangNhap == model.TenDangNhap);
+            .FirstOrDefaultAsync(t => t.TenDangNhap == loginKey || t.Email == loginKey);
 
         if (taiKhoan == null)
         {
@@ -66,8 +69,7 @@ public class TaiKhoanController : Controller
 
         if (taiKhoan.TrangThai == TrangThaiTaiKhoan.ChoDuyet)
         {
-            ModelState.AddModelError(string.Empty, "Tài khoản của bạn đang chờ phê duyệt. Vui lòng liên hệ quản trị viên.");
-            return View(model);
+            return RedirectToAction(nameof(PendingApproval));
         }
 
         if (taiKhoan.TrangThai == TrangThaiTaiKhoan.Khoa)
@@ -154,8 +156,6 @@ public class TaiKhoanController : Controller
                 ModelState.AddModelError(nameof(model.SoGiayToNguoiDaiDien), "Số giấy tờ người đại diện không được để trống.");
             if (string.IsNullOrWhiteSpace(model.TenCoSoLuuTru))
                 ModelState.AddModelError(nameof(model.TenCoSoLuuTru), "Tên cơ sở lưu trú không được để trống.");
-            if (string.IsNullOrWhiteSpace(model.LoaiCoSoLuuTru))
-                ModelState.AddModelError(nameof(model.LoaiCoSoLuuTru), "Loại cơ sở lưu trú không được để trống.");
             if (string.IsNullOrWhiteSpace(model.SoDienThoaiCoSo))
                 ModelState.AddModelError(nameof(model.SoDienThoaiCoSo), "Số điện thoại cơ sở không được để trống.");
             if (model.PhuongXaId == null)
@@ -323,10 +323,7 @@ public class TaiKhoanController : Controller
                     DiaChi = model.DiaChiCoSo ?? string.Empty,
                     SoDienThoai = model.SoDienThoaiCoSo ?? string.Empty,
                     Email = model.EmailCoSo ?? string.Empty,
-                    TrangThai = TrangThaiCoSo.ChoDuyet,
-                    LoaiHinh = model.LoaiCoSoLuuTru,
-                    MaSoKinhDoanh = model.MaSoThue,
-                    CreatedAt = DateTime.Now
+                    TrangThai = TrangThaiCoSo.ChoDuyet
                 };
                 _context.CoSoLuuTrus.Add(coSoLuuTru);
 
@@ -336,7 +333,7 @@ public class TaiKhoanController : Controller
                 _logger.LogInformation("Đăng ký tài khoản cơ sở lưu trú thành công (Chờ duyệt): {TenDangNhap}", model.TenDangNhap);
 
                 TempData["SuccessMessage"] = "Đăng ký tài khoản cơ sở lưu trú thành công! Vui lòng chờ phê duyệt.";
-                return RedirectToAction("DangKyThanhCong");
+                return RedirectToAction(nameof(DangKyThanhCong));
             }
         }
         catch (Exception ex)
@@ -352,6 +349,13 @@ public class TaiKhoanController : Controller
     // GET: /account/register-success
     [HttpGet("register-success")]
     public IActionResult DangKyThanhCong()
+    {
+        return View("RegisterSuccess");
+    }
+
+    // GET: /account/pending-approval
+    [HttpGet("pending-approval")]
+    public IActionResult PendingApproval()
     {
         return View();
     }
@@ -382,7 +386,7 @@ public class TaiKhoanController : Controller
     {
         return vaiTro switch
         {
-            VaiTroConst.NguoiNuocNgoai => RedirectToAction("TongQuan", "NguoiNuocNgoai"),
+            VaiTroConst.NguoiNuocNgoai => RedirectToAction("ThongTinCaNhan", "NguoiNuocNgoai"),
             VaiTroConst.ChuLuuTru => RedirectToAction("TongQuan", "CoSoLuuTru"),
             VaiTroConst.CanBoXNC => RedirectToAction("TongQuan", "CanBo"),
             VaiTroConst.CongAn => RedirectToAction("TongQuan", "CongAn"),
