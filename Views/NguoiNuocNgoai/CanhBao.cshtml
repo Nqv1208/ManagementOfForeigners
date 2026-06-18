@@ -1,0 +1,68 @@
+@model List<ManagementOfForeigners.Models.Entities.CanhBaoViPham>
+@{
+    Layout = "_ForeignerServiceLayout";
+    ViewData["Title"] = "Cảnh báo vi phạm";
+}
+
+<div class="row g-4">
+    <!-- Cột trái: Sidebar điều hướng & thông tin tài khoản -->
+    <div class="col-lg-3">
+        @await Html.PartialAsync("_ForeignerProfileSidebar")
+    </div>
+    
+    <!-- Cột phải: Cảnh báo vi phạm -->
+    <div class="col-lg-9">
+        <div class="service-card">
+            <div class="service-card-header d-flex justify-content-between align-items-center">
+                <h5><i class="bi bi-bell-fill me-2 text-danger"></i>Danh sách cảnh báo & Yêu cầu xử lý</h5>
+                <span class="badge bg-danger rounded-pill">@Model.Count(w => w.TrangThai != "Đã xử lý") Chưa xử lý</span>
+            </div>
+            <div class="service-card-body p-0">
+                
+                @if (!Model.Any())
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-shield-check text-success fs-1 mb-3 d-block"></i>
+                        <h6 class="fw-bold text-dark">Hồ sơ của bạn hoàn toàn sạch</h6>
+                        <p class="text-muted small mb-0">Hiện tại bạn không có cảnh báo vi phạm cư trú nào từ cơ quan quản lý.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="list-group list-group-flush">
+                        @foreach (var warn in Model)
+                        {
+                            var severityClass = warn.MucDoViPham switch
+                            {
+                                "Nghiêm trọng" => "danger",
+                                "Trung bình" => "warning",
+                                _ => "info"
+                            };
+                            
+                            <div class="list-group-item p-4">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <span class="badge bg-@severityClass me-2">Mức độ: @warn.MucDoViPham</span>
+                                        <span class="badge bg-light text-dark border">Trạng thái: @warn.TrangThai</span>
+                                    </div>
+                                    <small class="text-muted"><i class="bi bi-calendar3 me-1"></i>@warn.NgayCanhBao.ToString("dd/MM/yyyy HH:mm")</small>
+                                </div>
+                                <h6 class="fw-bold text-dark mb-2">Loại vi phạm: @warn.LoaiViPham</h6>
+                                <p class="text-secondary small mb-3"><strong>Nội dung cảnh báo:</strong> @warn.NoiDungCanhBao</p>
+                                
+                                @if (!string.IsNullOrEmpty(warn.GhiChu))
+                                {
+                                    <div class="bg-light p-3 rounded-3 border-start border-3 border-danger">
+                                        <small class="text-dark fw-bold d-block mb-1"><i class="bi bi-info-circle-fill text-danger me-1"></i>Yêu cầu khắc phục:</small>
+                                        <span class="text-muted small">@warn.GhiChu</span>
+                                    </div>
+                                }
+                            </div>
+                        }
+                    </div>
+                }
+
+            </div>
+        </div>
+    </div>
+</div>

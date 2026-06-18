@@ -1,0 +1,44 @@
+/* ============================================================
+   foreigner-service-layout.css
+   Layout styles for the Foreigner Service Portal (Self-Service).
+   Centered container structure mapping to the official public header.
+   ============================================================ */
+
+:root {
+    --service-primary: var(--primary, #2f8f1f);
+    --service-primary-dark: var(--primary-dark, #1f6f12);
+    --service-primary-soft: var(--primary-soft, #eaf7e6);
+    --service-bg: #f6f8f5;
+    --service-text: #1f2937;
+    --service-muted: #6b7280;
+    --service-border: #e2e8f0;
+    --service-card: #ffffff;
+}
+
+body.foreigner-service-page {
+    background-color: var(--service-bg);
+    color: var(--service-text);
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    margin: 0;
+}
+
+/* ============================================================
+   1. Service Container (Centered Max-Width)
+   ============================================================ */
+.service-container {
+    width: 100%;
+    max-width: 1320px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+/* ============================================================
+   2. Main Content Wrapper
+   ============================================================ */
+.service-main {
+    flex: 1;
+}
+

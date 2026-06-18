@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>@ViewData["Title"] - Cổng dịch vụ cá nhân người nước ngoài</title>
+    <!-- Thư viện CSS -->
+    <link rel="stylesheet" href="~/lib/bootstrap/dist/css/bootstrap.min.css" />
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css" />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/landing.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/public-layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/foreigner-service-layout.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/foreigner-service-pages.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/nav-user.css" asp-append-version="true" />
+    <link rel="stylesheet" href="~/css/khai-bao-tam-tru.css" asp-append-version="true" />
+</head>
+<body class="foreigner-service-page">
+    @*
+        Sử dụng đúng public header chính thống như cũ theo yêu cầu người dùng, 
+        kết hợp với layout centered thoáng đãng của Self-service portal.
+    *@
+
+    <!-- Header công quyền công cộng chính thức -->
+    @await Html.PartialAsync("_PublicHeader")
+
+    <!-- MAIN CONTAINER CHÍNH PHẲNG, CĂN GIỮA -->
+    <main class="service-main">
+        <div class="service-container py-4">
+            <!-- TempData Toast Alerts -->
+            @if (TempData["SuccessMessage"] != null)
+            {
+                <div class="temp-data-alert d-none" data-message="@TempData["SuccessMessage"]" data-type="success"></div>
+            }
+            @if (TempData["ErrorMessage"] != null)
+            {
+                <div class="temp-data-alert d-none" data-message="@TempData["ErrorMessage"]" data-type="danger"></div>
+            }
+            @if (TempData["WarningMessage"] != null)
+            {
+                <div class="temp-data-alert d-none" data-message="@TempData["WarningMessage"]" data-type="warning"></div>
+            }
+            @if (TempData["InfoMessage"] != null)
+            {
+                <div class="temp-data-alert d-none" data-message="@TempData["InfoMessage"]" data-type="info"></div>
+            }
+
+            @RenderBody()
+        </div>
+    </main>
+
+    <!-- FOOTER CHÍNH THỨC DỊCH VỤ -->
+    @await Html.PartialAsync("_PublicFooter")
+
+    <!-- Thư viện JS -->
+    <script src="~/lib/jquery/dist/jquery.min.js"></script>
+    <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="~/js/nav-user.js" asp-append-version="true"></script>
+    <script src="~/js/foreigner-service.js" asp-append-version="true"></script>
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

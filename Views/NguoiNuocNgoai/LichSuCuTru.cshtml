@@ -2,119 +2,151 @@
 @using X.PagedList
 @model IPagedList<ManagementOfForeigners.Models.Entities.LichSuCuTru>
 @{
-    ViewBag.Title = "Lịch sử cư trú & Cập nhật nơi ở";
+    Layout = "_ForeignerServiceLayout";
+    ViewData["Title"] = "Lịch sử cư trú";
     var cuTruModel = ViewBag.CuTruModel as ManagementOfForeigners.Models.ViewModels.NguoiNuocNgoai.CuTruViewModel ?? new ManagementOfForeigners.Models.ViewModels.NguoiNuocNgoai.CuTruViewModel();
 }
 
-<div class="container py-4">
-    <div class="row g-4">
-        <!-- List of stay history -->
-        <div class="col-lg-7">
-            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
-                <div class="card-header gov-card-header p-4">
-                    <h5 class="fw-bold mb-0">Lịch sử cư trú cá nhân</h5>
-                    <p class="text-white-50 mb-0 fs-7">Theo dõi nơi ở và lịch trình di chuyển của bạn tại Đà Nẵng</p>
-                </div>
+<link rel="stylesheet" href="~/css/khai-bao-tam-tru.css" asp-append-version="true" />
 
-                <div class="card-body p-4">
-                    <!-- Alert TempData (Handled globally by layout toasts) -->
-
-                    @if (!Model.Any())
-                    {
-                        <div class="text-center py-5">
-                            <i class="bi bi-geo-alt-fill text-muted" style="font-size: 3rem;"></i>
-                            <p class="text-muted mt-3 mb-0">Bạn chưa khai báo lịch sử cư trú nào.</p>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="timeline fs-7">
-                            @foreach (var item in Model)
-                            {
-                                <div class="card mb-3 border-0 shadow-none bg-light p-3" style="border-radius: 12px; border-left: 4px solid @(item.TrangThai == "Đang ở" ? "var(--success)" : "#6c757d") !important;">
-                                    <div class="d-flex justify-content-between align-items-center mb-2">
-                                        <span class="badge @(item.TrangThai == "Đang ở" ? "bg-success" : "bg-secondary")">
-                                            @item.TrangThai
-                                        </span>
-                                        <small class="text-muted fw-bold">
-                                            @item.NgayBatDau.ToString("dd/MM/yyyy") - 
-                                            @(item.NgayKetThuc.HasValue ? item.NgayKetThuc.Value.ToString("dd/MM/yyyy") : "Hiện tại")
-                                        </small>
-                                    </div>
-                                    <h6 class="fw-bold text-dark mb-1">@(item.CoSoLuuTru?.TenCoSo ?? "Cư trú tự do / Ngoài cơ sở")</h6>
-                                    <p class="mb-1 text-secondary fs-7"><i class="bi bi-geo-alt me-1"></i> @(item.CoSoLuuTru?.DiaChi ?? "Địa chỉ tự khai")</p>
-                                    <div class="d-flex justify-content-between text-muted fs-8 mt-2">
-                                        <span>Phòng: <strong>@item.Phong</strong></span>
-                                        @if (!string.IsNullOrEmpty(item.GhiChu))
-                                        {
-                                            <span>Ghi chú: @item.GhiChu</span>
-                                        }
-                                    </div>
-                                </div>
-                            }
-                        </div>
-
-                        <!-- Pagination -->
-                        <div class="d-flex justify-content-center mt-3">
-                            @Html.PagedListPager(Model, page => Url.Action("LichSuCuTru", new { page }),
-                                new X.PagedList.Mvc.Core.PagedListRenderOptions {
-                                    LiElementClasses = new string[] { "page-item" },
-                                    PageClasses = new string[] { "page-link" },
-                                    UlElementClasses = new string[] { "pagination", "pagination-sm" }
-                                })
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <!-- Declaration of new stay / Update residence -->
-        <div class="col-lg-5">
-            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
-                <div class="card-header gov-card-header p-4">
-                    <h5 class="fw-bold mb-0">Cập nhật nơi cư trú mới</h5>
-                    <p class="text-white-50 mb-0 fs-7">Khai báo ngay khi bạn chuyển đến nơi ở mới</p>
+<div class="row g-4">
+    <!-- Cột trái: Sidebar điều hướng & thông tin tài khoản -->
+    <div class="col-lg-3">
+        @await Html.PartialAsync("_ForeignerProfileSidebar")
+    </div>
+    
+    <!-- Cột phải: Lịch sử cư trú và Cập nhật nơi cư trú mới -->
+    <div class="col-lg-9">
+        <!-- Collapsible Update Form Card -->
+        <div class="collapse mb-4" id="collapseUpdateResidence">
+            <div class="service-card">
+                <div class="service-card-header">
+                    <h5 class="fw-bold mb-0 text-success"><i class="bi bi-pencil-square me-2"></i>Cập nhật nơi cư trú mới</h5>
+                    <p class="text-muted small mb-0 mt-1">Khai báo ngay khi bạn chuyển đến nơi ở mới</p>
                 </div>
 
                 <form asp-action="CapNhatNoiCuTru" method="post">
                     @Html.AntiForgeryToken()
-                    <div class="card-body p-4">
+                    <div class="service-card-body">
                         <div asp-validation-summary="ModelOnly" class="text-danger mb-3"></div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold text-dark fs-7">Cơ sở lưu trú đăng ký mới</label>
-                            <select name="MaCoSoLuuTru" asp-items="ViewBag.CoSoLuuTrus" class="form-select" style="border-radius: 8px;" required>
-                                <option value="">-- Chọn cơ sở lưu trú tại Đà Nẵng --</option>
-                            </select>
-                            <span class="text-danger fs-8"></span>
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label fw-semibold text-dark fs-7">Cơ sở lưu trú đăng ký mới</label>
+                                <div class="search-combobox">
+                                    <div class="input-group">
+                                        <span class="input-group-text"><i class="bi bi-search"></i></span>
+                                        <input type="text"
+                                               id="ResidenceCoSoSearchInput"
+                                               class="form-control"
+                                               placeholder="Nhập tối thiểu 2 ký tự tên, địa chỉ..."
+                                               autocomplete="off"
+                                               required />
+                                    </div>
+                                    <input type="hidden" name="MaCoSoLuuTru" id="ResidenceMaCoSoLuuTru" />
+                                    <span id="ResidenceMaCoSoLuuTru-error-custom" class="text-danger fs-8" style="display:none;"></span>
+                                    <div id="ResidenceCoSoSearchResults" class="search-results"></div>
+                                </div>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold text-dark fs-7">Số phòng / Số căn hộ</label>
+                                <input name="Phong" class="form-control" placeholder="Ví dụ: 402, Villa A..." style="border-radius: 8px;" required />
+                                <span class="text-danger fs-8"></span>
+                            </div>
+
+                            <div class="col-md-3">
+                                <label class="form-label fw-semibold text-dark fs-7">Ngày bắt đầu đến ở</label>
+                                <input name="NgayBatDau" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" style="border-radius: 8px;" required />
+                                <span class="text-danger fs-8"></span>
+                            </div>
+
+                            <div class="col-md-12">
+                                <label class="form-label fw-semibold text-dark fs-7">Ghi chú / Yêu cầu thêm</label>
+                                <textarea name="GhiChu" class="form-control" rows="2" placeholder="Ghi chú thêm về nơi ở..." style="border-radius: 8px;"></textarea>
+                            </div>
                         </div>
 
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold text-dark fs-7">Số phòng / Số căn hộ</label>
-                            <input name="Phong" class="form-control" placeholder="Ví dụ: Phòng 402, Villa A..." style="border-radius: 8px;" required />
-                            <span class="text-danger fs-8"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold text-dark fs-7">Ngày bắt đầu đến ở</label>
-                            <input name="NgayBatDau" class="form-control" type="date" value="@DateTime.Now.ToString("yyyy-MM-dd")" style="border-radius: 8px;" required />
-                            <span class="text-danger fs-8"></span>
-                        </div>
-
-                        <div class="mb-3">
-                            <label class="form-label fw-semibold text-dark fs-7">Ghi chú / Yêu cầu thêm</label>
-                            <textarea name="GhiChu" class="form-control" rows="3" placeholder="Ghi chú thêm về nơi ở..." style="border-radius: 8px;"></textarea>
-                        </div>
-
-                        <div class="alert alert-warning fs-8 text-muted border-0 p-2" style="border-radius: 8px;">
-                            <i class="bi bi-info-circle me-1"></i> <strong>Lưu ý:</strong> Khi bạn khai báo nơi ở mới, hệ thống sẽ tự động cập nhật trạng thái nơi ở cũ của bạn thành "Đã rời".
+                        <div class="alert alert-warning fs-8 text-muted border-0 p-2 mt-3 mb-0" style="border-radius: 8px; background-color: #fffbeb;">
+                            <i class="bi bi-info-circle me-1"></i> <strong>Lưu ý:</strong> Hệ thống sẽ tự động cập nhật trạng thái nơi ở cũ thành "Đã rời".
                         </div>
                     </div>
 
-                    <div class="card-footer bg-transparent border-0 p-4">
-                        <button type="submit" class="btn btn-primary w-100 py-2 fw-bold" style="border-radius: 8px;">Xác nhận chuyển nơi ở</button>
+                    <div class="service-card-body border-top bg-light p-3 text-end">
+                        <button type="button" class="btn btn-outline-secondary me-2 fw-semibold" data-bs-toggle="collapse" data-bs-target="#collapseUpdateResidence" style="border-radius: 8px;">Hủy</button>
+                        <button type="submit" class="btn btn-outline-success fw-semibold px-4" style="border-radius: 8px;">Xác nhận chuyển nơi ở</button>
                     </div>
                 </form>
+            </div>
+        </div>
+
+        <!-- List of stay history (Full width) -->
+        <div class="service-card">
+            <div class="service-card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="fw-bold mb-0 text-success"><i class="bi bi-geo-alt-fill me-2"></i>Lịch sử cư trú cá nhân</h5>
+                    <p class="text-muted small mb-0 mt-1">Theo dõi nơi tạm trú của bạn tại TP Đà Nẵng</p>
+                </div>
+                <button class="btn btn-link text-success text-decoration-none fw-semibold p-0" type="button" data-bs-toggle="collapse" data-bs-target="#collapseUpdateResidence" aria-expanded="false" aria-controls="collapseUpdateResidence" style="font-size: 0.9rem;">
+                    <i class="bi bi-pencil-square me-1"></i> Cập nhật nơi cư trú mới
+                </button>
+            </div>
+            <div class="service-card-body">
+                @if (!Model.Any())
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-geo-alt text-muted fs-1 mb-3 d-block"></i>
+                        <p class="text-muted small mb-0">Bạn chưa có dữ liệu lịch sử cư trú nào.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="residence-history-list">
+                        @foreach (var item in Model)
+                        {
+                            <div class="residence-item py-3 border-bottom" style="border-color: #f1f5f9 !important;">
+                                <div class="d-flex justify-content-between align-items-start mb-2">
+                                    <div>
+                                        <div class="d-flex align-items-center gap-2 flex-wrap">
+                                            <span class="fw-bold text-dark" style="font-size: 1rem;">@(item.CoSoLuuTru?.TenCoSo ?? "Cư trú tự do / Ngoài cơ sở")</span>
+                                            <span class="badge @(item.TrangThai == "Đang ở" ? "bg-success" : "bg-secondary")" style="font-size: 0.72rem;">
+                                                @item.TrangThai
+                                            </span>
+                                        </div>
+                                        <div class="text-muted small mt-1" style="font-size: 0.8rem;">
+                                            <i class="bi bi-calendar-range me-1"></i> Thời gian: @item.NgayBatDau.ToString("dd/MM/yyyy") - @(item.NgayKetThuc.HasValue ? item.NgayKetThuc.Value.ToString("dd/MM/yyyy") : "Hiện tại")
+                                        </div>
+                                    </div>
+                                    <div class="text-secondary small" style="font-size: 0.85rem;">
+                                        Phòng: <strong class="text-dark">@item.Phong</strong>
+                                    </div>
+                                </div>
+                                
+                                <div class="d-flex justify-content-between align-items-end flex-wrap gap-2 mt-2" style="font-size: 0.825rem;">
+                                    <div class="text-secondary">
+                                        <i class="bi bi-geo-alt-fill text-muted me-1"></i>Địa chỉ: <span class="text-dark">@(item.CoSoLuuTru?.DiaChi ?? "Địa chỉ tự khai")</span>
+                                    </div>
+                                    @if (!string.IsNullOrEmpty(item.GhiChu))
+                                    {
+                                        <div class="text-muted">
+                                            <i class="bi bi-info-circle me-1"></i> Ghi chú: @item.GhiChu
+                                        </div>
+                                    }
+                                </div>
+                            </div>
+                        }
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="d-flex justify-content-center mt-3">
+                        @Html.PagedListPager(Model, page => Url.Action("LichSuCuTru", new { page }),
+                            new X.PagedList.Mvc.Core.PagedListRenderOptions {
+                                LiElementClasses = new string[] { "page-item" },
+                                PageClasses = new string[] { "page-link" },
+                                UlElementClasses = new string[] { "pagination", "pagination-sm" }
+                            })
+                    </div>
+                }
             </div>
         </div>
     </div>
@@ -122,4 +154,5 @@
 
 @section Scripts {
     @{await Html.RenderPartialAsync("_ValidationScriptsPartial");}
+    <script src="~/js/khai-bao-tam-tru.js" asp-append-version="true"></script>
 }

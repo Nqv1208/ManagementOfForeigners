@@ -1,0 +1,100 @@
+@inject ManagementOfForeigners.Data.ApplicationDbContext _context
+@{
+    var taiKhoanId = User.FindFirst(System.Security.Claims.ClaimTypes.NameIdentifier)?.Value;
+    var userName = User.FindFirst(System.Security.Claims.ClaimTypes.Name)?.Value ?? "User";
+    
+    string hoTen = userName;
+    string quocTich = "N/A";
+    
+    var foreigner = _context.NguoiNuocNgoais.FirstOrDefault(n => n.MaTaiKhoan == taiKhoanId);
+    if (foreigner != null)
+    {
+        hoTen = foreigner.HoTen;
+        quocTich = foreigner.QuocTich;
+    }
+    
+    var currentAction = ViewContext.RouteData.Values["Action"]?.ToString();
+    
+    // Generate initials for avatar
+    var nameParts = hoTen.Split(' ', StringSplitOptions.RemoveEmptyEntries);
+    var initials = nameParts.Length >= 2 
+        ? $"{nameParts[0][0]}{nameParts[^1][0]}" 
+        : (nameParts.Length == 1 ? nameParts[0][..1] : "U");
+    initials = initials.ToUpper();
+}
+
+<div class="profile-sidebar-card">
+    <!-- 1. User Info Section -->
+    <div class="profile-sidebar-user">
+        <div class="profile-sidebar-avatar-container">
+            <div class="profile-sidebar-avatar">@initials</div>
+        </div>
+        <h6 class="profile-sidebar-name" title="@hoTen">@hoTen</h6>
+        <span class="profile-sidebar-role">@quocTich</span>
+    </div>
+    
+    <!-- 2. Navigation Menu -->
+    <div class="profile-sidebar-menu">
+        <div class="menu-group-title">Thông tin tài khoản</div>
+        
+        <a asp-controller="NguoiNuocNgoai" asp-action="ThongTinCaNhan" class="menu-item @(currentAction == "ThongTinCaNhan" ? "active" : "")">
+            <span class="menu-item-text">
+                <i class="bi bi-person-badge"></i> Thông tin cá nhân
+            </span>
+            <i class="bi bi-chevron-right chevron"></i>
+        </a>
+        
+        <a asp-controller="NguoiNuocNgoai" asp-action="CapNhatThongTin" class="menu-item @(currentAction == "CapNhatThongTin" ? "active" : "")">
+            <span class="menu-item-text">
+                <i class="bi bi-pencil-square"></i> Cập nhật thông tin
+            </span>
+            <i class="bi bi-chevron-right chevron"></i>
+        </a>
+        
+        <a asp-controller="NguoiNuocNgoai" asp-action="CaiDat" class="menu-item @(currentAction == "CaiDat" ? "active" : "")">
+            <span class="menu-item-text">
+                <i class="bi bi-shield-lock"></i> Cài đặt tài khoản
+            </span>
+            <i class="bi bi-chevron-right chevron"></i>
+        </a>
+        
+        <div class="menu-group-title">Dịch vụ công của tôi</div>
+        
+        <a asp-controller="NguoiNuocNgoai" asp-action="KhaiBaoTamTru" class="menu-item @(currentAction == "KhaiBaoTamTru" ? "active" : "")">
+            <span class="menu-item-text">
+                <i class="bi bi-file-earmark-plus"></i> Khai báo tạm trú
+            </span>
+            <i class="bi bi-chevron-right chevron"></i>
+        </a>
+        
+        <a asp-controller="NguoiNuocNgoai" asp-action="DanhSachKhaiBao" class="menu-item @(currentAction == "DanhSachKhaiBao" || currentAction == "ChiTietKhaiBao" ? "active" : "")">
+            <span class="menu-item-text">
+                <i class="bi bi-clock-history"></i> Lịch sử khai báo
+            </span>
+            <i class="bi bi-chevron-right chevron"></i>
+        </a>
+        
+        <a asp-controller="NguoiNuocNgoai" asp-action="LichSuCuTru" class="menu-item @(currentAction == "LichSuCuTru" ? "active" : "")">
+            <span class="menu-item-text">
+                <i class="bi bi-geo-alt"></i> Lịch sử cư trú
+            </span>
+            <i class="bi bi-chevron-right chevron"></i>
+        </a>
+        
+        <a asp-controller="NguoiNuocNgoai" asp-action="CanhBao" class="menu-item @(currentAction == "CanhBao" ? "active" : "")">
+            <span class="menu-item-text">
+                <i class="bi bi-exclamation-triangle"></i> Cảnh báo vi phạm
+            </span>
+            <i class="bi bi-chevron-right chevron"></i>
+        </a>
+        
+        <div class="menu-group-title">Hỗ trợ & Hướng dẫn</div>
+        
+        <a asp-controller="NguoiNuocNgoai" asp-action="HuongDan" class="menu-item @(currentAction == "HuongDan" ? "active" : "")">
+            <span class="menu-item-text">
+                <i class="bi bi-book"></i> Hướng dẫn & quy định
+            </span>
+            <i class="bi bi-chevron-right chevron"></i>
+        </a>
+    </div>
+</div>

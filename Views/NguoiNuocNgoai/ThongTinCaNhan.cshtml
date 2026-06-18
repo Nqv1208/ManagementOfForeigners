@@ -1,117 +1,93 @@
 @model ManagementOfForeigners.Models.Entities.NguoiNuocNgoai
 @{
-    ViewBag.Title = "Thông tin cá nhân";
+    Layout = "_ForeignerServiceLayout";
+    ViewData["Title"] = "Thông tin cá nhân";
+    var taiKhoan = Model.TaiKhoan;
 }
 
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <!-- Alert TempData (Handled globally by layout toasts) -->
-
-            <div class="card border-0 shadow-sm overflow-hidden" style="border-radius: 16px;">
-                <div class="card-header gov-card-header p-4 d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5 class="fw-bold mb-0">Hồ sơ cá nhân người nước ngoài</h5>
-                        <p class="text-white-50 mb-0 fs-7">Quản lý và cập nhật thông tin cá nhân của bạn trên hệ thống</p>
-                    </div>
-                    <a asp-action="CapNhatThongTin" class="btn btn-light btn-sm fw-bold px-3 py-2" style="border-radius: 8px;">
-                        <i class="bi bi-pencil-square me-1"></i> Chỉnh sửa
-                    </a>
+<div class="row g-4">
+    <!-- Cột trái: Sidebar điều hướng & thông tin tài khoản -->
+    <div class="col-lg-3">
+        @await Html.PartialAsync("_ForeignerProfileSidebar")
+    </div>
+    
+    <!-- Cột phải: Chi tiết hồ sơ cá nhân -->
+    <div class="col-lg-9">
+        <div class="service-card">
+            <div class="service-card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="fw-bold mb-0 text-success"><i class="bi bi-person-badge-fill me-2"></i>Thông tin cá nhân</h5>
+                    <p class="text-muted small mb-0 mt-1">Xem chi tiết thông tin hồ sơ và tài khoản của bạn</p>
                 </div>
+                <a asp-action="CapNhatThongTin" class="btn btn-link text-success text-decoration-none fw-semibold p-0" style="font-size: 0.9rem;">
+                    <i class="bi bi-pencil-square me-1"></i> Chỉnh sửa thông tin
+                </a>
+            </div>
 
-                <div class="card-body p-4">
-                    <div class="row mb-4">
-                        <div class="col-md-12 text-center pb-3 border-bottom">
-                            <div class="bg-light d-inline-flex align-items-center justify-content-center border" style="width: 100px; height: 100px; border-radius: 50%;">
-                                <i class="bi bi-person-fill text-secondary" style="font-size: 3.5rem;"></i>
-                            </div>
-                            <h4 class="fw-bold mt-3 mb-1">@Model.HoTen</h4>
-                            <span class="badge bg-secondary px-3 py-1">@Model.QuocTich</span>
+            <div class="service-card-body">
+                <!-- Group 1: Thông tin cá nhân -->
+                <div class="mb-4">
+                    <h6 class="text-success mb-2" style="font-weight: 600; font-size: 0.9rem; letter-spacing: 0.5px; text-transform: uppercase;">Thông tin cá nhân</h6>
+                    <div class="border-top" style="border-color: #f1f5f9 !important;">
+                        <div class="row py-2 border-bottom align-items-center" style="border-color: #f1f5f9 !important; margin-left: 0; margin-right: 0;">
+                            <div class="col-sm-4 px-0 text-secondary small">Họ và tên</div>
+                            <div class="col-sm-8 px-0 text-dark">@Model.HoTen</div>
                         </div>
-                    </div>
-
-                    <h5 class="fw-bold text-dark mb-3 border-start border-3 border-primary ps-2">Thông tin nhân thân</h5>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <div class="bg-light p-3 rounded-3">
-                                <small class="text-muted d-block">Họ và tên</small>
-                                <span class="fw-bold text-dark">@Model.HoTen</span>
-                            </div>
+                        <div class="row py-2 border-bottom align-items-center" style="border-color: #f1f5f9 !important; margin-left: 0; margin-right: 0;">
+                            <div class="col-sm-4 px-0 text-secondary small">Quốc tịch</div>
+                            <div class="col-sm-8 px-0 text-dark">@Model.QuocTich</div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="bg-light p-3 rounded-3">
-                                <small class="text-muted d-block">Quốc tịch</small>
-                                <span class="fw-bold text-dark">@Model.QuocTich</span>
-                            </div>
+                        <div class="row py-2 border-bottom align-items-center" style="border-color: #f1f5f9 !important; margin-left: 0; margin-right: 0;">
+                            <div class="col-sm-4 px-0 text-secondary small">Ngày sinh</div>
+                            <div class="col-sm-8 px-0 text-dark">@Model.NgaySinh.ToString("dd/MM/yyyy")</div>
                         </div>
-                        <div class="col-md-6">
-                            <div class="bg-light p-3 rounded-3">
-                                <small class="text-muted d-block">Ngày sinh</small>
-                                <span class="fw-bold text-dark">@Model.NgaySinh.ToString("dd/MM/yyyy")</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="bg-light p-3 rounded-3">
-                                <small class="text-muted d-block">Giới tính</small>
-                                <span class="fw-bold text-dark">@Model.GioiTinh</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h5 class="fw-bold text-dark mb-3 border-start border-3 border-primary ps-2">Hộ chiếu & Thị thực (Visa)</h5>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-4">
-                            <div class="bg-light p-3 rounded-3">
-                                <small class="text-muted d-block">Số hộ chiếu</small>
-                                <span class="fw-bold text-dark">@Model.SoHoChieu</span>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="bg-light p-3 rounded-3">
-                                <small class="text-muted d-block">Ngày cấp hộ chiếu</small>
-                                <span class="fw-bold text-dark">@Model.NgayCapHoChieu.ToString("dd/MM/yyyy")</span>
-                            </div>
-                        </div>
-                        <div class="col-md-4">
-                            <div class="bg-light p-3 rounded-3">
-                                <small class="text-muted d-block">Ngày hết hạn hộ chiếu</small>
-                                <span class="fw-bold text-dark text-danger">@Model.NgayHetHanHoChieu.ToString("dd/MM/yyyy")</span>
-                            </div>
-                        </div>
-
-                        <div class="col-md-6">
-                            <div class="bg-light p-3 rounded-3">
-                                <small class="text-muted d-block">Loại Visa / Thị thực</small>
-                                <span class="fw-bold text-dark">@Model.LoaiVisa</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="bg-light p-3 rounded-3">
-                                <small class="text-muted d-block">Ngày hết hạn Visa</small>
-                                <span class="fw-bold text-dark text-danger">@Model.NgayHetHanVisa.ToString("dd/MM/yyyy")</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <h5 class="fw-bold text-dark mb-3 border-start border-3 border-primary ps-2">Thông tin tài khoản</h5>
-                    <div class="row g-3">
-                        <div class="col-md-6">
-                            <div class="bg-light p-3 rounded-3">
-                                <small class="text-muted d-block">Email liên hệ</small>
-                                <span class="fw-bold text-dark">@Model.TaiKhoan.Email</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="bg-light p-3 rounded-3">
-                                <small class="text-muted d-block">Số điện thoại</small>
-                                <span class="fw-bold text-dark">@Model.TaiKhoan.SoDienThoai</span>
-                            </div>
+                        <div class="row py-2 border-bottom align-items-center" style="border-color: #f1f5f9 !important; margin-left: 0; margin-right: 0;">
+                            <div class="col-sm-4 px-0 text-secondary small">Giới tính</div>
+                            <div class="col-sm-8 px-0 text-dark">@Model.GioiTinh</div>
                         </div>
                     </div>
                 </div>
 
-                <div class="card-footer bg-transparent border-0 p-4 text-center">
-                    <a asp-action="TongQuan" class="btn btn-outline-secondary px-4" style="border-radius: 8px;">Quay lại bảng điều khiển</a>
+                <!-- Group 2: Hộ chiếu & Thị thực (Visa) -->
+                <div class="mb-4">
+                    <h6 class="text-success mb-2" style="font-weight: 600; font-size: 0.9rem; letter-spacing: 0.5px; text-transform: uppercase;">Hộ chiếu & Thị thực (Visa)</h6>
+                    <div class="border-top" style="border-color: #f1f5f9 !important;">
+                        <div class="row py-2 border-bottom align-items-center" style="border-color: #f1f5f9 !important; margin-left: 0; margin-right: 0;">
+                            <div class="col-sm-4 px-0 text-secondary small">Số hộ chiếu</div>
+                            <div class="col-sm-8 px-0 text-dark">@Model.SoHoChieu</div>
+                        </div>
+                        <div class="row py-2 border-bottom align-items-center" style="border-color: #f1f5f9 !important; margin-left: 0; margin-right: 0;">
+                            <div class="col-sm-4 px-0 text-secondary small">Ngày cấp hộ chiếu</div>
+                            <div class="col-sm-8 px-0 text-dark">@Model.NgayCapHoChieu.ToString("dd/MM/yyyy")</div>
+                        </div>
+                        <div class="row py-2 border-bottom align-items-center" style="border-color: #f1f5f9 !important; margin-left: 0; margin-right: 0;">
+                            <div class="col-sm-4 px-0 text-secondary small">Ngày hết hạn hộ chiếu</div>
+                            <div class="col-sm-8 px-0 text-danger">@Model.NgayHetHanHoChieu.ToString("dd/MM/yyyy")</div>
+                        </div>
+                        <div class="row py-2 border-bottom align-items-center" style="border-color: #f1f5f9 !important; margin-left: 0; margin-right: 0;">
+                            <div class="col-sm-4 px-0 text-secondary small">Loại Visa / Thị thực</div>
+                            <div class="col-sm-8 px-0 text-dark">@Model.LoaiVisa</div>
+                        </div>
+                        <div class="row py-2 border-bottom align-items-center" style="border-color: #f1f5f9 !important; margin-left: 0; margin-right: 0;">
+                            <div class="col-sm-4 px-0 text-secondary small">Ngày hết hạn Visa</div>
+                            <div class="col-sm-8 px-0 text-danger">@Model.NgayHetHanVisa.ToString("dd/MM/yyyy")</div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Group 3: Thông tin tài khoản liên lạc -->
+                <div class="mb-2">
+                    <h6 class="text-success mb-2" style="font-weight: 600; font-size: 0.9rem; letter-spacing: 0.5px; text-transform: uppercase;">Thông tin tài khoản liên lạc</h6>
+                    <div class="border-top" style="border-color: #f1f5f9 !important;">
+                        <div class="row py-2 border-bottom align-items-center" style="border-color: #f1f5f9 !important; margin-left: 0; margin-right: 0;">
+                            <div class="col-sm-4 px-0 text-secondary small">Email liên hệ</div>
+                            <div class="col-sm-8 px-0 text-dark">@(taiKhoan?.Email ?? "Chưa cập nhật")</div>
+                        </div>
+                        <div class="row py-2 border-bottom align-items-center" style="border-color: #f1f5f9 !important; margin-left: 0; margin-right: 0;">
+                            <div class="col-sm-4 px-0 text-secondary small">Số điện thoại</div>
+                            <div class="col-sm-8 px-0 text-dark">@(taiKhoan?.SoDienThoai ?? "Chưa cập nhật")</div>
+                        </div>
+                    </div>
                 </div>
             </div>
         </div>

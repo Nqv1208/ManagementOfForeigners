@@ -30,51 +30,9 @@ public class NguoiNuocNgoaiController : Controller
 
     // GET: /foreigner/dashboard
     [HttpGet("dashboard")]
-    public async Task<IActionResult> TongQuan()
+    public IActionResult TongQuan()
     {
-        var accountId = GetCurrentAccountId();
-        var account = await _context.TaiKhoans
-            .FirstOrDefaultAsync(t => t.MaTaiKhoan == accountId);
-
-        if (account == null) return Challenge();
-
-        var foreigner = await _context.NguoiNuocNgoais
-            .FirstOrDefaultAsync(n => n.MaTaiKhoan == accountId);
-
-        if (foreigner == null)
-        {
-            TempData["ErrorMessage"] = "Tài khoản của bạn chưa được liên kết với hồ sơ người nước ngoài. Vui lòng liên hệ quản trị viên.";
-            return RedirectToAction("Index", "TrangChu");
-        }
-
-        var recentDeclarations = await _context.HoSoKhaiBaoTamTrus
-            .Where(h => h.MaTaiKhoan == accountId)
-            .OrderByDescending(h => h.NgayKhaiBao)
-            .Take(5)
-            .ToListAsync();
-
-        var recentResidence = await _context.LichSuCuTrus
-            .Include(l => l.CoSoLuuTru)
-            .Where(l => l.MaNguoiNuocNgoai == foreigner.MaNguoiNuocNgoai)
-            .OrderByDescending(l => l.NgayBatDau)
-            .Take(5)
-            .ToListAsync();
-
-        var activeWarnings = await _context.CanhBaoViPhams
-            .Where(c => c.MaNguoiNuocNgoai == foreigner.MaNguoiNuocNgoai)
-            .OrderByDescending(c => c.NgayCanhBao)
-            .ToListAsync();
-
-        var viewModel = new TongQuanViewModel
-        {
-            AccountInfo = account,
-            PersonalInfo = foreigner,
-            RecentDeclarations = recentDeclarations,
-            RecentResidenceHistory = recentResidence,
-            ActiveWarnings = activeWarnings
-        };
-
-        return View(viewModel);
+        return RedirectToAction(nameof(ThongTinCaNhan));
     }
 
     // GET: /foreigner/profile
@@ -86,7 +44,7 @@ public class NguoiNuocNgoaiController : Controller
             .Include(n => n.TaiKhoan)
             .FirstOrDefaultAsync(n => n.MaTaiKhoan == accountId);
 
-        if (foreigner == null) return NotFound();
+        if (foreigner?.TaiKhoan == null) return NotFound();
 
         return View(foreigner);
     }
@@ -100,7 +58,9 @@ public class NguoiNuocNgoaiController : Controller
             .Include(n => n.TaiKhoan)
             .FirstOrDefaultAsync(n => n.MaTaiKhoan == accountId);
 
-        if (foreigner == null) return NotFound();
+        if (foreigner?.TaiKhoan == null) return NotFound();
+
+        var account = foreigner.TaiKhoan;
 
         var model = new CapNhatThongTinViewModel
         {
@@ -111,8 +71,8 @@ public class NguoiNuocNgoaiController : Controller
             SoHoChieu = foreigner.SoHoChieu,
             NgayCapHoChieu = foreigner.NgayCapHoChieu,
             NgayHetHanHoChieu = foreigner.NgayHetHanHoChieu,
-            Email = foreigner.TaiKhoan.Email ?? string.Empty,
-            SoDienThoai = foreigner.TaiKhoan.SoDienThoai ?? string.Empty
+            Email = account.Email ?? string.Empty,
+            SoDienThoai = account.SoDienThoai ?? string.Empty
         };
 
         return View(model);
@@ -130,7 +90,9 @@ public class NguoiNuocNgoaiController : Controller
             .Include(n => n.TaiKhoan)
             .FirstOrDefaultAsync(n => n.MaTaiKhoan == accountId);
 
-        if (foreigner == null) return NotFound();
+        if (foreigner?.TaiKhoan == null) return NotFound();
+
+        var account = foreigner.TaiKhoan;
 
         // Kiểm tra xem số hộ chiếu mới có bị trùng với người khác không
         if (foreigner.SoHoChieu != model.SoHoChieu)
@@ -176,8 +138,8 @@ public class NguoiNuocNgoaiController : Controller
             LogChange("Số hộ chiếu", foreigner.SoHoChieu, model.SoHoChieu);
             LogChange("Ngày cấp HC", foreigner.NgayCapHoChieu.ToString("yyyy-MM-dd"), model.NgayCapHoChieu.ToString("yyyy-MM-dd"));
             LogChange("Ngày hết hạn HC", foreigner.NgayHetHanHoChieu.ToString("yyyy-MM-dd"), model.NgayHetHanHoChieu.ToString("yyyy-MM-dd"));
-            LogChange("Email", foreigner.TaiKhoan.Email, model.Email);
-            LogChange("Số điện thoại", foreigner.TaiKhoan.SoDienThoai, model.SoDienThoai);
+            LogChange("Email", account.Email, model.Email);
+            LogChange("Số điện thoại", account.SoDienThoai, model.SoDienThoai);
 
             // Cập nhật giá trị
             foreigner.HoTen = model.HoTen;
@@ -188,8 +150,8 @@ public class NguoiNuocNgoaiController : Controller
             foreigner.NgayCapHoChieu = model.NgayCapHoChieu;
             foreigner.NgayHetHanHoChieu = model.NgayHetHanHoChieu;
             
-            foreigner.TaiKhoan.Email = model.Email;
-            foreigner.TaiKhoan.SoDienThoai = model.SoDienThoai;
+            account.Email = model.Email;
+            account.SoDienThoai = model.SoDienThoai;
 
             await _context.SaveChangesAsync();
             await transaction.CommitAsync();
@@ -206,9 +168,17 @@ public class NguoiNuocNgoaiController : Controller
     }
 
     // GET: /foreigner/search-facilities
+    // GET: /KhaiBaoTamTru/SearchCoSoLuuTru
     [HttpGet("search-facilities")]
+    [HttpGet("/KhaiBaoTamTru/SearchCoSoLuuTru")]
     public async Task<IActionResult> SearchCoSoLuuTru(string? keyword, int? phuongXaId)
     {
+        var searchKeyword = keyword?.Trim();
+        if (string.IsNullOrWhiteSpace(searchKeyword) || searchKeyword.Length < 2)
+        {
+            return Json(Array.Empty<object>());
+        }
+
         var query = _context.CoSoLuuTrus
             .Include(c => c.PhuongXa)
             .Where(c => c.TrangThai == TrangThaiCoSo.DangHoatDong);
@@ -218,17 +188,15 @@ public class NguoiNuocNgoaiController : Controller
             query = query.Where(c => c.MaPhuongXa == phuongXaId.Value);
         }
 
-        if (!string.IsNullOrWhiteSpace(keyword))
-        {
-            var searchKeyword = keyword.ToLower();
-            query = query.Where(c => 
-                c.TenCoSo.ToLower().Contains(searchKeyword) || 
-                c.DiaChi.ToLower().Contains(searchKeyword) || 
-                c.MaCoSoLuuTru.ToLower().Contains(searchKeyword)
-            );
-        }
+        var normalizedKeyword = searchKeyword.ToLower();
+        query = query.Where(c =>
+            c.TenCoSo.ToLower().Contains(normalizedKeyword) ||
+            c.DiaChi.ToLower().Contains(normalizedKeyword) ||
+            c.MaCoSoLuuTru.ToLower().Contains(normalizedKeyword)
+        );
 
         var results = await query
+            .OrderBy(c => c.TenCoSo)
             .Take(10)
             .Select(c => new
             {
@@ -260,7 +228,7 @@ public class NguoiNuocNgoaiController : Controller
         if (foreigner == null)
         {
             TempData["ErrorMessage"] = "Tài khoản của bạn chưa được liên kết với hồ sơ người nước ngoài. Vui lòng liên hệ quản trị viên.";
-            return RedirectToAction("TongQuan");
+            return RedirectToAction("ThongTinCaNhan");
         }
 
         var model = new KhaiBaoTamTruCreateViewModel
@@ -310,7 +278,7 @@ public class NguoiNuocNgoaiController : Controller
         if (foreigner == null)
         {
             TempData["ErrorMessage"] = "Tài khoản của bạn chưa được liên kết với hồ sơ người nước ngoài.";
-            return RedirectToAction("TongQuan");
+            return RedirectToAction("ThongTinCaNhan");
         }
 
         if (model.NgayKetThuc <= model.NgayBatDau)
@@ -470,15 +438,6 @@ public class NguoiNuocNgoaiController : Controller
             .OrderByDescending(l => l.NgayBatDau)
             .ToPagedList(pageNumber, pageSize);
 
-        var facilities = await _context.CoSoLuuTrus
-            .Where(c => c.TrangThai == TrangThaiCoSo.DangHoatDong)
-            .Select(c => new SelectListItem
-            {
-                Value = c.MaCoSoLuuTru,
-                Text = $"{c.TenCoSo} - {c.DiaChi}"
-            }).ToListAsync();
-
-        ViewBag.CoSoLuuTrus = new SelectList(facilities, "Value", "Text");
         ViewBag.CuTruModel = new CuTruViewModel();
 
         return View(history);
@@ -494,6 +453,26 @@ public class NguoiNuocNgoaiController : Controller
             .FirstOrDefaultAsync(n => n.MaTaiKhoan == accountId);
 
         if (foreigner == null) return NotFound();
+
+        CoSoLuuTru? facility = null;
+        if (string.IsNullOrWhiteSpace(model.MaCoSoLuuTru))
+        {
+            ModelState.AddModelError(nameof(model.MaCoSoLuuTru), "Vui lòng chọn cơ sở lưu trú từ danh sách gợi ý.");
+        }
+        else
+        {
+            facility = await _context.CoSoLuuTrus
+                .FirstOrDefaultAsync(c => c.MaCoSoLuuTru == model.MaCoSoLuuTru);
+
+            if (facility == null)
+            {
+                ModelState.AddModelError(nameof(model.MaCoSoLuuTru), "Cơ sở lưu trú không tồn tại.");
+            }
+            else if (facility.TrangThai != TrangThaiCoSo.DangHoatDong)
+            {
+                ModelState.AddModelError(nameof(model.MaCoSoLuuTru), "Cơ sở lưu trú đã chọn không còn hoạt động.");
+            }
+        }
 
         if (!ModelState.IsValid)
         {
@@ -517,7 +496,7 @@ public class NguoiNuocNgoaiController : Controller
         {
             MaLSLuuTru = IdGenerator.NewMaLichSuCuTru(_context),
             MaNguoiNuocNgoai = foreigner.MaNguoiNuocNgoai,
-            MaCoSoLuuTru = model.MaCoSoLuuTru,
+            MaCoSoLuuTru = facility!.MaCoSoLuuTru,
             NgayBatDau = model.NgayBatDau,
             Phong = model.Phong,
             TrangThai = TrangThaiLuuTru.DangO,
@@ -529,5 +508,36 @@ public class NguoiNuocNgoaiController : Controller
 
         TempData["SuccessMessage"] = "Khai báo cập nhật nơi cư trú mới thành công!";
         return RedirectToAction(nameof(LichSuCuTru));
+    }
+
+    // GET: /foreigner/settings
+    [HttpGet("settings")]
+    public async Task<IActionResult> CaiDat()
+    {
+        var accountId = GetCurrentAccountId();
+        var account = await _context.TaiKhoans.FirstOrDefaultAsync(t => t.MaTaiKhoan == accountId);
+        if (account == null) return NotFound();
+        return View(account);
+    }
+
+    // GET: /foreigner/alerts
+    [HttpGet("alerts")]
+    public async Task<IActionResult> CanhBao()
+    {
+        var accountId = GetCurrentAccountId();
+        var foreigner = await _context.NguoiNuocNgoais.FirstOrDefaultAsync(n => n.MaTaiKhoan == accountId);
+        if (foreigner == null) return NotFound();
+        var warnings = await _context.CanhBaoViPhams
+            .Where(c => c.MaNguoiNuocNgoai == foreigner.MaNguoiNuocNgoai)
+            .OrderByDescending(c => c.NgayCanhBao)
+            .ToListAsync();
+        return View(warnings);
+    }
+
+    // GET: /foreigner/guides
+    [HttpGet("guides")]
+    public IActionResult HuongDan()
+    {
+        return View();
     }
 }

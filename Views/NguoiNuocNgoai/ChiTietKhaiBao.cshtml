@@ -1,97 +1,101 @@
 @model ManagementOfForeigners.Models.Entities.HoSoKhaiBaoTamTru
 @{
-    ViewBag.Title = "Chi tiết hồ sơ khai báo tạm trú";
+    Layout = "_ForeignerServiceLayout";
+    ViewData["Title"] = "Chi tiết khai báo";
 }
 
-<div class="container py-4">
-    <div class="row justify-content-center">
-        <div class="col-lg-8">
-            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
-                <div class="card-header gov-card-header p-4 d-flex justify-content-between align-items-center">
-                    <div>
-                        <h5 class="fw-bold mb-0">Hồ sơ khai báo tạm trú #@Model.MaHSKhaiBao</h5>
-                        <p class="text-white-50 mb-0 fs-7">Chi tiết thông tin tờ khai đã nộp</p>
+<div class="row g-4">
+    <!-- Cột trái: Sidebar điều hướng & thông tin tài khoản -->
+    <div class="col-lg-3">
+        @await Html.PartialAsync("_ForeignerProfileSidebar")
+    </div>
+    
+    <!-- Cột phải: Chi tiết khai báo -->
+    <div class="col-lg-9">
+        <div class="service-card">
+            <div class="service-card-header d-flex justify-content-between align-items-center">
+                <div>
+                    <h5 class="fw-bold mb-0"><i class="bi bi-file-earmark-text me-2 text-success"></i>Tờ khai báo tạm trú #@Model.MaHSKhaiBao</h5>
+                    <p class="text-muted small mb-0 mt-1">Thông tin chi tiết hồ sơ tạm trú đã nộp</p>
+                </div>
+                <div>
+                    @await Html.PartialAsync("_StatusBadge", Model.TrangThai)
+                </div>
+            </div>
+
+            <div class="service-card-body">
+                <!-- Reject Reason Alert if Rejected -->
+                @if (Model.TrangThai == "Từ chối" && !string.IsNullOrEmpty(Model.LyDoTuChoi))
+                {
+                    <div class="alert alert-danger shadow-sm border-0 mb-4" role="alert" style="border-radius: 12px;">
+                        <h6 class="fw-bold text-danger mb-1"><i class="bi bi-exclamation-triangle-fill me-2"></i> LÝ DO TỪ CHỐI DUYỆT HỒ SƠ:</h6>
+                        <p class="mb-0 text-muted fs-7">@Model.LyDoTuChoi</p>
                     </div>
-                    <div>
-                        @await Html.PartialAsync("_StatusBadge", Model.TrangThai)
+                }
+
+                <h6 class="fw-bold text-muted mb-3 text-uppercase small" style="letter-spacing: 0.5px;">1. Thông tin khai báo</h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-6">
+                        <div class="bg-light p-3 rounded-3">
+                            <small class="text-muted d-block">Ngày khai báo</small>
+                            <span class="fw-bold text-dark">@Model.NgayKhaiBao.ToString("dd/MM/yyyy HH:mm")</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="bg-light p-3 rounded-3">
+                            <small class="text-muted d-block">Mục đích lưu trú</small>
+                            <span class="fw-bold text-dark">@Model.MucDichLuuTru</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="bg-light p-3 rounded-3">
+                            <small class="text-muted d-block">Ngày bắt đầu</small>
+                            <span class="fw-bold text-dark">@Model.NgayBatDau.ToString("dd/MM/yyyy")</span>
+                        </div>
+                    </div>
+                    <div class="col-md-6">
+                        <div class="bg-light p-3 rounded-3">
+                            <small class="text-muted d-block">Ngày kết thúc</small>
+                            <span class="fw-bold text-dark">@Model.NgayKetThuc.ToString("dd/MM/yyyy")</span>
+                        </div>
                     </div>
                 </div>
 
-                <div class="card-body p-4">
-                    <!-- Reject Reason Alert if Rejected -->
-                    @if (Model.TrangThai == "Từ chối" && !string.IsNullOrEmpty(Model.LyDoTuChoi))
-                    {
-                        <div class="alert alert-danger shadow-sm border-0 mb-4" role="alert" style="border-radius: 12px;">
-                            <h6 class="fw-bold text-danger mb-1"><i class="bi bi-exclamation-triangle-fill me-2"></i> LÝ DO TỪ CHỐI DUYỆT HỒ SƠ:</h6>
-                            <p class="mb-0 text-muted fs-7">@Model.LyDoTuChoi</p>
-                        </div>
-                    }
-
-                    <h6 class="fw-bold text-muted mb-3 uppercase-title">1. Thông tin khai báo</h6>
-                    <div class="row g-3 mb-4">
-                        <div class="col-md-6">
-                            <div class="bg-light p-3 rounded-3">
-                                <small class="text-muted d-block">Ngày khai báo</small>
-                                <span class="fw-bold text-dark">@Model.NgayKhaiBao.ToString("dd/MM/yyyy HH:mm")</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="bg-light p-3 rounded-3">
-                                <small class="text-muted d-block">Mục đích lưu trú</small>
-                                <span class="fw-bold text-dark">@Model.MucDichLuuTru</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="bg-light p-3 rounded-3">
-                                <small class="text-muted d-block">Ngày bắt đầu</small>
-                                <span class="fw-bold text-dark">@Model.NgayBatDau.ToString("dd/MM/yyyy")</span>
-                            </div>
-                        </div>
-                        <div class="col-md-6">
-                            <div class="bg-light p-3 rounded-3">
-                                <small class="text-muted d-block">Ngày kết thúc</small>
-                                <span class="fw-bold text-dark">@Model.NgayKetThuc.ToString("dd/MM/yyyy")</span>
-                            </div>
+                <h6 class="fw-bold text-muted mb-3 text-uppercase small" style="letter-spacing: 0.5px;">2. Nơi tạm trú tại Đà Nẵng</h6>
+                <div class="row g-3 mb-4">
+                    <div class="col-md-12">
+                        <div class="bg-light p-3 rounded-3">
+                            <small class="text-muted d-block">Địa chỉ lưu trú chi tiết</small>
+                            <span class="fw-bold text-dark">@Model.DiaChiLuuTru</span>
                         </div>
                     </div>
+                    <div class="col-md-12">
+                        <div class="bg-light p-3 rounded-3">
+                            <small class="text-muted d-block">Cơ sở lưu trú liên kết</small>
+                            <span class="fw-bold text-dark">@(Model.CoSoLuuTru != null ? $"{Model.CoSoLuuTru.TenCoSo} ({Model.CoSoLuuTru.DiaChi})" : "Tự khai báo ngoài cơ sở lưu trú")</span>
+                        </div>
+                    </div>
+                </div>
 
-                    <h6 class="fw-bold text-muted mb-3 uppercase-title">2. Nơi tạm trú tại Đà Nẵng</h6>
-                    <div class="row g-3 mb-4">
+                @if (!string.IsNullOrEmpty(Model.GhiChu))
+                {
+                    <h6 class="fw-bold text-muted mb-3 text-uppercase small" style="letter-spacing: 0.5px;">3. Ghi chú của người khai báo</h6>
+                    <div class="row g-3">
                         <div class="col-md-12">
                             <div class="bg-light p-3 rounded-3">
-                                <small class="text-muted d-block">Địa chỉ cụ thể</small>
-                                <span class="fw-bold text-dark">@Model.DiaChiLuuTru</span>
-                            </div>
-                        </div>
-                        <div class="col-md-12">
-                            <div class="bg-light p-3 rounded-3">
-                                <small class="text-muted d-block">Cơ sở lưu trú liên kết</small>
-                                <span class="fw-bold text-dark">@(Model.CoSoLuuTru != null ? $"{Model.CoSoLuuTru.TenCoSo} ({Model.CoSoLuuTru.DiaChi})" : "Tự khai báo ngoài cơ sở lưu trú")</span>
+                                <span class="text-secondary fs-7">@Model.GhiChu</span>
                             </div>
                         </div>
                     </div>
+                }
+            </div>
 
-                    @if (!string.IsNullOrEmpty(Model.GhiChu))
-                    {
-                        <h6 class="fw-bold text-muted mb-3 uppercase-title">3. Ghi chú của người khai báo</h6>
-                        <div class="row g-3">
-                            <div class="col-md-12">
-                                <div class="bg-light p-3 rounded-3">
-                                    <span class="text-secondary fs-7">@Model.GhiChu</span>
-                                </div>
-                            </div>
-                        </div>
-                    }
-
-                </div>
-
-                <div class="card-footer bg-transparent border-0 p-4 d-flex justify-content-between">
-                    <a asp-action="DanhSachKhaiBao" class="btn btn-outline-secondary px-4" style="border-radius: 8px;">Quay lại danh sách</a>
-                    @if (Model.TrangThai == "Chờ duyệt")
-                    {
-                        <span class="text-muted fs-8 align-self-center"><i class="bi bi-clock me-1"></i> Đang chờ Công an Phường/Xã xử lý hồ sơ...</span>
-                    }
-                </div>
+            <div class="service-card-body border-top bg-light p-4 d-flex justify-content-between">
+                <a asp-action="DanhSachKhaiBao" class="btn btn-outline-secondary px-4" style="border-radius: 8px;">Quay lại danh sách</a>
+                @if (Model.TrangThai == "Chờ duyệt")
+                {
+                    <span class="text-muted fs-8 align-self-center"><i class="bi bi-clock me-1"></i> Đang chờ Công an Phường/Xã xử lý hồ sơ...</span>
+                }
             </div>
         </div>
     </div>

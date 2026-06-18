@@ -1,0 +1,139 @@
+@{
+    Layout = "_ForeignerServiceLayout";
+    ViewData["Title"] = "Hướng dẫn & Quy định";
+}
+
+<div class="row g-4">
+    <!-- Cột trái: Sidebar điều hướng & thông tin tài khoản -->
+    <div class="col-lg-3">
+        @await Html.PartialAsync("_ForeignerProfileSidebar")
+    </div>
+    
+    <!-- Cột phải: Nội dung hướng dẫn & Hotline/FAQ -->
+    <div class="col-lg-9">
+        <div class="row g-4">
+            <!-- Cột trái: Nội dung hướng dẫn -->
+            <div class="col-xl-8 col-lg-12">
+                
+                <!-- Quy trình khai báo -->
+                <div class="service-card">
+                    <div class="service-card-header">
+                        <h5><i class="bi bi-journal-check me-2 text-success"></i>Quy trình tự khai báo tạm trú trực tuyến</h5>
+                    </div>
+                    <div class="service-card-body">
+                        <div class="timeline-service">
+                            <div class="d-flex mb-4 gap-3">
+                                <div class="bg-success text-white rounded-circle p-2 d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px; flex-shrink:0;">1</div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Đăng ký và hoàn thiện hồ sơ</h6>
+                                    <p class="text-muted small mb-0">Đăng ký tài khoản bằng Số hộ chiếu hợp lệ, sau đó điền đầy đủ thông tin cá nhân cơ bản và cập nhật loại thị thực (visa) đang sở hữu.</p>
+                                </div>
+                            </div>
+                            
+                            <div class="d-flex mb-4 gap-3">
+                                <div class="bg-success text-white rounded-circle p-2 d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px; flex-shrink:0;">2</div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Thực hiện tờ khai báo tạm trú</h6>
+                                    <p class="text-muted small mb-0">Truy cập mục "Khai báo tạm trú mới", chọn Phường/Xã cư trú và tìm kiếm chính xác cơ sở lưu trú (khách sạn, nhà trọ, căn hộ) mà bạn đang cư trú từ danh sách gợi ý.</p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex mb-4 gap-3">
+                                <div class="bg-success text-white rounded-circle p-2 d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px; flex-shrink:0;">3</div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Chờ phê duyệt từ Công an Phường/Xã</h6>
+                                    <p class="text-muted small mb-0">Hồ sơ sẽ được chuyển trực tiếp đến cơ quan Công an cấp Phường/Xã phụ trách địa bàn để thẩm định và phê duyệt thông tin cư trú của bạn.</p>
+                                </div>
+                            </div>
+
+                            <div class="d-flex gap-3">
+                                <div class="bg-success text-white rounded-circle p-2 d-flex align-items-center justify-content-center fw-bold" style="width: 36px; height: 36px; flex-shrink:0;">4</div>
+                                <div>
+                                    <h6 class="fw-bold mb-1">Theo dõi kết quả & Nhận thông báo</h6>
+                                    <p class="text-muted small mb-0">Theo dõi trạng thái tại mục "Lịch sử khai báo". Nếu bị từ chối, vui lòng xem lý do và thực hiện cập nhật lại tờ khai theo đúng yêu cầu.</p>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Quy định pháp luật -->
+                <div class="service-card">
+                    <div class="service-card-header">
+                        <h5><i class="bi bi-shield-exclamation me-2 text-warning"></i>Quy định pháp luật về Cư trú của người nước ngoài</h5>
+                    </div>
+                    <div class="service-card-body text-secondary fs-7" style="line-height: 1.6;">
+                        <p class="mb-3">Theo <strong>Luật Nhập cảnh, xuất cảnh, quá cảnh, cư trú của người nước ngoài tại Việt Nam</strong>:</p>
+                        
+                        <div class="p-3 bg-light rounded-3 border-start border-3 border-danger mb-3">
+                            <i class="bi bi-info-circle-fill text-danger me-1"></i> Người nước ngoài tạm trú tại Việt Nam phải thông qua người trực tiếp quản lý, điều hành hoạt động của cơ sở lưu trú để khai báo tạm trú với Công an xã, phường, thị trấn hoặc đồn, trạm Công an nơi có cơ sở lưu trú.
+                        </div>
+
+                        <ul class="ps-3 mb-0">
+                            <li class="mb-2"><strong>Thời hạn khai báo:</strong> Trong thời hạn 12 giờ kể từ khi người nước ngoài đến cơ sở lưu trú (đối với vùng sâu, vùng xa trong thời hạn 24 giờ).</li>
+                            <li class="mb-2"><strong>Thời hạn tạm trú:</strong> Thời hạn tạm trú được cấp bằng thời hạn giá trị của thị thực (visa) hoặc thẻ tạm trú được cấp.</li>
+                            <li><strong>Vi phạm quy định:</strong> Các hành vi không khai báo tạm trú hoặc khai báo thông tin không trung thực có thể bị xử phạt hành chính và ảnh hưởng đến quyền xin gia hạn cư trú tại Việt Nam.</li>
+                        </ul>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Cột phải: Hotline & FAQ -->
+            <div class="col-xl-4 col-lg-12">
+                
+                <!-- Hotline hỗ trợ -->
+                <div class="service-card mb-4">
+                    <div class="service-card-header">
+                        <h5><i class="bi bi-telephone-fill me-2 text-success"></i>Hỗ trợ kỹ thuật & Nghiệp vụ</h5>
+                    </div>
+                    <div class="service-card-body">
+                        <div class="d-flex align-items-center mb-3 gap-3">
+                            <div class="bg-light rounded-circle p-2 text-danger fs-4"><i class="bi bi-headset"></i></div>
+                            <div>
+                                <span class="text-muted small d-block">Tổng đài Dịch vụ công Đà Nẵng</span>
+                                <strong class="text-dark">0236.1022</strong>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center mb-3 gap-3">
+                            <div class="bg-light rounded-circle p-2 text-success fs-4"><i class="bi bi-shield-fill-check"></i></div>
+                            <div>
+                                <span class="text-muted small d-block">Phòng Quản lý Xuất nhập cảnh</span>
+                                <strong class="text-dark">0236.3822.464</strong>
+                            </div>
+                        </div>
+                        <div class="d-flex align-items-center gap-3">
+                            <div class="bg-light rounded-circle p-2 text-primary fs-4"><i class="bi bi-envelope-fill"></i></div>
+                            <div>
+                                <span class="text-muted small d-block">Email hỗ trợ kỹ thuật</span>
+                                <strong class="text-dark">qlxnc@danang.gov.vn</strong>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- FAQ nhanh -->
+                <div class="service-card">
+                    <div class="service-card-header">
+                        <h5><i class="bi bi-question-circle-fill me-2 text-info"></i>Câu hỏi thường gặp (FAQ)</h5>
+                    </div>
+                    <div class="service-card-body text-secondary fs-7" style="line-height: 1.5;">
+                        <div class="mb-3">
+                            <strong class="text-dark d-block">Tôi có thể tự khai báo không?</strong>
+                            <span>Có, hệ thống này cung cấp cổng dịch vụ cá nhân (Self-Service) để người nước ngoài tự thực hiện khai báo tạm trú và cập nhật nơi ở bất cứ lúc nào.</span>
+                        </div>
+                        <div class="mb-3">
+                            <strong class="text-dark d-block">Mã hồ sơ khai báo là gì?</strong>
+                            <span>Mã hồ sơ (ví dụ: #HS000102) được cấp tự động sau khi bạn nộp tờ khai nhằm mục đích tra cứu tiến trình duyệt từ phía cơ quan Công an.</span>
+                        </div>
+                        <div>
+                            <strong class="text-dark d-block">Làm sao biết tờ khai đã được duyệt?</strong>
+                            <span>Kiểm tra trạng thái tờ khai trong mục "Lịch sử khai báo". Trạng thái "Đã duyệt" có badge màu xanh lá cây biểu thị tờ khai của bạn hợp lệ.</span>
+                        </div>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
