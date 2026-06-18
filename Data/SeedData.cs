@@ -852,6 +852,42 @@ public static class SeedData
             await context.SaveChangesAsync();
         }
 
+        // Sửa lỗi hiển thị các bản ghi cảnh báo cũ bị lỗi font do cột text trước đó
+        var existingWarnings = await context.CanhBaoViPhams.ToListAsync();
+        var warningsUpdated = false;
+        foreach (var warn in existingWarnings)
+        {
+            var seedIdx = warn.NoiDungCanhBao.IndexOf("seed #");
+            if (seedIdx >= 0 && seedIdx + 6 + 3 <= warn.NoiDungCanhBao.Length)
+            {
+                var indexStr = warn.NoiDungCanhBao.Substring(seedIdx + 6, 3);
+                if (int.TryParse(indexStr, out int index))
+                {
+                    var correctContent = $"Cảnh báo seed #{index:000}: cần rà soát thông tin lưu trú và giấy tờ liên quan.";
+                    var correctGhiChu = "Dữ liệu cảnh báo mẫu phục vụ kiểm thử nghiệp vụ.";
+                    if (warn.NoiDungCanhBao != correctContent || warn.GhiChu != correctGhiChu)
+                    {
+                        warn.NoiDungCanhBao = correctContent;
+                        warn.GhiChu = correctGhiChu;
+                        warningsUpdated = true;
+                    }
+                }
+            }
+            else if (warn.NoiDungCanhBao.Contains("?"))
+            {
+                warn.NoiDungCanhBao = warn.NoiDungCanhBao
+                    .Replace("C?nh báo", "Cảnh báo")
+                    .Replace("c?n rà soát", "cần rà soát")
+                    .Replace("gi?y t?", "giấy tờ")
+                    .Replace("luu trú", "lưu trú");
+                warningsUpdated = true;
+            }
+        }
+        if (warningsUpdated)
+        {
+            await context.SaveChangesAsync();
+        }
+
         var reports = BuildBaoCaoSeed().ToArray();
         var existingReports = (await context.BaoCaoViPhams.ToListAsync()).ToDictionary(x => x.MaBaoCao.Trim());
 

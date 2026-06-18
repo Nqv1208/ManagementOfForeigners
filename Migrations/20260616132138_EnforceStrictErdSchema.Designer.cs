@@ -4,6 +4,7 @@ using ManagementOfForeigners.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace ManagementOfForeigners.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260616132138_EnforceStrictErdSchema")]
+    partial class EnforceStrictErdSchema
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -46,7 +49,6 @@ namespace ManagementOfForeigners.Migrations
                     b.Property<string>("NoiDungBaoCao")
                         .IsRequired()
                         .HasMaxLength(255)
-                        .IsUnicode(true)
                         .HasColumnType("nvarchar(255)");
 
                     b.Property<string>("TrangThaiXuLy")
@@ -145,13 +147,11 @@ namespace ManagementOfForeigners.Migrations
                     SqlServerPropertyBuilderExtensions.UseIdentityColumn(b.Property<int>("MaCanhBao"));
 
                     b.Property<string>("GhiChu")
-                        .IsUnicode(true)
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("LoaiViPham")
                         .IsRequired()
                         .HasMaxLength(100)
-                        .IsUnicode(true)
                         .HasColumnType("nvarchar(100)");
 
                     b.Property<string>("MaCanBo")
@@ -176,8 +176,7 @@ namespace ManagementOfForeigners.Migrations
 
                     b.Property<string>("NoiDungCanhBao")
                         .IsRequired()
-                        .IsUnicode(true)
-                        .HasColumnType("nvarchar(max)");
+                        .HasColumnType("text");
 
                     b.Property<string>("TrangThai")
                         .IsRequired()
