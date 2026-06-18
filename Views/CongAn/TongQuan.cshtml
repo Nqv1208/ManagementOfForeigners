@@ -123,10 +123,17 @@
                                             <td>@dec.TaiKhoan.NguoiNuocNgoai?.SoHoChieu</td>
                                             <td><small class="text-muted style-multiline-ellipsis">@dec.DiaChiLuuTru</small></td>
                                             <td>
-                                                <div class="d-inline-flex gap-2">
-                                                    <a asp-action="ChiTietKhaiBao" asp-route-id="@dec.MaHSKhaiBao" class="btn btn-primary btn-xs" style="border-radius: 5px;">
-                                                        <i class="bi bi-eye"></i> Xem / Duyệt
+                                                <div class="d-inline-flex gap-1 align-items-center">
+                                                    <a asp-action="ChiTietKhaiBao" asp-route-id="@dec.MaHSKhaiBao" class="btn btn-outline-primary btn-xs" style="border-radius: 5px; font-size: 0.75rem;">
+                                                        <i class="bi bi-eye"></i> Chi tiết
                                                     </a>
+                                                    <form asp-action="PheDuyet" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn phê duyệt hồ sơ khai báo này?');" style="display:inline-block; margin: 0;">
+                                                        @Html.AntiForgeryToken()
+                                                        <input type="hidden" name="id" value="@dec.MaHSKhaiBao" />
+                                                        <button type="submit" class="btn btn-success btn-xs fw-semibold text-white px-2 py-1" style="border-radius: 5px; font-size: 0.75rem; border: none; background-color: var(--primary);">
+                                                            <i class="bi bi-check-circle"></i> Duyệt
+                                                        </button>
+                                                    </form>
                                                 </div>
                                             </td>
                                         </tr>
