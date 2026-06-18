@@ -2,101 +2,218 @@
 @using X.PagedList
 @using ManagementOfForeigners.Models.Entities
 @model IPagedList<ManagementOfForeigners.Models.Entities.BaoCaoViPham>
-
 @{
-    ViewBag.Title = "Tiếp nhận báo cáo vi phạm";
+    Layout = "~/Views/Shared/_OfficerLayout.cshtml";
+    ViewBag.Title = "Báo cáo từ địa bàn";
 }
 
-<div class="container py-4">
-    <div class="card border-0 shadow-sm" style="border-radius: 16px;">
-        <div class="card-header gov-card-header p-4">
-            <h5 class="fw-bold mb-0">Tiếp nhận và xử lý báo cáo vi phạm</h5>
-            <p class="text-white-50 mb-0 fs-7">Báo cáo do Công an Phường/Xã gửi lên Phòng Quản lý Xuất nhập cảnh.</p>
-        </div>
-        <div class="card-body p-4">
-            <form asp-action="DanhSachBaoCao" method="get" class="row g-3 mb-4">
-                <div class="col-md-6">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0" style="border-radius: 8px 0 0 8px;"><i class="bi bi-search text-muted"></i></span>
-                        <input type="text" name="search" class="form-control border-start-0" value="@ViewBag.Search" placeholder="Họ tên, hộ chiếu, nội dung báo cáo..." style="border-radius: 0 8px 8px 0;" />
+<div class="officer-page-header">
+    <div>
+        <h4>Tiếp Nhận Báo Cáo Vi Phạm</h4>
+        <p class="text-muted mb-0">Tiếp nhận, thẩm định và xử lý các tin báo vi phạm của người nước ngoài do Công an Phường/Xã gửi lên</p>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card officer-filter-card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <form asp-action="DanhSachBaoCao" method="get" class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold text-dark fs-7">Tìm kiếm nhanh</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="search" class="form-control border-start-0" value="@ViewBag.Search" placeholder="Tìm theo tên NNN, hộ chiếu, nội dung tin báo..." style="font-size: 0.85rem;" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold text-dark fs-7">Trạng thái xử lý</label>
+                <select name="trangThai" class="form-select" style="font-size: 0.85rem;">
+                    <option value="">-- Tất cả trạng thái --</option>
+                    <option value="@TrangThaiXuLyConst.ChuaXuLy" selected="@(ViewBag.TrangThai == TrangThaiXuLyConst.ChuaXuLy)">@TrangThaiXuLyConst.ChuaXuLy</option>
+                    <option value="@TrangThaiXuLyConst.DangXuLy" selected="@(ViewBag.TrangThai == TrangThaiXuLyConst.DangXuLy)">@TrangThaiXuLyConst.DangXuLy</option>
+                    <option value="@TrangThaiXuLyConst.DaXuLy" selected="@(ViewBag.TrangThai == TrangThaiXuLyConst.DaXuLy)">@TrangThaiXuLyConst.DaXuLy</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <a asp-action="DanhSachBaoCao" class="btn btn-outline-secondary w-50 fw-semibold" style="border-radius: 8px; font-size: 0.85rem; height: 40px; display: inline-flex; align-items: center; justify-content: center;">
+                    Đặt lại
+                </a>
+                <button type="submit" class="btn btn-success w-50 fw-semibold" style="border-radius: 8px; font-size: 0.85rem; height: 40px;">
+                    <i class="bi bi-funnel-fill me-1"></i> Lọc
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results -->
+<div class="officer-table-card">
+    <div class="card-body p-4">
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-flag-fill text-muted" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-3 mb-0">Không tìm thấy báo cáo vi phạm nào từ cơ sở địa bàn.</p>
+            </div>
+        }
+        else
+        {
+            <div class="officer-table-wrap">
+                <table class="officer-table">
+                    <thead>
+                        <tr>
+                            <th>Báo cáo</th>
+                            <th>Người liên quan</th>
+                            <th>Đơn vị gửi</th>
+                            <th>Nội dung</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center" style="width: 140px;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var report in Model)
+                        {
+                            var fId = report.NguoiNuocNgoai?.MaNguoiNuocNgoai ?? "";
+                            var fName = report.NguoiNuocNgoai?.HoTen ?? "N/A";
+                            var passport = report.NguoiNuocNgoai?.SoHoChieu ?? "N/A";
+                            var officerName = report.CanBo?.HoTen ?? "N/A";
+                            var officerWard = report.CanBo?.PhuongXa?.TenPhuongXa ?? "N/A";
+
+                            var statusClass = report.TrangThaiXuLy switch
+                            {
+                                "Chưa xử lý" => "badge-danger",
+                                "Đang xử lý" => "badge-warning",
+                                "Đã xử lý" => "badge-success",
+                                _ => "badge-neutral"
+                            };
+
+                            <tr>
+                                <td>
+                                    <div class="cell-title"><code>#BC-@report.MaBaoCao</code></div>
+                                    <div class="cell-sub">@report.NgayBaoCao.ToString("dd/MM/yyyy HH:mm")</div>
+                                </td>
+                                <td>
+                                    <div class="cell-title">@fName</div>
+                                    <div class="cell-sub">Hộ chiếu: @passport</div>
+                                </td>
+                                <td>
+                                    <div class="cell-title">@officerName</div>
+                                    <div class="cell-sub">@officerWard</div>
+                                </td>
+                                <td>
+                                    <div class="cell-sub cell-truncate" title="@report.NoiDungBaoCao" style="max-width: 300px;">
+                                        @report.NoiDungBaoCao
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge-custom @statusClass" style="min-height: 20px; padding: 2px 8px; font-size: 11px;">
+                                        @report.TrangThaiXuLy
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-inline-flex align-items-center gap-1">
+                                        @if (!string.IsNullOrEmpty(fId))
+                                        {
+                                            <a asp-action="ChiTietNguoiNuocNgoai" asp-route-id="@fId" class="btn btn-xs btn-outline-success">
+                                                Chi tiết
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-xs btn-outline-secondary" disabled>
+                                                Chi tiết
+                                            </button>
+                                        }
+                                        <div class="dropdown">
+                                            <button class="btn btn-link text-secondary p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="bi bi-three-dots"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-radius: 8px; font-size: 0.85rem;">
+                                                <li>
+                                                    <button class="dropdown-item py-2 text-success update-report-btn" 
+                                                            data-id="@report.MaBaoCao" 
+                                                            data-current-status="@report.TrangThaiXuLy" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#updateReportModal">
+                                                        <i class="bi bi-gear me-2"></i> Phản hồi xử lý
+                                                    </button>
+                                                </li>
+                                                @if (!string.IsNullOrEmpty(fId))
+                                                {
+                                                    <li>
+                                                        <a class="dropdown-item py-2 text-warning" asp-action="CanhBaoViPham" asp-route-maNguoiNuocNgoai="@fId">
+                                                            <i class="bi bi-exclamation-triangle me-2"></i> Gửi cảnh báo vi phạm
+                                                        </a>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center mt-4">
+                @Html.PagedListPager(Model, page => Url.Action("DanhSachBaoCao", new { page, search = ViewBag.Search, trangThai = ViewBag.TrangThai }),
+                    new X.PagedList.Mvc.Core.PagedListRenderOptions {
+                        LiElementClasses = new string[] { "page-item" },
+                        PageClasses = new string[] { "page-link" },
+                        UlElementClasses = new string[] { "pagination", "pagination-sm" }
+                    })
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Update Status Modal -->
+<div class="modal fade" id="updateReportModal" tabindex="-1" aria-labelledby="updateReportModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content officer-modal-content">
+            <div class="modal-header officer-modal-header">
+                <h6 class="modal-title fw-bold" id="updateReportModalLabel"><i class="bi bi-shield-fill me-1"></i>Xử lý báo cáo vi phạm từ địa bàn</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="CapNhatTrangThaiBaoCao" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body p-4">
+                    <input type="hidden" name="id" id="modalReportId" />
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-dark fs-7">Trạng thái xử lý mới</label>
+                        <select name="trangThai" id="modalReportStatus" class="form-select" required style="border-radius: 8px;">
+                            <option value="@TrangThaiXuLyConst.ChuaXuLy">@TrangThaiXuLyConst.ChuaXuLy</option>
+                            <option value="@TrangThaiXuLyConst.DangXuLy">@TrangThaiXuLyConst.DangXuLy</option>
+                            <option value="@TrangThaiXuLyConst.DaXuLy">@TrangThaiXuLyConst.DaXuLy</option>
+                        </select>
                     </div>
+                    
+                    <p class="text-muted text-xs mb-0 mt-3">
+                        <i class="bi bi-info-circle me-1"></i> Cập nhật trạng thái này sẽ giúp Công an Phường/Xã nắm bắt tiến trình xử lý vụ việc.
+                    </p>
                 </div>
-                <div class="col-md-3">
-                    <select name="trangThai" class="form-select" style="border-radius: 8px;">
-                        <option value="">Tất cả trạng thái</option>
-                        <option value="@TrangThaiXuLyConst.ChuaXuLy" selected="@(ViewBag.TrangThai == TrangThaiXuLyConst.ChuaXuLy)">@TrangThaiXuLyConst.ChuaXuLy</option>
-                        <option value="@TrangThaiXuLyConst.DangXuLy" selected="@(ViewBag.TrangThai == TrangThaiXuLyConst.DangXuLy)">@TrangThaiXuLyConst.DangXuLy</option>
-                        <option value="@TrangThaiXuLyConst.DaXuLy" selected="@(ViewBag.TrangThai == TrangThaiXuLyConst.DaXuLy)">@TrangThaiXuLyConst.DaXuLy</option>
-                    </select>
-                </div>
-                <div class="col-md-3 d-grid">
-                    <button class="btn btn-primary fw-semibold" type="submit" style="border-radius: 8px;">Lọc báo cáo</button>
+                <div class="modal-footer officer-modal-footer">
+                    <button type="button" class="btn btn-outline-secondary px-3 py-1.5 fw-semibold" style="border-radius: 8px; font-size: 0.85rem;" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success px-4 py-1.5 fw-semibold" style="border-radius: 8px; font-size: 0.85rem;">Xác nhận</button>
                 </div>
             </form>
-
-            @if (!Model.Any())
-            {
-                <div class="text-center py-5">
-                    <i class="bi bi-flag text-muted" style="font-size: 3rem;"></i>
-                    <p class="text-muted mt-3 mb-0">Không có báo cáo vi phạm phù hợp.</p>
-                </div>
-            }
-            else
-            {
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0 fs-7">
-                        <thead>
-                            <tr>
-                                <th>Ngày báo cáo</th>
-                                <th>Người nước ngoài</th>
-                                <th>Công an gửi</th>
-                                <th>Nội dung</th>
-                                <th>Trạng thái</th>
-                                <th class="text-end">Xử lý</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var report in Model)
-                            {
-                                <tr>
-                                    <td>@report.NgayBaoCao.ToString("dd/MM/yyyy HH:mm")</td>
-                                    <td>
-                                        <div class="fw-bold">@report.NguoiNuocNgoai.HoTen</div>
-                                        <small class="text-muted">HC: @report.NguoiNuocNgoai.SoHoChieu</small>
-                                    </td>
-                                    <td>
-                                        <div class="fw-semibold">@report.CanBo.HoTen</div>
-                                        <small class="text-muted">@report.CanBo.PhuongXa.TenPhuongXa</small>
-                                    </td>
-                                    <td style="max-width: 360px;">@report.NoiDungBaoCao</td>
-                                    <td>@await Html.PartialAsync("_StatusBadge", report.TrangThaiXuLy)</td>
-                                    <td class="text-end">
-                                        <form asp-action="CapNhatTrangThaiBaoCao" method="post" class="d-inline-flex gap-2" onsubmit="return confirm('Cập nhật trạng thái báo cáo này?');">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="id" value="@report.MaBaoCao" />
-                                            <select name="trangThai" class="form-select form-select-sm" style="width: 140px;">
-                                                <option value="@TrangThaiXuLyConst.ChuaXuLy" selected="@(report.TrangThaiXuLy == TrangThaiXuLyConst.ChuaXuLy)">@TrangThaiXuLyConst.ChuaXuLy</option>
-                                                <option value="@TrangThaiXuLyConst.DangXuLy" selected="@(report.TrangThaiXuLy == TrangThaiXuLyConst.DangXuLy)">@TrangThaiXuLyConst.DangXuLy</option>
-                                                <option value="@TrangThaiXuLyConst.DaXuLy" selected="@(report.TrangThaiXuLy == TrangThaiXuLyConst.DaXuLy)">@TrangThaiXuLyConst.DaXuLy</option>
-                                            </select>
-                                            <button class="btn btn-sm btn-primary" type="submit">Lưu</button>
-                                        </form>
-                                    </td>
-                                </tr>
-                            }
-                        </tbody>
-                    </table>
-                </div>
-
-                <div class="d-flex justify-content-center mt-4">
-                    @Html.PagedListPager(Model, page => Url.Action("DanhSachBaoCao", new { page, search = ViewBag.Search, trangThai = ViewBag.TrangThai }),
-                        new X.PagedList.Mvc.Core.PagedListRenderOptions {
-                            LiElementClasses = new string[] { "page-item" },
-                            PageClasses = new string[] { "page-link" },
-                            UlElementClasses = new string[] { "pagination", "pagination-sm" }
-                        })
-                </div>
-            }
         </div>
     </div>
 </div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.update-report-btn').click(function() {
+                var id = $(this).data('id');
+                var status = $(this).data('current-status');
+                
+                $('#modalReportId').val(id);
+                $('#modalReportStatus').val(status);
+            });
+        });
+    </script>
+}

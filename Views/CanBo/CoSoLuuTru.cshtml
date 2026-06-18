@@ -1,0 +1,148 @@
+@using X.PagedList.Mvc.Core
+@using X.PagedList
+@model IPagedList<ManagementOfForeigners.Models.ViewModels.CanBo.CanBoFacilityRowViewModel>
+@{
+    Layout = "~/Views/Shared/_OfficerLayout.cshtml";
+    ViewBag.Title = "Cơ sở lưu trú";
+}
+
+<div class="officer-page-header">
+    <div>
+        <h4>Cơ Sở Lưu Trú</h4>
+        <p class="text-muted mb-0">Giám sát, theo dõi hoạt động kinh doanh lưu trú và đánh giá mức độ rủi ro của các cơ sở trên địa bàn</p>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card officer-filter-card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <form asp-action="CoSoLuuTru" method="get" class="row g-3 align-items-end">
+            <div class="col-md-9">
+                <label class="form-label fw-semibold text-dark fs-7">Tìm kiếm cơ sở lưu trú</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="search" class="form-control border-start-0" value="@ViewBag.Search" placeholder="Tìm theo tên cơ sở, địa chỉ, phường/xã..." style="font-size: 0.85rem;" />
+                </div>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <a asp-action="CoSoLuuTru" class="btn btn-outline-secondary w-50 fw-semibold" style="border-radius: 8px; font-size: 0.85rem; height: 40px; display: inline-flex; align-items: center; justify-content: center;">
+                    Đặt lại
+                </a>
+                <button type="submit" class="btn btn-success w-50 fw-semibold" style="border-radius: 8px; font-size: 0.85rem; height: 40px;">
+                    <i class="bi bi-funnel-fill me-1"></i> Lọc
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results -->
+<div class="officer-table-card">
+    <div class="card-body p-4">
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-building-exclamation text-muted" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-3 mb-0">Không tìm thấy cơ sở lưu trú nào.</p>
+            </div>
+        }
+        else
+        {
+            <div class="officer-table-wrap">
+                <table class="officer-table">
+                    <thead>
+                        <tr>
+                            <th>Cơ sở</th>
+                            <th>Địa bàn / Loại hình</th>
+                            <th>Hoạt động</th>
+                            <th>Rủi ro</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center" style="width: 150px;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var facility in Model)
+                        {
+                            var riskClass = facility.MucRuiRo switch
+                            {
+                                "Cao" => "badge-danger",
+                                "Trung bình" => "badge-warning",
+                                _ => "badge-success"
+                            };
+
+                            var statusBadgeClass = facility.TrangThai == "Đang hoạt động" ? "badge-success" : "badge-danger";
+
+                            <tr>
+                                <td>
+                                    <div class="cell-title">@facility.TenCoSo</div>
+                                    <div class="cell-sub">Mã: <code>@facility.MaCoSoLuuTru</code></div>
+                                </td>
+                                <td>
+                                    <div class="cell-title">@facility.PhuongXa</div>
+                                    <div class="cell-sub">@facility.LoaiHinh</div>
+                                </td>
+                                <td>
+                                    <div class="metric-inline">
+                                        <div class="metric-item" title="Khách đang ở">
+                                            <i class="bi bi-people text-success"></i>
+                                            <span class="fw-bold">@facility.SoKhachDangO</span> <span class="text-muted">ở</span>
+                                        </div>
+                                        <span class="text-muted">|</span>
+                                        <div class="metric-item" title="Tổng hồ sơ khai báo">
+                                            <i class="bi bi-file-earmark-text text-primary"></i>
+                                            <span class="fw-bold">@facility.TongHoSo</span> <span class="text-muted">hồ sơ</span>
+                                        </div>
+                                        <span class="text-muted">|</span>
+                                        <div class="metric-item" title="Tổng vi phạm phát sinh">
+                                            <i class="bi bi-exclamation-triangle text-danger"></i>
+                                            <span class="fw-bold text-danger">@facility.TongViPham</span> <span class="text-muted">lỗi</span>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td>
+                                    <span class="badge-custom @riskClass" style="min-height: 20px; padding: 2px 8px; font-size: 11px;">
+                                        @facility.MucRuiRo
+                                    </span>
+                                </td>
+                                <td>
+                                    <span class="badge-custom @statusBadgeClass" style="min-height: 20px; padding: 2px 8px; font-size: 11px;">
+                                        @facility.TrangThai
+                                    </span>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-inline-flex align-items-center gap-1">
+                                        <a asp-action="HoSoTamTru" asp-route-search="@facility.TenCoSo" class="btn btn-xs btn-outline-success">
+                                            Xem hồ sơ
+                                        </a>
+                                        <div class="dropdown">
+                                            <button class="btn btn-link text-secondary p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="bi bi-three-dots"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-radius: 8px; font-size: 0.85rem;">
+                                                <li>
+                                                    <a class="dropdown-item py-2 text-success" asp-action="TraCuu" asp-route-coSoLuuTru="@facility.TenCoSo">
+                                                        <i class="bi bi-people me-2"></i> Khách đang cư trú
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center mt-4">
+                @Html.PagedListPager(Model, page => Url.Action("CoSoLuuTru", new { page, search = ViewBag.Search }),
+                    new X.PagedList.Mvc.Core.PagedListRenderOptions {
+                        LiElementClasses = new string[] { "page-item" },
+                        PageClasses = new string[] { "page-link" },
+                        UlElementClasses = new string[] { "pagination", "pagination-sm" }
+                    })
+            </div>
+        }
+    </div>
+</div>

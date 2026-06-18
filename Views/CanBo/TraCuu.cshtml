@@ -1,144 +1,248 @@
 @using X.PagedList.Mvc.Core
 @using X.PagedList
-@model IPagedList<ManagementOfForeigners.Models.Entities.NguoiNuocNgoai>
+@model ManagementOfForeigners.Models.ViewModels.CanBo.CanBoTraCuuViewModel
 @{
+    Layout = "~/Views/Shared/_OfficerLayout.cshtml";
     ViewBag.Title = "Tra cứu người nước ngoài";
 }
 
-<div class="container py-4">
-    <div class="card border-0 shadow-sm" style="border-radius: 16px;">
-        <div class="card-header gov-card-header p-4">
-            <h5 class="fw-bold mb-0">Tra cứu thông tin người nước ngoài</h5>
-            <p class="text-white-50 mb-0 fs-7">Tìm kiếm, lọc danh sách người nước ngoài đang hoạt động trên địa bàn thành phố</p>
+<div class="officer-page-header">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+            <h4>Tra Cứu Người Nước Ngoài</h4>
+            <p class="text-muted mb-0">Tìm kiếm nâng cao thông tin cá nhân, tình trạng cư trú, lịch sử lưu trú của công dân nước ngoài</p>
         </div>
+        <a asp-action="CanhBaoViPham" class="btn btn-warning fw-semibold text-dark px-3 py-2" style="border-radius: 8px;">
+            <i class="bi bi-exclamation-triangle me-1"></i> Tạo cảnh báo mới
+        </a>
+    </div>
+</div>
 
-        <div class="card-body p-4">
-            <!-- Filter Form -->
-            <form asp-action="TraCuu" method="get" class="row g-3 mb-4">
-                <div class="col-lg-4 col-md-12">
-                    <label class="form-label fw-semibold text-dark fs-7">Tìm kiếm nhanh</label>
+<!-- Advanced Filter Form -->
+<div class="card officer-filter-card border-0 shadow-sm">
+    <div class="card-body p-0">
+        <h6 class="fw-bold mb-3 text-secondary" style="font-size: 0.88rem;"><i class="bi bi-funnel me-1"></i>Bộ lọc tìm kiếm nâng cao</h6>
+        <form asp-action="TraCuu" method="get">
+            <div class="row g-3">
+                <!-- Row 1 -->
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label fw-semibold text-dark fs-7">Từ khoá tìm kiếm</label>
                     <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0" style="border-radius: 8px 0 0 8px;"><i class="bi bi-search text-muted"></i></span>
-                        <input type="text" name="search" class="form-control border-start-0" value="@ViewBag.Search" placeholder="Tìm theo họ tên, số hộ chiếu, nơi cư trú..." style="border-radius: 0 8px 8px 0;" />
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="search" class="form-control border-start-0" value="@Model.Search" placeholder="Họ tên, số hộ chiếu..." style="font-size: 0.85rem;" />
                     </div>
                 </div>
 
-                <div class="col-lg-3 col-md-6">
+                <div class="col-xl-3 col-md-6">
                     <label class="form-label fw-semibold text-dark fs-7">Quốc tịch</label>
-                    <select name="quocTich" class="form-select" style="border-radius: 8px;">
+                    <select name="quocTich" class="form-select" style="font-size: 0.85rem;">
                         <option value="">-- Tất cả quốc tịch --</option>
-                        @foreach (var nation in ViewBag.Nationalities)
+                        @if (ViewBag.Nationalities != null)
                         {
-                            @if (ViewBag.QuocTich == nation)
+                            foreach (var nation in ViewBag.Nationalities)
                             {
-                                <option value="@nation" selected>@nation</option>
-                            }
-                            else
-                            {
-                                <option value="@nation">@nation</option>
+                                if (Model.QuocTich == nation)
+                                {
+                                    <option value="@nation" selected>@nation</option>
+                                }
+                                else
+                                {
+                                    <option value="@nation">@nation</option>
+                                }
                             }
                         }
                     </select>
                 </div>
 
-                <div class="col-lg-3 col-md-6">
+                <div class="col-xl-3 col-md-6">
                     <label class="form-label fw-semibold text-dark fs-7">Loại Visa</label>
-                    <select name="loaiVisa" class="form-select" style="border-radius: 8px;">
+                    <select name="loaiVisa" class="form-select" style="font-size: 0.85rem;">
                         <option value="">-- Tất cả loại visa --</option>
-                        @foreach (var visa in ViewBag.VisaTypes)
+                        @if (ViewBag.VisaTypes != null)
                         {
-                            @if (ViewBag.LoaiVisa == visa)
+                            foreach (var visa in ViewBag.VisaTypes)
                             {
-                                <option value="@visa" selected>@visa</option>
-                            }
-                            else
-                            {
-                                <option value="@visa">@visa</option>
+                                if (Model.LoaiVisa == visa)
+                                {
+                                    <option value="@visa" selected>@visa</option>
+                                }
+                                else
+                                {
+                                    <option value="@visa">@visa</option>
+                                }
                             }
                         }
                     </select>
                 </div>
 
-                <div class="col-lg-2 col-md-12 d-flex align-items-end">
-                    <button type="submit" class="btn btn-primary w-100 fw-semibold" style="border-radius: 8px; height: 38px;">
-                        <i class="bi bi-funnel-fill me-1"></i> Lọc kết quả
-                    </button>
-                </div>
-            </form>
-
-            @if (!Model.Any())
-            {
-                <div class="text-center py-5">
-                    <i class="bi bi-search-heart text-muted" style="font-size: 3rem;"></i>
-                    <p class="text-muted mt-3 mb-0">Không tìm thấy người nước ngoài nào phù hợp với điều kiện tìm kiếm.</p>
-                </div>
-            }
-            else
-            {
-                <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0 fs-7">
-                        <thead>
-                            <tr class="table-gov-header">
-                                <th>Mã NNN</th>
-                                <th>Họ và tên</th>
-                                <th>Số hộ chiếu</th>
-                                <th>Quốc tịch</th>
-                                <th>Loại Visa</th>
-                                <th>Thời hạn Visa</th>
-                                <th>Nơi cư trú hiện tại</th>
-                                <th class="text-center">Hành động</th>
-                            </tr>
-                        </thead>
-                        <tbody>
-                            @foreach (var foreigner in Model)
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label fw-semibold text-dark fs-7">Phường/Xã quản lý</label>
+                    <select name="phuongXa" class="form-select" style="font-size: 0.85rem;">
+                        <option value="">-- Tất cả phường xã --</option>
+                        @if (ViewBag.Wards != null)
+                        {
+                            foreach (var ward in ViewBag.Wards)
                             {
-                                <tr>
-                                    <td><code class="text-secondary fw-semibold">@foreigner.MaNguoiNuocNgoai</code></td>
-                                    <td class="fw-bold text-dark">@foreigner.HoTen</td>
-                                    <td>@foreigner.SoHoChieu</td>
-                                    <td>@foreigner.QuocTich</td>
-                                    <td><span class="badge bg-secondary">@foreigner.LoaiVisa</span></td>
-                                    <td>
-                                        @if (foreigner.NgayHetHanVisa < DateTime.Now)
-                                        {
-                                            <span class="text-danger fw-semibold"><i class="bi bi-x-circle-fill"></i> Quá hạn (@foreigner.NgayHetHanVisa.ToString("dd/MM/yyyy"))</span>
-                                        }
-                                        else
-                                        {
-                                            <span class="text-success"><i class="bi bi-check-circle-fill"></i> Còn hạn (@foreigner.NgayHetHanVisa.ToString("dd/MM/yyyy"))</span>
-                                        }
-                                    </td>
-                                    <td>
-                                        <small class="text-muted style-multiline-ellipsis" style="max-width: 200px; display: inline-block;">
-                                            @foreigner.NoiCuTruHienTai
-                                        </small>
-                                    </td>
-                                    <td class="text-center">
-                                        <div class="d-inline-flex gap-2">
-                                            <a asp-action="ChiTietNguoiNuocNgoai" asp-route-id="@foreigner.MaNguoiNuocNgoai" class="btn btn-primary btn-xs" style="border-radius: 6px;">
-                                                <i class="bi bi-eye"></i> Xem hồ sơ
-                                            </a>
-                                            <a asp-action="CanhBaoViPham" asp-route-maNguoiNuocNgoai="@foreigner.MaNguoiNuocNgoai" class="btn btn-warning btn-xs text-dark" style="border-radius: 6px;">
-                                                <i class="bi bi-exclamation-triangle"></i> Cảnh báo
-                                            </a>
-                                        </div>
-                                    </td>
-                                </tr>
+                                if (Model.PhuongXa == ward)
+                                {
+                                    <option value="@ward" selected>@ward</option>
+                                }
+                                else
+                                {
+                                    <option value="@ward">@ward</option>
+                                }
                             }
-                        </tbody>
-                    </table>
+                        }
+                    </select>
                 </div>
 
-                <!-- Pagination -->
-                <div class="d-flex justify-content-center mt-4">
-                    @Html.PagedListPager(Model, page => Url.Action("TraCuu", new { page, search = ViewBag.Search, quocTich = ViewBag.QuocTich, loaiVisa = ViewBag.LoaiVisa }),
-                        new X.PagedList.Mvc.Core.PagedListRenderOptions {
-                            LiElementClasses = new string[] { "page-item" },
-                            PageClasses = new string[] { "page-link" },
-                            UlElementClasses = new string[] { "pagination", "pagination-sm" }
-                        })
+                <!-- Row 2 -->
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label fw-semibold text-dark fs-7">Tên cơ sở lưu trú</label>
+                    <input type="text" name="coSoLuuTru" class="form-control" value="@Model.CoSoLuuTru" placeholder="Nhập tên cơ sở..." style="font-size: 0.85rem;" />
                 </div>
-            }
-        </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label fw-semibold text-dark fs-7">Trạng thái cư trú</label>
+                    <select name="trangThaiCuTru" class="form-select" style="font-size: 0.85rem;">
+                        <option value="">-- Tất cả trạng thái --</option>
+                        <option value="Đang ở" selected="@(Model.TrangThaiCuTru == "Đang ở")">Đang ở</option>
+                        <option value="Đã rời" selected="@(Model.TrangThaiCuTru == "Đã rời")">Đã rời</option>
+                    </select>
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label fw-semibold text-dark fs-7">Lưu trú từ ngày</label>
+                    <input type="date" name="fromDate" class="form-control" value="@Model.FromDate" style="font-size: 0.85rem;" />
+                </div>
+
+                <div class="col-xl-3 col-md-6">
+                    <label class="form-label fw-semibold text-dark fs-7">Đến ngày</label>
+                    <input type="date" name="toDate" class="form-control" value="@Model.ToDate" style="font-size: 0.85rem;" />
+                </div>
+            </div>
+
+            <div class="d-flex justify-content-end gap-2 mt-4">
+                <a asp-action="TraCuu" class="btn btn-outline-secondary px-4 fw-semibold" style="border-radius: 8px; font-size: 0.85rem;">
+                    <i class="bi bi-x-circle me-1"></i> Đặt lại
+                </a>
+                <button type="submit" class="btn btn-success px-4 fw-semibold" style="border-radius: 8px; font-size: 0.85rem;">
+                    <i class="bi bi-funnel-fill me-1"></i> Tìm kiếm
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results Area -->
+<div class="officer-table-card">
+    <div class="card-body p-4">
+        @if (!Model.Foreigners.Any())
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-people text-muted" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-3 mb-0">Không tìm thấy người nước ngoài nào phù hợp với bộ lọc tìm kiếm.</p>
+            </div>
+        }
+        else
+        {
+            <div class="officer-table-wrap">
+                <table class="officer-table">
+                    <thead>
+                        <tr>
+                            <th>Họ và tên / Số hộ chiếu</th>
+                            <th>Quốc tịch & Giới tính</th>
+                            <th>Thị thực (Visa)</th>
+                            <th>Trạng thái</th>
+                            <th>Nơi cư trú hiện tại</th>
+                            <th>Địa bàn (Phường/Xã)</th>
+                            <th class="text-center" style="width: 150px;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var f in Model.Foreigners)
+                        {
+                            var visaExpired = f.NgayHetHanVisa < DateTime.Now;
+                            var badgeClass = f.TrangThaiCuTru == "Đang ở" ? "badge-success" : "badge-neutral";
+                            <tr>
+                                <td>
+                                    <div class="cell-title">@f.HoTen</div>
+                                    <div class="cell-sub"><i class="bi bi-passport me-1"></i>Hộ chiếu: @f.SoHoChieu</div>
+                                </td>
+                                <td>
+                                    <div class="cell-title">@f.QuocTich</div>
+                                    <div class="cell-sub">Giới tính: @f.GioiTinh</div>
+                                </td>
+                                <td>
+                                    <div><span class="badge-custom badge-neutral" style="min-height:20px; padding: 2px 8px;">@f.LoaiVisa</span></div>
+                                    @if (visaExpired)
+                                    {
+                                        <div class="text-danger fw-bold mt-1" style="font-size: 11.5px;"><i class="bi bi-x-circle me-1"></i>Quá hạn</div>
+                                    }
+                                    else
+                                    {
+                                        <div class="text-success mt-1" style="font-size: 11.5px;"><i class="bi bi-check-circle me-1"></i>Hạn: @f.NgayHetHanVisa.ToString("dd/MM/yyyy")</div>
+                                    }
+                                </td>
+                                <td>
+                                    <span class="badge-custom @badgeClass">
+                                        @f.TrangThaiCuTru
+                                    </span>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark">@f.TenCoSoLuuTru</div>
+                                    <div class="cell-sub cell-truncate" title="@f.DiaChiCuTru">@f.DiaChiCuTru</div>
+                                </td>
+                                <td>@f.TenPhuongXa</td>
+                                <td class="text-center">
+                                    <div class="d-inline-flex align-items-center gap-1">
+                                        <a asp-action="ChiTietNguoiNuocNgoai" asp-route-id="@f.MaNguoiNuocNgoai" class="btn btn-xs btn-outline-success">
+                                            Chi tiết
+                                        </a>
+                                        <div class="dropdown">
+                                            <button class="btn btn-link text-secondary p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="bi bi-three-dots"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-radius: 8px; font-size: 0.85rem;">
+                                                <li>
+                                                    <a class="dropdown-item py-2 text-warning" asp-action="CanhBaoViPham" asp-route-maNguoiNuocNgoai="@f.MaNguoiNuocNgoai">
+                                                        <i class="bi bi-exclamation-triangle me-2"></i> Gửi cảnh báo vi phạm
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item py-2 text-success" asp-action="HoSoTamTru" asp-route-search="@f.SoHoChieu">
+                                                        <i class="bi bi-file-earmark-text me-2"></i> Tra cứu khai báo
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center mt-4">
+                @Html.PagedListPager(Model.Foreigners, page => Url.Action("TraCuu", new { 
+                    page, 
+                    search = Model.Search, 
+                    quocTich = Model.QuocTich, 
+                    loaiVisa = Model.LoaiVisa,
+                    phuongXa = Model.PhuongXa,
+                    coSoLuuTru = Model.CoSoLuuTru,
+                    trangThaiCuTru = Model.TrangThaiCuTru,
+                    fromDate = Model.FromDate,
+                    toDate = Model.ToDate
+                }),
+                new X.PagedList.Mvc.Core.PagedListRenderOptions {
+                    LiElementClasses = new string[] { "page-item" },
+                    PageClasses = new string[] { "page-link" },
+                    UlElementClasses = new string[] { "pagination", "pagination-sm" }
+                })
+            </div>
+        }
     </div>
 </div>

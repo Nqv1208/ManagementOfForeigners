@@ -1,0 +1,254 @@
+@using X.PagedList.Mvc.Core
+@using X.PagedList
+@model IPagedList<ManagementOfForeigners.Models.Entities.HoSoKhaiBaoTamTru>
+@{
+    Layout = "~/Views/Shared/_OfficerLayout.cshtml";
+    ViewBag.Title = "Hồ sơ tạm trú";
+}
+
+<div class="officer-page-header">
+    <div>
+        <h4>Danh Sách Hồ Sơ Tạm Trú</h4>
+        <p class="text-muted mb-0">Giám sát, quản lý và phê duyệt/yêu cầu rà soát các hồ sơ khai báo tạm trú trong toàn thành phố</p>
+    </div>
+</div>
+
+<!-- Filters -->
+<div class="card officer-filter-card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <form asp-action="HoSoTamTru" method="get" class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold text-dark fs-7">Tìm kiếm nhanh</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="search" class="form-control border-start-0" value="@ViewBag.Search" placeholder="Tên khách, hộ chiếu, tên cơ sở lưu trú..." style="font-size: 0.85rem;" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold text-dark fs-7">Trạng thái hồ sơ</label>
+                <select name="status" class="form-select" style="font-size: 0.85rem;">
+                    <option value="">-- Tất cả trạng thái --</option>
+                    <option value="Chờ duyệt" selected="@(ViewBag.Status == "Chờ duyệt")">Chờ duyệt</option>
+                    <option value="Đã duyệt" selected="@(ViewBag.Status == "Đã duyệt")">Đã duyệt</option>
+                    <option value="Từ chối" selected="@(ViewBag.Status == "Từ chối")">Từ chối</option>
+                    <option value="Cần rà soát" selected="@(ViewBag.Status == "Cần rà soát")">Cần rà soát</option>
+                    <option value="Sai thông tin" selected="@(ViewBag.Status == "Sai thông tin")">Sai thông tin</option>
+                    <option value="Đã xử lý" selected="@(ViewBag.Status == "Đã xử lý")">Đã xử lý</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <a asp-action="HoSoTamTru" class="btn btn-outline-secondary w-50 fw-semibold" style="border-radius: 8px; font-size: 0.85rem; height: 40px; display: inline-flex; align-items: center; justify-content: center;">
+                    Đặt lại
+                </a>
+                <button type="submit" class="btn btn-success w-50 fw-semibold" style="border-radius: 8px; font-size: 0.85rem; height: 40px;">
+                    <i class="bi bi-funnel-fill me-1"></i> Lọc
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results -->
+<div class="officer-table-card">
+    <div class="card-body p-4">
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-file-earmark-x text-muted" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-3 mb-0">Không tìm thấy hồ sơ khai báo tạm trú nào phù hợp.</p>
+            </div>
+        }
+        else
+        {
+            <div class="officer-table-wrap">
+                <table class="officer-table">
+                    <thead>
+                        <tr>
+                            <th>Hồ sơ</th>
+                            <th>Khách / Hộ chiếu</th>
+                            <th>Lưu trú</th>
+                            <th>Thời gian</th>
+                            <th>Nguồn / Trạng thái</th>
+                            <th class="text-center" style="width: 140px;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var dec in Model)
+                        {
+                            var foreignerName = dec.TaiKhoan?.NguoiNuocNgoai?.HoTen ?? "N/A";
+                            var passport = dec.TaiKhoan?.NguoiNuocNgoai?.SoHoChieu ?? "N/A";
+                            var fId = dec.TaiKhoan?.NguoiNuocNgoai?.MaNguoiNuocNgoai ?? "";
+                            var sourceName = dec.TaiKhoan?.MaVaiTro switch
+                            {
+                                1 => "Tự khai báo",
+                                2 => "Chủ cơ sở",
+                                3 => "Công an P/X",
+                                _ => "Hệ thống"
+                            };
+                            var sourceBadgeClass = dec.TaiKhoan?.MaVaiTro switch
+                            {
+                                1 => "badge-info",
+                                2 => "badge-success",
+                                3 => "badge-warning",
+                                _ => "badge-neutral"
+                            };
+                            var statusBadgeClass = dec.TrangThai switch
+                            {
+                                "Chờ duyệt" => "badge-warning",
+                                "Đã duyệt" => "badge-success",
+                                "Từ chối" => "badge-danger",
+                                "Cần rà soát" or "Sai thông tin" => "badge-warning",
+                                "Đã xử lý" => "badge-success",
+                                _ => "badge-neutral"
+                            };
+
+                            <tr>
+                                <td>
+                                    <div class="cell-title"><code>@dec.MaHSKhaiBao</code></div>
+                                    <div class="cell-sub">Khai báo: @dec.NgayKhaiBao.ToString("dd/MM/yyyy")</div>
+                                </td>
+                                <td>
+                                    <div class="cell-title">@foreignerName</div>
+                                    <div class="cell-sub">HC: @passport</div>
+                                </td>
+                                <td>
+                                    <div class="fw-bold text-dark text-truncate" style="max-width: 200px;" title="@dec.CoSoLuuTru.TenCoSo">@dec.CoSoLuuTru.TenCoSo</div>
+                                    <div class="cell-sub cell-truncate" style="max-width: 200px;" title="@dec.DiaChiLuuTru">@dec.DiaChiLuuTru</div>
+                                </td>
+                                <td>
+                                    <div style="font-size: 0.8rem;"><i class="bi bi-calendar-event me-1 text-muted"></i>@dec.NgayBatDau.ToString("dd/MM/yyyy")</div>
+                                    <div style="font-size: 0.8rem; margin-top: 2px;"><i class="bi bi-calendar-check me-1 text-muted"></i>@dec.NgayKetThuc.ToString("dd/MM/yyyy")</div>
+                                </td>
+                                <td>
+                                    <div class="mb-1">
+                                        <span class="badge-custom @sourceBadgeClass" style="min-height: 20px; padding: 2px 8px; font-size: 11px;">
+                                            @sourceName
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span class="badge-custom @statusBadgeClass" style="min-height: 20px; padding: 2px 8px; font-size: 11px;">
+                                            @dec.TrangThai
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-inline-flex align-items-center gap-1">
+                                        @if (!string.IsNullOrEmpty(fId))
+                                        {
+                                            <a asp-action="ChiTietNguoiNuocNgoai" asp-route-id="@fId" class="btn btn-xs btn-outline-success">
+                                                Chi tiết
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-xs btn-outline-secondary" disabled>
+                                                Chi tiết
+                                            </button>
+                                        }
+
+                                        <div class="dropdown">
+                                            <button class="btn btn-link text-secondary p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="bi bi-three-dots"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-radius: 8px; font-size: 0.85rem;">
+                                                @if (dec.TrangThai != "Đã duyệt" && dec.TrangThai != "Từ chối")
+                                                {
+                                                    <li>
+                                                        <button class="dropdown-item py-2 text-success update-status-btn" 
+                                                                data-id="@dec.MaHSKhaiBao" 
+                                                                data-current-status="@dec.TrangThai" 
+                                                                data-note="@dec.GhiChu" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#updateStatusModal">
+                                                            <i class="bi bi-pencil-square me-2"></i> Cập nhật trạng thái
+                                                        </button>
+                                                    </li>
+                                                }
+                                                else
+                                                {
+                                                    <li>
+                                                        <span class="dropdown-item py-2 text-muted" style="cursor: not-allowed; opacity: 0.6;">
+                                                            <i class="bi bi-lock-fill me-2"></i> Hồ sơ đã hoàn tất
+                                                        </span>
+                                                    </li>
+                                                }
+                                                <li>
+                                                    <a class="dropdown-item py-2 text-primary" asp-action="HoSoTamTru" asp-route-search="@passport">
+                                                        <i class="bi bi-search me-2"></i> Tra cứu hồ sơ này
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+ 
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center mt-4">
+                @Html.PagedListPager(Model, page => Url.Action("HoSoTamTru", new { page, search = ViewBag.Search, status = ViewBag.Status }),
+                    new X.PagedList.Mvc.Core.PagedListRenderOptions {
+                        LiElementClasses = new string[] { "page-item" },
+                        PageClasses = new string[] { "page-link" },
+                        UlElementClasses = new string[] { "pagination", "pagination-sm" }
+                    })
+            </div>
+        }
+    </div>
+</div>
+ 
+<!-- Update Status Modal -->
+<div class="modal fade" id="updateStatusModal" tabindex="-1" aria-labelledby="updateStatusModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content officer-modal-content">
+            <div class="modal-header officer-modal-header">
+                <h6 class="modal-title fw-bold" id="updateStatusModalLabel"><i class="bi bi-pencil-square me-1"></i>Cập nhật trạng thái khai báo</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="LuuTrangThaiKhaiBao" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body p-4">
+                    <input type="hidden" name="id" id="modalRecordId" />
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-dark fs-7">Trạng thái mới</label>
+                        <select name="trangThai" id="modalStatusSelect" class="form-select" required style="border-radius: 8px;">
+                            <option value="Chờ duyệt">Chờ duyệt</option>
+                            <option value="Cần rà soát">Cần rà soát</option>
+                            <option value="Đã xử lý">Đã xử lý</option>
+                            <option value="Sai thông tin">Sai thông tin</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-dark fs-7">Ý kiến xử lý / Ghi chú</label>
+                        <textarea name="ghiChu" id="modalNoteText" class="form-control" rows="3" placeholder="Nhập lý do hoặc ý kiến xử lý (tùy chọn)..." style="border-radius: 8px;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer officer-modal-footer">
+                    <button type="button" class="btn btn-outline-secondary px-3 py-1.5 fw-semibold" style="border-radius: 8px; font-size: 0.85rem;" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success px-4 py-1.5 fw-semibold" style="border-radius: 8px; font-size: 0.85rem;">Xác nhận</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.update-status-btn').click(function() {
+                var id = $(this).data('id');
+                var status = $(this).data('current-status');
+                var note = $(this).data('note');
+                
+                $('#modalRecordId').val(id);
+                $('#modalStatusSelect').val(status);
+                $('#modalNoteText').val(note);
+            });
+        });
+    </script>
+}

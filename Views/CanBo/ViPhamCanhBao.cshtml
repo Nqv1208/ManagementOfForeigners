@@ -1,0 +1,233 @@
+@using X.PagedList.Mvc.Core
+@using X.PagedList
+@model IPagedList<ManagementOfForeigners.Models.Entities.CanhBaoViPham>
+@{
+    Layout = "~/Views/Shared/_OfficerLayout.cshtml";
+    ViewBag.Title = "Vi phạm & Cảnh báo";
+}
+
+<div class="officer-page-header">
+    <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+        <div>
+            <h4>Quản Lý Vi Phạm & Cảnh Báo</h4>
+            <p class="text-muted mb-0">Hồ sơ nghiệp vụ vi phạm, ban hành và theo dõi kết quả xử lý cảnh báo cư trú</p>
+        </div>
+        <a asp-action="CanhBaoViPham" class="btn btn-warning fw-semibold text-dark px-3 py-2" style="border-radius: 8px;">
+            <i class="bi bi-plus-circle me-1"></i> Tạo cảnh báo mới
+        </a>
+    </div>
+</div>
+
+<!-- Search Form -->
+<div class="card officer-filter-card border-0 shadow-sm">
+    <div class="card-body p-4">
+        <form asp-action="ViPhamCanhBao" method="get" class="row g-3 align-items-end">
+            <div class="col-md-6">
+                <label class="form-label fw-semibold text-dark fs-7">Tìm kiếm nhanh</label>
+                <div class="input-group">
+                    <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                    <input type="text" name="search" class="form-control border-start-0" value="@ViewBag.Search" placeholder="Tìm theo tên NNN, hộ chiếu, loại vi phạm..." style="font-size: 0.85rem;" />
+                </div>
+            </div>
+            <div class="col-md-3">
+                <label class="form-label fw-semibold text-dark fs-7">Trạng thái xử lý</label>
+                <select name="trangThai" class="form-select" style="font-size: 0.85rem;">
+                    <option value="">-- Tất cả trạng thái --</option>
+                    <option value="Đã gửi" selected="@(ViewBag.TrangThai == "Đã gửi")">Đã gửi</option>
+                    <option value="Đang xử lý" selected="@(ViewBag.TrangThai == "Đang xử lý")">Đang xử lý</option>
+                    <option value="Đã xử lý" selected="@(ViewBag.TrangThai == "Đã xử lý")">Đã xử lý</option>
+                </select>
+            </div>
+            <div class="col-md-3 d-flex gap-2">
+                <a asp-action="ViPhamCanhBao" class="btn btn-outline-secondary w-50 fw-semibold" style="border-radius: 8px; font-size: 0.85rem; height: 40px; display: inline-flex; align-items: center; justify-content: center;">
+                    Đặt lại
+                </a>
+                <button type="submit" class="btn btn-success w-50 fw-semibold" style="border-radius: 8px; font-size: 0.85rem; height: 40px;">
+                    <i class="bi bi-funnel-fill me-1"></i> Lọc
+                </button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<!-- Results -->
+<div class="officer-table-card">
+    <div class="card-body p-4">
+        @if (!Model.Any())
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-shield-check text-muted" style="font-size: 3rem;"></i>
+                <p class="text-muted mt-3 mb-0">Không có vụ việc vi phạm nào được ghi nhận.</p>
+            </div>
+        }
+        else
+        {
+            <div class="officer-table-wrap">
+                <table class="officer-table">
+                    <thead>
+                        <tr>
+                            <th>Vụ việc</th>
+                            <th>Người liên quan</th>
+                            <th>Nội dung vi phạm</th>
+                            <th>Đơn vị / Cán bộ xử lý</th>
+                            <th>Trạng thái</th>
+                            <th class="text-center" style="width: 140px;">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var warn in Model)
+                        {
+                            var severityClass = warn.MucDoViPham switch
+                            {
+                                "Nhẹ" => "badge-info",
+                                "Trung bình" => "badge-warning",
+                                "Nghiêm trọng" => "badge-danger",
+                                _ => "badge-neutral"
+                            };
+                            var statusClass = warn.TrangThai switch
+                            {
+                                "Đã gửi" => "badge-warning",
+                                "Đang xử lý" => "badge-info",
+                                "Đã xử lý" => "badge-success",
+                                _ => "badge-neutral"
+                            };
+                            var fId = warn.NguoiNuocNgoai?.MaNguoiNuocNgoai ?? "";
+                            var fName = warn.NguoiNuocNgoai?.HoTen ?? "N/A";
+                            var passport = warn.NguoiNuocNgoai?.SoHoChieu ?? "N/A";
+                            var officerName = warn.CanBo?.HoTen ?? "N/A";
+                            var officerWard = warn.CanBo?.PhuongXa?.TenPhuongXa ?? "Cấp Thành phố";
+
+                            <tr>
+                                <td>
+                                    <div class="cell-title" style="color: var(--color-primary-700);"><code>#VP-@warn.MaCanhBao</code></div>
+                                    <div class="cell-sub">Gửi: @warn.NgayCanhBao.ToString("dd/MM/yyyy HH:mm")</div>
+                                </td>
+                                <td>
+                                    <div class="cell-title">@fName</div>
+                                    <div class="cell-sub">Hộ chiếu: @passport</div>
+                                </td>
+                                <td>
+                                    <div class="cell-title">@warn.LoaiViPham</div>
+                                    <div class="cell-sub cell-truncate" title="@warn.NoiDungCanhBao" style="max-width: 250px;">
+                                        @warn.NoiDungCanhBao
+                                    </div>
+                                </td>
+                                <td>
+                                    <div class="cell-title">@officerName</div>
+                                    <div class="cell-sub">@officerWard</div>
+                                </td>
+                                <td>
+                                    <div class="mb-1">
+                                        <span class="badge-custom @severityClass" style="min-height: 20px; padding: 2px 8px; font-size: 11px;">
+                                            @warn.MucDoViPham
+                                        </span>
+                                    </div>
+                                    <div>
+                                        <span class="badge-custom @statusClass" style="min-height: 20px; padding: 2px 8px; font-size: 11px;">
+                                            @warn.TrangThai
+                                        </span>
+                                    </div>
+                                </td>
+                                <td class="text-center">
+                                    <div class="d-inline-flex align-items-center gap-1">
+                                        @if (!string.IsNullOrEmpty(fId))
+                                        {
+                                            <a asp-action="ChiTietNguoiNuocNgoai" asp-route-id="@fId" class="btn btn-xs btn-outline-success">
+                                                Chi tiết
+                                            </a>
+                                        }
+                                        else
+                                        {
+                                            <button class="btn btn-xs btn-outline-secondary" disabled>
+                                                Chi tiết
+                                            </button>
+                                        }
+                                        <div class="dropdown">
+                                            <button class="btn btn-link text-secondary p-1" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="bi bi-three-dots"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-radius: 8px; font-size: 0.85rem;">
+                                                <li>
+                                                    <button class="dropdown-item py-2 text-success update-warning-btn" 
+                                                            data-id="@warn.MaCanhBao" 
+                                                            data-current-status="@warn.TrangThai" 
+                                                            data-note="@warn.GhiChu" 
+                                                            data-bs-toggle="modal" 
+                                                            data-bs-target="#updateWarningModal">
+                                                        <i class="bi bi-pencil-square me-2"></i> Cập nhật trạng thái
+                                                    </button>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+
+            <!-- Pagination -->
+            <div class="d-flex justify-content-center mt-4">
+                @Html.PagedListPager(Model, page => Url.Action("ViPhamCanhBao", new { page, search = ViewBag.Search, trangThai = ViewBag.TrangThai }),
+                    new X.PagedList.Mvc.Core.PagedListRenderOptions {
+                        LiElementClasses = new string[] { "page-item" },
+                        PageClasses = new string[] { "page-link" },
+                        UlElementClasses = new string[] { "pagination", "pagination-sm" }
+                    })
+            </div>
+        }
+    </div>
+</div>
+
+<!-- Update Status Modal -->
+<div class="modal fade" id="updateWarningModal" tabindex="-1" aria-labelledby="updateWarningModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content officer-modal-content">
+            <div class="modal-header officer-modal-header">
+                <h6 class="modal-title fw-bold" id="updateWarningModalLabel"><i class="bi bi-pencil-square me-1"></i>Cập nhật trạng thái vụ việc</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="CapNhatTrangThaiCanhBao" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body p-4">
+                    <input type="hidden" name="id" id="modalWarningId" />
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-dark fs-7">Trạng thái mới</label>
+                        <select name="trangThai" id="modalWarningStatus" class="form-select" required style="border-radius: 8px;">
+                            <option value="Đã gửi">Đã gửi</option>
+                            <option value="Đang xử lý">Đang xử lý</option>
+                            <option value="Đã xử lý">Đã xử lý</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-dark fs-7">Nội dung ghi chú xử lý</label>
+                        <textarea name="ghiChu" id="modalWarningNote" class="form-control" rows="3" placeholder="Nhập kết quả xử lý hoặc ghi chú bổ sung..." style="border-radius: 8px;"></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer officer-modal-footer">
+                    <button type="button" class="btn btn-outline-secondary px-3 py-1.5 fw-semibold" style="border-radius: 8px; font-size: 0.85rem;" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success px-4 py-1.5 fw-semibold" style="border-radius: 8px; font-size: 0.85rem;">Cập nhật</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.update-warning-btn').click(function() {
+                var id = $(this).data('id');
+                var status = $(this).data('current-status');
+                var note = $(this).data('note');
+                
+                $('#modalWarningId').val(id);
+                $('#modalWarningStatus').val(status);
+                $('#modalWarningNote').val(note);
+            });
+        });
+    </script>
+}

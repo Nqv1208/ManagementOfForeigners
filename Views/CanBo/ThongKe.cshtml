@@ -1,158 +1,304 @@
+@using ManagementOfForeigners.Models.ViewModels.QuanTri
 @{
-    ViewBag.Title = "Thống kê báo cáo xuất nhập cảnh";
-    var quocTichStats = ViewBag.QuocTichStats as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
-    var visaStats = ViewBag.VisaStats as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
-    var facilityStats = ViewBag.FacilityStats as IEnumerable<dynamic> ?? Enumerable.Empty<dynamic>();
+    Layout = "~/Views/Shared/_OfficerLayout.cshtml";
+    ViewBag.Title = "Thống kê & Báo cáo";
 
-    int maxQuocTichCount = quocTichStats.FirstOrDefault()?.Count ?? 1;
-    int maxVisaCount = visaStats.FirstOrDefault()?.Count ?? 1;
-    int maxFacilityCount = facilityStats.FirstOrDefault()?.Count ?? 1;
+    var quocTichStats = ViewBag.QuocTichStats as List<AdminStatItemViewModel> ?? new();
+    var visaStats = ViewBag.VisaStats as List<AdminStatItemViewModel> ?? new();
+    var wardStats = ViewBag.WardStats as List<AdminStatItemViewModel> ?? new();
+    var facilityStats = ViewBag.FacilityStats as List<AdminStatItemViewModel> ?? new();
+    var violationStats = ViewBag.ViolationStats as List<AdminStatItemViewModel> ?? new();
+
+    int maxQuocTichCount = quocTichStats.FirstOrDefault()?.Value ?? 1;
+    int maxVisaCount = visaStats.FirstOrDefault()?.Value ?? 1;
+    int maxWardCount = wardStats.FirstOrDefault()?.Value ?? 1;
+    int maxFacilityCount = facilityStats.FirstOrDefault()?.Value ?? 1;
+    int maxViolationCount = violationStats.FirstOrDefault()?.Value ?? 1;
 }
 
-<div class="container py-4">
-    <div class="row mb-4">
-        <div class="col-12">
-            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
-                <div class="card-body p-4 bg-success text-white rounded-3">
-                    <div class="d-flex align-items-center gap-3">
-                        <div class="bg-primary text-white rounded-circle p-3 fs-3 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                            <i class="bi bi-graph-up-arrow"></i>
-                        </div>
-                        <div>
-                            <h4 class="fw-bold mb-1">Thống kê & Báo cáo Tổng hợp</h4>
-                            <p class="text-white-50 mb-0">Biểu đồ cơ cấu quốc tịch, phân loại thị thực và mật độ lưu trú thực tế tại TP. Đà Nẵng</p>
-                        </div>
+<div class="officer-page-header">
+    <div>
+        <h4>Thống Kê Báo Cáo Xuất Nhập Cảnh</h4>
+        <p class="text-muted mb-0">Biểu đồ cơ cấu quốc tịch, phân loại thị thực, mật độ cư trú và vi phạm cư trú tại TP. Đà Nẵng</p>
+    </div>
+</div>
+
+<!-- Date Filter Form - Compact version -->
+<div class="card officer-filter-card border-0 shadow-sm" style="padding: 14px 20px;">
+    <form asp-action="ThongKe" method="get" class="row g-2 align-items-center">
+        <div class="col-auto">
+            <span class="fw-bold text-secondary fs-7"><i class="bi bi-calendar-range me-1"></i>Khoảng thời gian:</span>
+        </div>
+        <div class="col-md-3 col-sm-5">
+            <input type="date" name="fromDate" class="form-control" value="@ViewBag.FromDate" style="font-size: 0.82rem; height: 36px;" />
+        </div>
+        <div class="col-auto text-muted">đến</div>
+        <div class="col-md-3 col-sm-5">
+            <input type="date" name="toDate" class="form-control" value="@ViewBag.ToDate" style="font-size: 0.82rem; height: 36px;" />
+        </div>
+        <div class="col-md-auto col-12 ms-md-auto d-flex gap-2 justify-content-end">
+            <a asp-action="ThongKe" class="btn btn-sm btn-outline-secondary px-3 py-1.5 fw-semibold" style="border-radius: 6px; font-size: 0.82rem; height: 36px; display: inline-flex; align-items: center;">
+                Đặt lại
+            </a>
+            <button type="submit" class="btn btn-sm btn-success px-3 py-1.5 fw-semibold" style="border-radius: 6px; font-size: 0.82rem; height: 36px;">
+                <i class="bi bi-funnel-fill me-1"></i> Thống kê
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Summary Stats in Selected Range -->
+<div class="row g-4 mb-4">
+    <!-- Total Foreigners -->
+    <div class="col-xl-3 col-md-6">
+        <div class="officer-stat-card is-success">
+            <div class="stat-content">
+                <span class="stat-label">Tổng khách nước ngoài</span>
+                <span class="stat-value">@ViewBag.TotalForeignersInRange</span>
+            </div>
+            <div class="stat-icon">
+                <i class="bi bi-globe2"></i>
+            </div>
+        </div>
+    </div>
+    <!-- Declarations in Range -->
+    <div class="col-xl-3 col-md-6">
+        <div class="officer-stat-card is-info">
+            <div class="stat-content">
+                <span class="stat-label">Hồ sơ khai báo mới</span>
+                <span class="stat-value">@ViewBag.TotalDeclarationsInRange</span>
+            </div>
+            <div class="stat-icon">
+                <i class="bi bi-file-earmark-text"></i>
+            </div>
+        </div>
+    </div>
+    <!-- Warnings in Range -->
+    <div class="col-xl-3 col-md-6">
+        <div class="officer-stat-card is-warning">
+            <div class="stat-content">
+                <span class="stat-label">Cảnh báo đã phát hành</span>
+                <span class="stat-value">@ViewBag.TotalWarningsInRange</span>
+            </div>
+            <div class="stat-icon">
+                <i class="bi bi-exclamation-triangle"></i>
+            </div>
+        </div>
+    </div>
+    <!-- Reports in Range -->
+    <div class="col-xl-3 col-md-6">
+        <div class="officer-stat-card is-danger">
+            <div class="stat-content">
+                <span class="stat-label">Báo cáo vi phạm tiếp nhận</span>
+                <span class="stat-value">@ViewBag.TotalReportsInRange</span>
+            </div>
+            <div class="stat-icon">
+                <i class="bi bi-flag"></i>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row g-4 mb-4">
+    <!-- Nationality Stats -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; border: 1px solid var(--color-border);">
+            <div class="card-header bg-white border-0 p-4 pb-0">
+                <span class="cell-title"><i class="bi bi-globe me-2 text-primary"></i>Cơ cấu Quốc tịch</span>
+                <p class="text-muted mb-0 fs-8">Danh sách quốc tịch có số lượng người cư trú nhiều nhất</p>
+            </div>
+            <div class="card-body p-4">
+                @if (!quocTichStats.Any())
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-bar-chart text-muted" style="font-size: 2.5rem;"></i>
+                        <p class="text-muted mt-2 mb-0">Chưa có dữ liệu thống kê quốc tịch.</p>
                     </div>
-                </div>
+                }
+                else
+                {
+                    <div class="stats-progress-container">
+                        @foreach (var item in quocTichStats)
+                        {
+                            int percentage = maxQuocTichCount > 0 ? (int)Math.Round((double)item.Value * 100 / maxQuocTichCount) : 0;
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-semibold text-dark fs-7">@item.Label</span>
+                                    <span class="fw-bold text-secondary fs-7">@item.Value người</span>
+                                </div>
+                                <div class="stats-progress-bar-track">
+                                    <div class="stats-progress-bar-fill" style="width: @percentage%;"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
             </div>
         </div>
     </div>
 
-    <div class="row g-4">
-        <!-- Quốc tịch -->
-        <div class="col-lg-6">
-            <div class="card border-0 shadow-sm h-100" style="border-radius: 16px;">
-                <div class="card-header bg-white border-0 p-4 pb-0">
-                    <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-globe me-2 text-primary"></i>Cơ cấu Quốc tịch</h5>
-                    <p class="text-muted mb-0 fs-8">Tỷ lệ phân bố công dân nước ngoài theo quốc gia</p>
-                </div>
-                <div class="card-body p-4">
-                    @if (!quocTichStats.Any())
-                    {
-                        <div class="text-center py-5">
-                            <i class="bi bi-bar-chart text-muted" style="font-size: 2.5rem;"></i>
-                            <p class="text-muted mt-2 mb-0">Chưa có dữ liệu thống kê.</p>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="d-flex flex-column gap-3">
-                            @foreach (var item in quocTichStats)
-                            {
-                                int percentage = (int)Math.Round((double)item.Count * 100 / maxQuocTichCount);
-                                <div>
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <span class="fw-bold text-dark fs-7">@item.Key</span>
-                                        <span class="badge bg-success">@item.Count người</span>
-                                    </div>
-                                    <div class="progress" style="height: 10px; border-radius: 5px;">
-                                        <div class="progress-bar bg-primary" role="progressbar" style="width: @percentage%; border-radius: 5px;" aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
+    <!-- Visa Type Stats -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; border: 1px solid var(--color-border);">
+            <div class="card-header bg-white border-0 p-4 pb-0">
+                <span class="cell-title"><i class="bi bi-shield-lock me-2 text-success"></i>Cơ cấu Thị thực (Visa)</span>
+                <p class="text-muted mb-0 fs-8">Phân loại thị thực theo mục đích cư trú tại địa phương</p>
+            </div>
+            <div class="card-body p-4">
+                @if (!visaStats.Any())
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-pie-chart text-muted" style="font-size: 2.5rem;"></i>
+                        <p class="text-muted mt-2 mb-0">Chưa có dữ liệu thống kê thị thực.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="stats-progress-container">
+                        @foreach (var item in visaStats)
+                        {
+                            int percentage = maxVisaCount > 0 ? (int)Math.Round((double)item.Value * 100 / maxVisaCount) : 0;
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-semibold text-dark fs-7">Visa @item.Label</span>
+                                    <span class="fw-bold text-secondary fs-7">@item.Value người</span>
                                 </div>
-                            }
-                        </div>
-                    }
-                </div>
-            </div>
-        </div>
-
-        <!-- Loại Visa -->
-        <div class="col-lg-6">
-            <div class="card border-0 shadow-sm h-100" style="border-radius: 16px;">
-                <div class="card-header bg-white border-0 p-4 pb-0">
-                    <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-shield-lock me-2 text-success"></i>Cơ cấu Thị thực (Visa)</h5>
-                    <p class="text-muted mb-0 fs-8">Phân loại theo mục đích nhập cảnh (Du lịch, Doanh nghiệp...)</p>
-                </div>
-                <div class="card-body p-4">
-                    @if (!visaStats.Any())
-                    {
-                        <div class="text-center py-5">
-                            <i class="bi bi-pie-chart text-muted" style="font-size: 2.5rem;"></i>
-                            <p class="text-muted mt-2 mb-0">Chưa có dữ liệu thống kê.</p>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="d-flex flex-column gap-3">
-                            @foreach (var item in visaStats)
-                            {
-                                int percentage = (int)Math.Round((double)item.Count * 100 / maxVisaCount);
-                                <div>
-                                    <div class="d-flex justify-content-between align-items-center mb-1">
-                                        <span class="fw-bold text-dark fs-7">@item.Key</span>
-                                        <span class="badge bg-success">@item.Count người</span>
-                                    </div>
-                                    <div class="progress" style="height: 10px; border-radius: 5px;">
-                                        <div class="progress-bar bg-success" role="progressbar" style="width: @percentage%; border-radius: 5px;" aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
-                                    </div>
+                                <div class="stats-progress-bar-track">
+                                    <div class="stats-progress-bar-fill accent-orange" style="width: @percentage%;"></div>
                                 </div>
-                            }
-                        </div>
-                    }
-                </div>
+                            </div>
+                        }
+                    </div>
+                }
             </div>
         </div>
+    </div>
+</div>
 
-        <!-- Mật độ lưu trú -->
-        <div class="col-12">
-            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
-                <div class="card-header bg-white border-0 p-4 pb-0">
-                    <h5 class="fw-bold mb-0 text-dark"><i class="bi bi-building me-2 text-warning"></i>Top Cơ sở lưu trú có mật độ khách cao nhất</h5>
-                    <p class="text-muted mb-0 fs-8">Các cơ sở có lượng khách nước ngoài đang ở nhiều nhất tại Đà Nẵng</p>
-                </div>
-                <div class="card-body p-4">
-                    @if (!facilityStats.Any())
-                    {
-                        <div class="text-center py-5">
-                            <i class="bi bi-house-exclamation text-muted" style="font-size: 2.5rem;"></i>
-                            <p class="text-muted mt-2 mb-0">Không có dữ liệu lưu trú hoạt động.</p>
-                        </div>
-                    }
-                    else
-                    {
-                        <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0 fs-7">
-                                <thead>
-                                    <tr class="table-light">
-                                        <th>Hạng</th>
-                                        <th>Tên cơ sở lưu trú</th>
-                                        <th>Đang lưu trú</th>
-                                        <th>Cơ cấu mật độ trực quan</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    @{ int rank = 1; }
-                                    @foreach (var item in facilityStats)
-                                    {
-                                        int percentage = (int)Math.Round((double)item.Count * 100 / maxFacilityCount);
-                                        <tr>
-                                            <td class="fw-bold"><span class="badge bg-success rounded-circle p-2 d-inline-flex align-items-center justify-content-center" style="width: 28px; height: 28px;">@rank</span></td>
-                                            <td class="fw-bold">@item.Key</td>
-                                            <td><span class="text-dark fw-bold">@item.Count</span> khách đang ở</td>
-                                            <td style="width: 50%;">
-                                                <div class="progress" style="height: 12px; border-radius: 6px;">
-                                                    <div class="progress-bar bg-warning progress-bar-striped" role="progressbar" style="width: @percentage%; border-radius: 6px;" aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
-                                                </div>
-                                            </td>
-                                        </tr>
-                                        rank++;
-                                    }
-                                </tbody>
-                            </table>
-                        </div>
-                    }
-                </div>
+<div class="row g-4 mb-4">
+    <!-- Ward Stats -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; border: 1px solid var(--color-border);">
+            <div class="card-header bg-white border-0 p-4 pb-0">
+                <span class="cell-title"><i class="bi bi-geo-alt me-2 text-info"></i>Đại bàn cư trú (Phường/Xã)</span>
+                <p class="text-muted mb-0 fs-8">Số lượng khách nước ngoài đang ở hoạt động theo Phường/Xã</p>
+            </div>
+            <div class="card-body p-4">
+                @if (!wardStats.Any())
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-map text-muted" style="font-size: 2.5rem;"></i>
+                        <p class="text-muted mt-2 mb-0">Chưa có dữ liệu thống kê địa bàn cư trú.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="stats-progress-container">
+                        @foreach (var item in wardStats)
+                        {
+                            int percentage = maxWardCount > 0 ? (int)Math.Round((double)item.Value * 100 / maxWardCount) : 0;
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-semibold text-dark fs-7">@item.Label</span>
+                                    <span class="fw-bold text-secondary fs-7">@item.Value người</span>
+                                </div>
+                                <div class="stats-progress-bar-track">
+                                    <div class="stats-progress-bar-fill" style="width: @percentage%; background-color: var(--color-info);"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
             </div>
         </div>
+    </div>
+
+    <!-- Violation Stats -->
+    <div class="col-lg-6">
+        <div class="card border-0 shadow-sm h-100" style="border-radius: 12px; border: 1px solid var(--color-border);">
+            <div class="card-header bg-white border-0 p-4 pb-0">
+                <span class="cell-title"><i class="bi bi-exclamation-triangle me-2 text-danger"></i>Phân loại vi phạm</span>
+                <p class="text-muted mb-0 fs-8">Phân loại hành vi vi phạm cư trú trong khoảng thời gian đã chọn</p>
+            </div>
+            <div class="card-body p-4">
+                @if (!violationStats.Any())
+                {
+                    <div class="text-center py-5">
+                        <i class="bi bi-check-circle text-success" style="font-size: 2.5rem;"></i>
+                        <p class="text-muted mt-2 mb-0">Tuyệt vời! Không phát hiện vi phạm cư trú nào trong khoảng thời gian này.</p>
+                    </div>
+                }
+                else
+                {
+                    <div class="stats-progress-container">
+                        @foreach (var item in violationStats)
+                        {
+                            int percentage = maxViolationCount > 0 ? (int)Math.Round((double)item.Value * 100 / maxViolationCount) : 0;
+                            <div>
+                                <div class="d-flex justify-content-between align-items-center mb-1">
+                                    <span class="fw-semibold text-dark fs-7">@item.Label</span>
+                                    <span class="fw-bold text-secondary fs-7">@item.Value vụ</span>
+                                </div>
+                                <div class="stats-progress-bar-track">
+                                    <div class="stats-progress-bar-fill accent-danger" style="width: @percentage%;"></div>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Top Facilities -->
+<div class="officer-table-card mb-4">
+    <div class="card-header bg-white border-0 p-4 pb-0">
+        <span class="cell-title"><i class="bi bi-building me-2 text-warning"></i>Cơ sở lưu trú có số khách đang cư trú đông nhất</span>
+        <p class="text-muted mb-0 fs-8">Top 10 cơ sở lưu trú dẫn đầu về mật độ người nước ngoài đang ở</p>
+    </div>
+    <div class="card-body p-4">
+        @if (!facilityStats.Any())
+        {
+            <div class="text-center py-5">
+                <i class="bi bi-house-exclamation text-muted" style="font-size: 2.5rem;"></i>
+                <p class="text-muted mt-2 mb-0">Không có dữ liệu lưu trú hoạt động tại các cơ sở.</p>
+            </div>
+        }
+        else
+        {
+            <div class="officer-table-wrap">
+                <table class="officer-table">
+                    <thead>
+                        <tr>
+                            <th style="width: 80px; text-align: center;">Hạng</th>
+                            <th>Tên cơ sở lưu trú</th>
+                            <th style="width: 200px;">Số lượng khách hiện tại</th>
+                            <th>Biểu đồ mật độ</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @{ int rank = 1; }
+                        @foreach (var item in facilityStats)
+                        {
+                            int percentage = maxFacilityCount > 0 ? (int)Math.Round((double)item.Value * 100 / maxFacilityCount) : 0;
+                            <tr>
+                                <td class="fw-bold text-center">
+                                    <span class="badge-custom badge-success" style="width: 26px; height: 26px; border-radius: 999px;">@rank</span>
+                                </td>
+                                <td class="fw-bold text-dark">@item.Label</td>
+                                <td class="fw-semibold">@item.Value khách đang ở</td>
+                                <td>
+                                    <div class="stats-progress-bar-track" style="height: 12px;">
+                                        <div class="stats-progress-bar-fill" style="width: @percentage%; background-color: var(--color-accent);"></div>
+                                    </div>
+                                </td>
+                            </tr>
+                            rank++;
+                        }
+                    </tbody>
+                </table>
+            </div>
+        }
     </div>
 </div>
