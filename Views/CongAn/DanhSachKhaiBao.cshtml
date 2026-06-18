@@ -87,11 +87,31 @@
                                     <td class="text-center">
                                         @await Html.PartialAsync("_StatusBadge", dec.TrangThai)
                                     </td>
-                                    <td class="text-center">
-                                        <a asp-action="ChiTietKhaiBao" asp-route-id="@dec.MaHSKhaiBao" class="btn btn-primary btn-xs" style="border-radius: 6px;">
-                                            <i class="bi bi-eye"></i> Chi tiết
-                                        </a>
-                                    </td>
+                                     <td class="text-center">
+                                         <div class="d-inline-flex gap-1 align-items-center justify-content-center">
+                                             <a asp-action="ChiTietKhaiBao" asp-route-id="@dec.MaHSKhaiBao" class="btn btn-outline-primary btn-xs" style="border-radius: 6px; font-size: 0.75rem;">
+                                                 <i class="bi bi-eye"></i> Chi tiết
+                                             </a>
+                                             @if (dec.TrangThai == "Chờ duyệt")
+                                             {
+                                                 <form asp-action="PheDuyet" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn phê duyệt hồ sơ khai báo này?');" style="display:inline-block; margin: 0;">
+                                                     @Html.AntiForgeryToken()
+                                                     <input type="hidden" name="id" value="@dec.MaHSKhaiBao" />
+                                                     <button type="submit" class="btn btn-success btn-xs fw-semibold text-white px-2 py-1" style="border-radius: 6px; font-size: 0.75rem; border: none; background-color: var(--primary);">
+                                                         <i class="bi bi-check-circle"></i> Duyệt
+                                                     </button>
+                                                 </form>
+                                                 
+                                                 <button type="button" class="btn btn-danger btn-xs fw-semibold text-white px-2 py-1 quick-reject-btn" 
+                                                         data-id="@dec.MaHSKhaiBao" 
+                                                         data-bs-toggle="modal" 
+                                                         data-bs-target="#quickRejectModal" 
+                                                         style="border-radius: 6px; font-size: 0.75rem; border: none; background-color: var(--danger);">
+                                                     <i class="bi bi-x-circle"></i> Từ chối
+                                                 </button>
+                                             }
+                                         </div>
+                                     </td>
                                 </tr>
                             }
                         </tbody>
@@ -111,3 +131,41 @@
         </div>
     </div>
 </div>
+
+<!-- Quick Reject Modal -->
+<div class="modal fade" id="quickRejectModal" tabindex="-1" aria-labelledby="quickRejectModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 12px; overflow: hidden; border: none;">
+            <div class="modal-header bg-danger text-white">
+                <h6 class="modal-title fw-bold" id="quickRejectModalLabel"><i class="bi bi-exclamation-triangle-fill me-1"></i>Từ chối phê duyệt hồ sơ</h6>
+                <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="TuChoi" method="post">
+                @Html.AntiForgeryToken()
+                <div class="modal-body p-4">
+                    <input type="hidden" name="MaHSKhaiBao" id="quickRejectId" />
+                    
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold text-dark fs-7">Lý do từ chối</label>
+                        <textarea name="LyDoTuChoi" class="form-control" rows="3" placeholder="Nhập lý do từ chối (Ví dụ: Thiếu thông tin, sai số hộ chiếu...)" style="border-radius: 8px;" required></textarea>
+                    </div>
+                </div>
+                <div class="modal-footer" style="background-color: #f8fafc;">
+                    <button type="button" class="btn btn-outline-secondary btn-sm px-3 py-1.5 fw-semibold" data-bs-dismiss="modal" style="border-radius: 6px; font-size: 0.85rem;">Hủy</button>
+                    <button type="submit" class="btn btn-danger btn-sm px-3 py-1.5 fw-semibold" style="border-radius: 6px; font-size: 0.85rem;">Xác nhận từ chối</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            $('.quick-reject-btn').click(function() {
+                var id = $(this).data('id');
+                $('#quickRejectId').val(id);
+            });
+        });
+    </script>
+}
