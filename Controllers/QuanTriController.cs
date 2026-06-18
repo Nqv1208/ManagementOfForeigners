@@ -26,72 +26,60 @@ public class QuanTriController : Controller
     public async Task<IActionResult> TongQuan()
     {
         var today = DateTime.Today;
-        var next30Days = today.AddDays(30);
-        var monthStart = new DateTime(today.Year, today.Month, 1);
+
+        var logsTodayCount = await _context.LichSuCapNhatThongTinCaNhans.CountAsync(x => x.NgayCapNhat >= today)
+            + await _context.CanhBaoViPhams.CountAsync(x => x.NgayCanhBao >= today)
+            + await _context.BaoCaoViPhams.CountAsync(x => x.NgayBaoCao >= today);
 
         var model = new TongQuanViewModel
         {
             TotalAccounts = await _context.TaiKhoans.CountAsync(),
             ActiveAccounts = await _context.TaiKhoans.CountAsync(t => t.TrangThai == TrangThaiTaiKhoan.HoatDong),
-            LockedAccounts = await _context.TaiKhoans.CountAsync(t => t.TrangThai == TrangThaiTaiKhoan.Khoa),
-            NewAccountsThisMonth = await _context.TaiKhoans.CountAsync(t => t.NgayTao >= monthStart),
-
-            TotalForeigners = await _context.NguoiNuocNgoais.CountAsync(),
-            VisaExpiring30Days = await _context.NguoiNuocNgoais.CountAsync(n => n.NgayHetHanVisa >= today && n.NgayHetHanVisa <= next30Days),
-            TotalFacilities = await _context.CoSoLuuTrus.CountAsync(),
-            ActiveFacilities = await _context.CoSoLuuTrus.CountAsync(c => c.TrangThai == TrangThaiCoSo.DangHoatDong),
-
-            PendingDeclarations = await _context.HoSoKhaiBaoTamTrus.CountAsync(h => h.TrangThai == TrangThaiKhaiBao.ChoDuyet),
-            ApprovedDeclarations = await _context.HoSoKhaiBaoTamTrus.CountAsync(h => h.TrangThai == TrangThaiKhaiBao.DaDuyet),
-            RejectedDeclarations = await _context.HoSoKhaiBaoTamTrus.CountAsync(h => h.TrangThai == TrangThaiKhaiBao.TuChoi),
-
-            TotalWarnings = await _context.CanhBaoViPhams.CountAsync(),
-            OpenReports = await _context.BaoCaoViPhams.CountAsync(r => r.TrangThaiXuLy != TrangThaiXuLyConst.DaXuLy)
+            TotalRoles = await _context.VaiTros.CountAsync(),
+            TotalWards = await _context.PhuongXas.CountAsync(),
+            LogsTodayCount = logsTodayCount
         };
-
-        model.RoleStats = await _context.TaiKhoans
-            .Include(t => t.VaiTro)
-            .GroupBy(t => t.VaiTro.TenVaiTro)
-            .Select(g => new AdminStatItemViewModel { Label = g.Key, Value = g.Count() })
-            .OrderByDescending(x => x.Value)
-            .ToListAsync();
-
-        model.DeclarationStats = await _context.HoSoKhaiBaoTamTrus
-            .GroupBy(h => h.TrangThai)
-            .Select(g => new AdminStatItemViewModel { Label = g.Key, Value = g.Count() })
-            .OrderByDescending(x => x.Value)
-            .ToListAsync();
 
         model.LatestAccounts = await BuildAccountQuery()
             .OrderByDescending(t => t.NgayTao)
-            .Take(8)
+            .Take(5)
             .Select(AccountRowProjection)
             .ToListAsync();
 
-        model.LatestDeclarations = await _context.HoSoKhaiBaoTamTrus
-            .Include(h => h.TaiKhoan)
-                .ThenInclude(t => t.NguoiNuocNgoai)
-            .Include(h => h.CoSoLuuTru)
-            .OrderByDescending(h => h.NgayKhaiBao)
-            .Take(8)
-            .Select(h => new AdminDeclarationRowViewModel
+        var profileUpdates = await _context.LichSuCapNhatThongTinCaNhans
+            .Include(u => u.TaiKhoan)
+            .OrderByDescending(u => u.NgayCapNhat)
+            .Take(10)
+            .Select(u => new NhatKyHoatDongViewModel
             {
-                MaHSKhaiBao = h.MaHSKhaiBao,
-                HoTenNguoiNuocNgoai = h.TaiKhoan.NguoiNuocNgoai != null ? h.TaiKhoan.NguoiNuocNgoai.HoTen : "—",
-                SoHoChieu = h.TaiKhoan.NguoiNuocNgoai != null ? h.TaiKhoan.NguoiNuocNgoai.SoHoChieu : "—",
-                DiaChiLuuTru = h.DiaChiLuuTru,
-                TenCoSo = h.CoSoLuuTru != null ? h.CoSoLuuTru.TenCoSo : null,
-                NgayKhaiBao = h.NgayKhaiBao,
-                NgayBatDau = h.NgayBatDau,
-                NgayKetThuc = h.NgayKetThuc,
-                TrangThai = h.TrangThai
+                OccurredAt = u.NgayCapNhat,
+                ActorOrSource = u.TaiKhoan.TenDangNhap,
+                Category = "Cập nhật thông tin",
+                Detail = $"Thay đổi {u.TruongCapNhat} từ '{u.GiaTriCu}' sang '{u.GiaTriMoi}'",
+                Status = "Đã cập nhật"
             })
             .ToListAsync();
 
-        model.LatestReports = await BuildReportQuery()
-            .OrderByDescending(r => r.NgayBaoCao)
-            .Take(8)
+        var warnings = await _context.CanhBaoViPhams
+            .Include(w => w.CanBo)
+            .Include(w => w.NguoiNuocNgoai)
+            .OrderByDescending(w => w.NgayCanhBao)
+            .Take(10)
+            .Select(w => new NhatKyHoatDongViewModel
+            {
+                OccurredAt = w.NgayCanhBao,
+                ActorOrSource = w.CanBo.HoTen,
+                Category = "Cảnh báo vi phạm",
+                Detail = $"Gửi cảnh báo đến {w.NguoiNuocNgoai.HoTen} ({w.LoaiViPham})",
+                Status = w.TrangThai
+            })
             .ToListAsync();
+
+        model.LatestLogs = profileUpdates
+            .Concat(warnings)
+            .OrderByDescending(l => l.OccurredAt)
+            .Take(8)
+            .ToList();
 
         return View(model);
     }
@@ -456,81 +444,134 @@ public class QuanTriController : Controller
 
     // GET: /admin/permissions
     [HttpGet("permissions")]
-    public async Task<IActionResult> QuanLyPhanQuyen()
+    public async Task<IActionResult> PhanQuyen(int? id)
     {
         var roles = await _context.VaiTros
-            .Include(v => v.QuyenHans)
             .OrderBy(v => v.MaVaiTro)
             .ToListAsync();
+
+        VaiTro? selectedRole = null;
+        if (id.HasValue)
+        {
+            selectedRole = await _context.VaiTros
+                .Include(v => v.QuyenHans)
+                .FirstOrDefaultAsync(v => v.MaVaiTro == id.Value);
+        }
+        else if (roles.Any())
+        {
+            selectedRole = await _context.VaiTros
+                .Include(v => v.QuyenHans)
+                .FirstOrDefaultAsync(v => v.MaVaiTro == roles.First().MaVaiTro);
+        }
+
+        ViewBag.SelectedRole = selectedRole;
         return View(roles);
     }
 
-    // POST: /admin/permissions/add
-    [HttpPost("permissions/add")]
+    // POST: /admin/permissions/save
+    [HttpPost("permissions/save")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> ThemQuyen(int maVaiTro, string tenQuyen, string moTaQuyen)
+    public async Task<IActionResult> LuuPhanQuyen(int maVaiTro, List<string> selectedPermissions)
     {
-        if (string.IsNullOrWhiteSpace(tenQuyen))
+        var role = await _context.VaiTros.Include(v => v.QuyenHans).FirstOrDefaultAsync(v => v.MaVaiTro == maVaiTro);
+        if (role == null) return NotFound();
+
+        // Xoá toàn bộ quyền cũ của vai trò này
+        _context.QuyenHans.RemoveRange(role.QuyenHans);
+
+        // Thêm danh sách quyền mới
+        if (selectedPermissions != null)
         {
-            TempData["ErrorMessage"] = "Tên quyền không được để trống.";
-            return RedirectToAction(nameof(QuanLyPhanQuyen));
+            foreach (var perm in selectedPermissions)
+            {
+                if (!string.IsNullOrWhiteSpace(perm))
+                {
+                    _context.QuyenHans.Add(new QuyenHan
+                     {
+                         MaVaiTro = maVaiTro,
+                         TenQuyen = perm,
+                         MoTaQuyen = $"Quyền hạn gán động: {perm}",
+                         NgayCapNhat = DateTime.Now
+                     });
+                }
+            }
         }
 
-        var roleExists = await _context.VaiTros.AnyAsync(v => v.MaVaiTro == maVaiTro);
-        if (!roleExists) return NotFound();
-
-        var permission = new QuyenHan
-        {
-            MaVaiTro = maVaiTro,
-            TenQuyen = tenQuyen.Trim(),
-            MoTaQuyen = moTaQuyen?.Trim() ?? string.Empty,
-            NgayCapNhat = DateTime.Now
-        };
-
-        _context.QuyenHans.Add(permission);
         await _context.SaveChangesAsync();
-        TempData["SuccessMessage"] = "Thêm quyền hạn thành công.";
-        return RedirectToAction(nameof(QuanLyPhanQuyen));
+        TempData["SuccessMessage"] = $"Cập nhật phân quyền cho vai trò {role.TenVaiTro} thành công.";
+        return RedirectToAction(nameof(PhanQuyen), new { id = maVaiTro });
     }
 
-    // POST: /admin/permissions/delete
-    [HttpPost("permissions/delete")]
-    [ValidateAntiForgeryToken]
-    public async Task<IActionResult> XoaQuyen(int maQuyen)
+    // GET: /admin/roles
+    [HttpGet("roles")]
+    public async Task<IActionResult> VaiTro(int? id)
     {
-        var permission = await _context.QuyenHans.FirstOrDefaultAsync(q => q.MaQuyen == maQuyen);
-        if (permission == null) return NotFound();
-
-        _context.QuyenHans.Remove(permission);
-        await _context.SaveChangesAsync();
-        TempData["SuccessMessage"] = "Xóa quyền hạn thành công.";
-        return RedirectToAction(nameof(QuanLyPhanQuyen));
+        var roles = await _context.VaiTros
+            .OrderBy(v => v.MaVaiTro)
+            .ToListAsync();
+            
+        var userCounts = await _context.TaiKhoans
+            .GroupBy(t => t.MaVaiTro)
+            .Select(g => new { MaVaiTro = g.Key, Count = g.Count() })
+            .ToDictionaryAsync(x => x.MaVaiTro, x => x.Count);
+            
+        ViewBag.UserCounts = userCounts;
+        
+        VaiTro? selectedRole = null;
+        if (id.HasValue)
+        {
+            selectedRole = roles.FirstOrDefault(r => r.MaVaiTro == id.Value);
+        }
+        else if (roles.Any())
+        {
+            selectedRole = roles.First();
+        }
+        
+        ViewBag.SelectedRole = selectedRole;
+        return View(roles);
     }
 
-    // POST: /admin/roles/update
-    [HttpPost("roles/update")]
+    // POST: /admin/roles/save
+    [HttpPost("roles/save")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CapNhatVaiTro(int maVaiTro, string moTaVaiTro, string trangThai)
+    public async Task<IActionResult> LuuVaiTro(int maVaiTro, string moTaVaiTro, string trangThai)
     {
         var role = await _context.VaiTros.FirstOrDefaultAsync(v => v.MaVaiTro == maVaiTro);
         if (role == null) return NotFound();
-
+        
         role.MoTaVaiTro = moTaVaiTro?.Trim() ?? string.Empty;
         role.TrangThai = trangThai ?? "Hoạt động";
-
+        
         _context.VaiTros.Update(role);
         await _context.SaveChangesAsync();
-        TempData["SuccessMessage"] = "Cập nhật vai trò thành công.";
-        return RedirectToAction(nameof(QuanLyPhanQuyen));
+        TempData["SuccessMessage"] = $"Cập nhật vai trò {role.TenVaiTro} thành công.";
+        return RedirectToAction(nameof(VaiTro), new { id = maVaiTro });
     }
 
     // GET: /admin/activity-logs
     [HttpGet("activity-logs")]
-    public async Task<IActionResult> NhatKyHoatDong()
+    public async Task<IActionResult> NhatKyHeThong(string? search, string? category, string? status, string? fromDate, string? toDate)
     {
-        // Fetch 100 recent updates
-        var profileUpdates = await _context.LichSuCapNhatThongTinCaNhans
+        var profileUpdatesQuery = _context.LichSuCapNhatThongTinCaNhans
             .Include(u => u.TaiKhoan)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var cleanSearch = search.Trim();
+            profileUpdatesQuery = profileUpdatesQuery.Where(u => u.TaiKhoan.TenDangNhap.Contains(cleanSearch) || u.TruongCapNhat.Contains(cleanSearch) || (u.LyDoCapNhat != null && u.LyDoCapNhat.Contains(cleanSearch)));
+        }
+
+        if (!string.IsNullOrEmpty(fromDate) && DateTime.TryParse(fromDate, out var fromDt))
+        {
+            profileUpdatesQuery = profileUpdatesQuery.Where(u => u.NgayCapNhat >= fromDt);
+        }
+        if (!string.IsNullOrEmpty(toDate) && DateTime.TryParse(toDate, out var toDt))
+        {
+            profileUpdatesQuery = profileUpdatesQuery.Where(u => u.NgayCapNhat <= toDt.AddDays(1));
+        }
+
+        var profileUpdates = await profileUpdatesQuery
             .OrderByDescending(u => u.NgayCapNhat)
             .Take(100)
             .Select(u => new NhatKyHoatDongViewModel
@@ -543,10 +584,27 @@ public class QuanTriController : Controller
             })
             .ToListAsync();
 
-        // Fetch 100 recent warnings
-        var warnings = await _context.CanhBaoViPhams
+        var warningsQuery = _context.CanhBaoViPhams
             .Include(w => w.CanBo)
             .Include(w => w.NguoiNuocNgoai)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var cleanSearch = search.Trim();
+            warningsQuery = warningsQuery.Where(w => w.CanBo.HoTen.Contains(cleanSearch) || w.NguoiNuocNgoai.HoTen.Contains(cleanSearch) || w.LoaiViPham.Contains(cleanSearch) || w.NoiDungCanhBao.Contains(cleanSearch));
+        }
+
+        if (!string.IsNullOrEmpty(fromDate) && DateTime.TryParse(fromDate, out var fromDtW))
+        {
+            warningsQuery = warningsQuery.Where(w => w.NgayCanhBao >= fromDtW);
+        }
+        if (!string.IsNullOrEmpty(toDate) && DateTime.TryParse(toDate, out var toDtW))
+        {
+            warningsQuery = warningsQuery.Where(w => w.NgayCanhBao <= toDtW.AddDays(1));
+        }
+
+        var warnings = await warningsQuery
             .OrderByDescending(w => w.NgayCanhBao)
             .Take(100)
             .Select(w => new NhatKyHoatDongViewModel
@@ -559,10 +617,27 @@ public class QuanTriController : Controller
             })
             .ToListAsync();
 
-        // Fetch 100 recent reports
-        var reports = await _context.BaoCaoViPhams
+        var reportsQuery = _context.BaoCaoViPhams
             .Include(r => r.CanBo)
             .Include(r => r.NguoiNuocNgoai)
+            .AsQueryable();
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            var cleanSearch = search.Trim();
+            reportsQuery = reportsQuery.Where(r => r.CanBo.HoTen.Contains(cleanSearch) || r.NguoiNuocNgoai.HoTen.Contains(cleanSearch) || r.NoiDungBaoCao.Contains(cleanSearch));
+        }
+
+        if (!string.IsNullOrEmpty(fromDate) && DateTime.TryParse(fromDate, out var fromDtR))
+        {
+            reportsQuery = reportsQuery.Where(r => r.NgayBaoCao >= fromDtR);
+        }
+        if (!string.IsNullOrEmpty(toDate) && DateTime.TryParse(toDate, out var toDtR))
+        {
+            reportsQuery = reportsQuery.Where(r => r.NgayBaoCao <= toDtR.AddDays(1));
+        }
+
+        var reports = await reportsQuery
             .OrderByDescending(r => r.NgayBaoCao)
             .Take(100)
             .Select(r => new NhatKyHoatDongViewModel
@@ -575,14 +650,49 @@ public class QuanTriController : Controller
             })
             .ToListAsync();
 
-        // Merge, sort, and display
         var allLogs = profileUpdates
             .Concat(warnings)
-            .Concat(reports)
+            .Concat(reports);
+
+        if (!string.IsNullOrWhiteSpace(category))
+        {
+            allLogs = allLogs.Where(l => l.Category == category);
+        }
+
+        if (!string.IsNullOrWhiteSpace(status))
+        {
+            allLogs = allLogs.Where(l => l.Status == status);
+        }
+
+        var result = allLogs
             .OrderByDescending(l => l.OccurredAt)
             .Take(200)
             .ToList();
 
-        return View(allLogs);
+        ViewBag.Search = search;
+        ViewBag.Category = category;
+        ViewBag.Status = status;
+        ViewBag.FromDate = fromDate;
+        ViewBag.ToDate = toDate;
+
+        return View(result);
+    }
+
+    // POST: /admin/accounts/update-role
+    [HttpPost("accounts/update-role")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> CapNhatVaiTroTaiKhoan(string id, int maVaiTro)
+    {
+        if (string.IsNullOrWhiteSpace(id)) return NotFound();
+        var account = await _context.TaiKhoans.FirstOrDefaultAsync(t => t.MaTaiKhoan == id);
+        if (account == null) return NotFound();
+        
+        var roleExists = await _context.VaiTros.AnyAsync(v => v.MaVaiTro == maVaiTro);
+        if (!roleExists) return NotFound();
+        
+        account.MaVaiTro = maVaiTro;
+        await _context.SaveChangesAsync();
+        TempData["SuccessMessage"] = $"Đã cập nhật vai trò cho tài khoản {account.TenDangNhap} thành công.";
+        return RedirectToAction(nameof(TaiKhoan));
     }
 }

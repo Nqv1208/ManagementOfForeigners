@@ -38,29 +38,20 @@
                 <li class="admin-menu-item @(actionName == "TongQuan" ? "active" : "")">
                     <a asp-controller="QuanTri" asp-action="TongQuan"><i class="bi bi-grid-fill"></i> Tổng quan</a>
                 </li>
-                <li class="admin-menu-item @(actionName == "TaiKhoan" || actionName == "QuanLyTaiKhoan" ? "active" : "")">
+                <li class="admin-menu-item @(actionName == "TaiKhoan" ? "active" : "")">
                     <a asp-controller="QuanTri" asp-action="TaiKhoan"><i class="bi bi-people-fill"></i> Quản lý tài khoản</a>
                 </li>
-                <li class="admin-menu-item">
-                    <a asp-controller="CanBo" asp-action="TraCuu"><i class="bi bi-person-badge-fill"></i> Quản lý người nước ngoài</a>
+                <li class="admin-menu-item @(actionName == "VaiTro" ? "active" : "")">
+                    <a asp-controller="QuanTri" asp-action="VaiTro"><i class="bi bi-shield-lock-fill"></i> Vai trò</a>
                 </li>
-                <li class="admin-menu-item @(actionName == "CoSoLuuTru" ? "active" : "")">
-                    <a asp-controller="QuanTri" asp-action="CoSoLuuTru"><i class="bi bi-building-fill-gear"></i> Cơ sở lưu trú</a>
+                <li class="admin-menu-item @(actionName == "PhanQuyen" ? "active" : "")">
+                    <a asp-controller="QuanTri" asp-action="PhanQuyen"><i class="bi bi-key-fill"></i> Phân quyền</a>
                 </li>
-                <li class="admin-menu-item">
-                    <a asp-controller="CanBo" asp-action="TongQuan"><i class="bi bi-file-earmark-check-fill"></i> Khai báo tạm trú</a>
+                <li class="admin-menu-item @(actionName == "DanhMucPhuongXa" ? "active" : "")">
+                    <a asp-controller="QuanTri" asp-action="DanhMucPhuongXa"><i class="bi bi-map-fill"></i> Danh mục phường/xã</a>
                 </li>
-                <li class="admin-menu-item">
-                    <a href="#"><i class="bi bi-card-list"></i> Visa / Thẻ tạm trú</a>
-                </li>
-                <li class="admin-menu-item @(actionName == "BaoCaoViPham" ? "active" : "")">
-                    <a asp-controller="QuanTri" asp-action="BaoCaoViPham"><i class="bi bi-exclamation-triangle-fill"></i> Báo cáo vi phạm</a>
-                </li>
-                <li class="admin-menu-item">
-                    <a asp-controller="CanBo" asp-action="ThongKe"><i class="bi bi-graph-up-arrow"></i> Thống kê</a>
-                </li>
-                <li class="admin-menu-item @(actionName == "QuanLyPhanQuyen" || actionName == "DanhMucPhuongXa" || actionName == "NhatKyHoatDong" ? "active" : "")">
-                    <a asp-controller="QuanTri" asp-action="QuanLyPhanQuyen"><i class="bi bi-gear-fill"></i> Cấu hình hệ thống</a>
+                <li class="admin-menu-item @(actionName == "NhatKyHeThong" ? "active" : "")">
+                    <a asp-controller="QuanTri" asp-action="NhatKyHeThong"><i class="bi bi-journal-text"></i> Nhật ký hệ thống</a>
                 </li>
             </ul>
         </aside>

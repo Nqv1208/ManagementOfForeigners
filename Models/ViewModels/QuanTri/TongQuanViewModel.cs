@@ -22,11 +22,16 @@ public class TongQuanViewModel
     public int TotalWarnings { get; set; }
     public int OpenReports { get; set; }
 
+    public int TotalRoles { get; set; }
+    public int TotalWards { get; set; }
+    public int LogsTodayCount { get; set; }
+
     public List<AdminStatItemViewModel> RoleStats { get; set; } = new();
     public List<AdminStatItemViewModel> DeclarationStats { get; set; } = new();
     public List<AdminAccountRowViewModel> LatestAccounts { get; set; } = new();
     public List<AdminDeclarationRowViewModel> LatestDeclarations { get; set; } = new();
     public List<AdminReportRowViewModel> LatestReports { get; set; } = new();
+    public List<NhatKyHoatDongViewModel> LatestLogs { get; set; } = new();
 }
 
 public class AdminStatItemViewModel

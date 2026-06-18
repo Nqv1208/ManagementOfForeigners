@@ -9,102 +9,309 @@
     int? selectedRole = ViewBag.Role == null ? null : Convert.ToInt32(ViewBag.Role);
 }
 
-<section class="admin-page-title">
-    <div>
-        <span class="admin-eyebrow">Quản trị người dùng</span>
-        <h1>Quản lý tài khoản hệ thống</h1>
-        <p>Tìm kiếm, lọc theo vai trò, khoá/mở khoá và đặt lại mật khẩu tạm thời.</p>
-    </div>
-    <a class="btn btn-outline-secondary" asp-controller="QuanTri" asp-action="TongQuan">Về dashboard</a>
-</section>
-
-<form method="get" class="admin-filter-card">
-    <div class="row g-3">
-        <div class="col-md-4">
-            <label class="form-label">Tìm kiếm</label>
-            <input class="form-control" name="search" value="@search" placeholder="Tên đăng nhập, email, SĐT, họ tên..." />
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">Vai trò</label>
-            <select class="form-select" name="role">
-                <option value="">Tất cả vai trò</option>
-                @foreach (var role in roles)
-                {
-                    <option value="@role.MaVaiTro" selected="@(selectedRole == role.MaVaiTro)">@role.TenVaiTro</option>
-                }
-            </select>
-        </div>
-        <div class="col-md-3">
-            <label class="form-label">Trạng thái</label>
-            <select class="form-select" name="status">
-                <option value="">Tất cả trạng thái</option>
-                <option value="@TrangThaiTaiKhoan.HoatDong" selected="@(status == TrangThaiTaiKhoan.HoatDong)">Hoạt động</option>
-                <option value="@TrangThaiTaiKhoan.Khoa" selected="@(status == TrangThaiTaiKhoan.Khoa)">Khoá</option>
-                <option value="@TrangThaiTaiKhoan.ChoDuyet" selected="@(status == TrangThaiTaiKhoan.ChoDuyet)">Chờ duyệt</option>
-            </select>
-        </div>
-        <div class="col-md-2 d-flex align-items-end gap-2">
-            <button class="btn btn-primary w-100" type="submit">Lọc</button>
-            <a class="btn btn-light" asp-controller="QuanTri" asp-action="TaiKhoan">Xoá</a>
-        </div>
-    </div>
-</form>
-
-<section class="admin-panel">
-    <div class="admin-panel-header">
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2>Danh sách tài khoản</h2>
-            <p>Hiển thị tối đa 200 kết quả gần nhất để tránh tải quá nặng.</p>
+            <h4 class="fw-bold text-dark mb-1">Quản lý tài khoản hệ thống</h4>
+            <p class="text-muted mb-0 small">Danh sách tài khoản nội bộ và tài khoản người dùng của toàn hệ thống.</p>
         </div>
-        <span class="admin-chip">@Model.Count() kết quả</span>
     </div>
-    <div class="table-responsive">
-        <table class="table admin-table align-middle">
-            <thead>
-                <tr>
-                    <th>Tài khoản</th>
-                    <th>Chủ thể</th>
-                    <th>Vai trò</th>
-                    <th>Liên hệ</th>
-                    <th>Trạng thái</th>
-                    <th>Ngày tạo</th>
-                    <th class="text-end">Thao tác</th>
-                </tr>
-            </thead>
-            <tbody>
-            @foreach (var item in Model)
-            {
-                <tr>
-                    <td><strong>@item.TenDangNhap</strong><br /><small>@item.MaTaiKhoan</small></td>
-                    <td>@item.OwnerDisplayName</td>
-                    <td><span class="admin-chip">@item.VaiTro</span></td>
-                    <td><small>@(item.Email ?? "—")<br />@(item.SoDienThoai ?? "—")</small></td>
-                    <td>@await Html.PartialAsync("_StatusBadge", item.TrangThai)</td>
-                    <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
-                    <td class="text-end">
-                        <form asp-controller="QuanTri" asp-action="DoiTrangThaiTaiKhoan" method="post" class="d-inline">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@item.MaTaiKhoan" />
-                            @if (item.TrangThai == TrangThaiTaiKhoan.ChoDuyet)
-                            {
-                                <button class="btn btn-sm btn-success" type="submit">Duyệt tài khoản</button>
-                            }
-                            else
-                            {
-                                <button class="btn btn-sm @(item.TrangThai == TrangThaiTaiKhoan.Khoa ? "btn-success" : "btn-outline-danger")" type="submit">
-                                    @(item.TrangThai == TrangThaiTaiKhoan.Khoa ? "Mở khoá" : "Khoá")
-                                </button>
-                            }
-                        </form>
-                        <form asp-controller="QuanTri" asp-action="DatLaiMatKhau" method="post" class="d-inline" onsubmit="return confirm('Đặt lại mật khẩu tạm thời cho tài khoản này?');">
-                            @Html.AntiForgeryToken()
-                            <input type="hidden" name="id" value="@item.MaTaiKhoan" />
-                            <button class="btn btn-sm btn-outline-secondary" type="submit">Reset mật khẩu</button>
-                        </form>
-                    </td>
-                </tr>
-            }
-            </tbody>
-        </table>
+
+    <!-- Filter Card -->
+    <div class="card border-0 shadow-sm mb-4" style="border-radius: 12px; background-color: #fff;">
+        <div class="card-body p-4">
+            <form method="get" class="row g-3 align-items-end">
+                <div class="col-lg-4 col-md-6">
+                    <label class="form-label fw-bold text-secondary small text-uppercase">Tìm kiếm tài khoản</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0"><i class="bi bi-search text-muted"></i></span>
+                        <input class="form-control border-start-0" name="search" value="@search" placeholder="Tên đăng nhập, email, SĐT, họ tên..." />
+                    </div>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <label class="form-label fw-bold text-secondary small text-uppercase">Lọc theo vai trò</label>
+                    <select class="form-select" name="role">
+                        <option value="">Tất cả vai trò</option>
+                        @foreach (var role in roles)
+                        {
+                            <option value="@role.MaVaiTro" selected="@(selectedRole == role.MaVaiTro)">@role.TenVaiTro</option>
+                        }
+                    </select>
+                </div>
+                <div class="col-lg-3 col-md-3">
+                    <label class="form-label fw-bold text-secondary small text-uppercase">Lọc trạng thái</label>
+                    <select class="form-select" name="status">
+                        <option value="">Tất cả trạng thái</option>
+                        <option value="@TrangThaiTaiKhoan.HoatDong" selected="@(status == TrangThaiTaiKhoan.HoatDong)">Hoạt động</option>
+                        <option value="@TrangThaiTaiKhoan.Khoa" selected="@(status == TrangThaiTaiKhoan.Khoa)">Khoá</option>
+                        <option value="@TrangThaiTaiKhoan.ChoDuyet" selected="@(status == TrangThaiTaiKhoan.ChoDuyet)">Chờ duyệt</option>
+                    </select>
+                </div>
+                <div class="col-lg-2 col-md-12 d-flex gap-2">
+                    <button class="btn btn-success flex-grow-1" type="submit">Lọc</button>
+                    <a class="btn btn-outline-secondary" asp-controller="QuanTri" asp-action="TaiKhoan">Đặt lại</a>
+                </div>
+            </form>
+        </div>
     </div>
-</section>
+
+    <!-- Data Panel -->
+    <div class="card border-0 shadow-sm" style="border-radius: 12px; background-color: #fff;">
+        <div class="card-header bg-white border-0 p-4 pb-0 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold text-dark mb-0"><i class="bi bi-people me-2 text-success"></i>Danh sách tài khoản</h5>
+            <span class="badge bg-light text-dark border px-3 py-1.5 fw-semibold">@Model.Count() tài khoản</span>
+        </div>
+        <div class="card-body p-4">
+            <div class="table-responsive">
+                <table class="table align-middle mb-0" style="font-size: 0.88rem;">
+                    <thead>
+                        <tr class="table-light">
+                            <th>Tên tài khoản</th>
+                            <th>Chủ thể</th>
+                            <th>Vai trò</th>
+                            <th>Liên hệ</th>
+                            <th>Trạng thái</th>
+                            <th>Ngày tạo</th>
+                            <th class="text-end">Hành động</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @foreach (var item in Model)
+                        {
+                            <tr>
+                                <td>
+                                    <div class="fw-bold text-dark">@item.TenDangNhap</div>
+                                    <small class="text-muted">ID: @item.MaTaiKhoan</small>
+                                </td>
+                                <td>@item.OwnerDisplayName</td>
+                                <td>
+                                    <span class="badge bg-light text-dark border px-2.5 py-1">@item.VaiTro</span>
+                                </td>
+                                <td>
+                                    <div>@item.Email</div>
+                                    <small class="text-muted">@item.SoDienThoai</small>
+                                </td>
+                                <td>
+                                    @await Html.PartialAsync("_StatusBadge", item.TrangThai)
+                                </td>
+                                <td>@item.NgayTao.ToString("dd/MM/yyyy")</td>
+                                <td class="text-end">
+                                    <div class="d-inline-flex gap-2 align-items-center">
+                                        <!-- Detail Button trigger modal -->
+                                        <button type="button" class="btn btn-light btn-xs border fw-semibold btn-detail-trigger"
+                                                data-bs-toggle="modal" data-bs-target="#accountDetailModal"
+                                                data-username="@item.TenDangNhap"
+                                                data-id="@item.MaTaiKhoan"
+                                                data-owner="@item.OwnerDisplayName"
+                                                data-role="@item.VaiTro"
+                                                data-email="@(item.Email ?? "—")"
+                                                data-phone="@(item.SoDienThoai ?? "—")"
+                                                data-status="@item.TrangThai"
+                                                data-created="@item.NgayTao.ToString("dd/MM/yyyy HH:mm")"
+                                                data-login="@(item.LanDangNhapCuoi?.ToString("dd/MM/yyyy HH:mm") ?? "Chưa đăng nhập")">
+                                            Chi tiết
+                                        </button>
+
+                                        <!-- Actions Dropdown -->
+                                        <div class="dropdown">
+                                            <button class="btn btn-outline-secondary btn-xs dropdown-toggle" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="bi bi-three-dots"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end shadow border-0" style="font-size: 0.85rem; border-radius: 8px;">
+                                                <li>
+                                                    <a class="dropdown-item py-2 btn-update-role-trigger" href="#"
+                                                       data-bs-toggle="modal" data-bs-target="#updateRoleModal"
+                                                       data-id="@item.MaTaiKhoan"
+                                                       data-username="@item.TenDangNhap"
+                                                       data-role-id="@(roles.FirstOrDefault(r => r.TenVaiTro == item.VaiTro)?.MaVaiTro ?? 0)">
+                                                        <i class="bi bi-shield-lock me-2 text-primary"></i> Cập nhật vai trò
+                                                    </a>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item py-2" href="#" onclick="document.getElementById('toggle-form-@item.MaTaiKhoan').submit();">
+                                                        @if (item.TrangThai == TrangThaiTaiKhoan.ChoDuyet)
+                                                        {
+                                                            <i class="bi bi-check-circle me-2 text-success"></i> <span>Duyệt tài khoản</span>
+                                                        }
+                                                        else
+                                                        {
+                                                            <i class="bi @(item.TrangThai == TrangThaiTaiKhoan.Khoa ? "bi-unlock" : "bi-lock") me-2 text-warning"></i>
+                                                            <span>@(item.TrangThai == TrangThaiTaiKhoan.Khoa ? "Mở khoá tài khoản" : "Khoá tài khoản")</span>
+                                                        }
+                                                    </a>
+                                                    <form id="toggle-form-@item.MaTaiKhoan" asp-controller="QuanTri" asp-action="DoiTrangThaiTaiKhoan" asp-route-id="@item.MaTaiKhoan" method="post" class="d-none">
+                                                        @Html.AntiForgeryToken()
+                                                    </form>
+                                                </li>
+                                                <li>
+                                                    <a class="dropdown-item py-2 text-danger" href="#" onclick="if(confirm('Bạn có chắc chắn muốn đặt lại mật khẩu tạm thời cho tài khoản này?')) { document.getElementById('reset-form-@item.MaTaiKhoan').submit(); }">
+                                                        <i class="bi bi-key-fill me-2 text-danger"></i> Reset mật khẩu
+                                                    </a>
+                                                    <form id="reset-form-@item.MaTaiKhoan" asp-controller="QuanTri" asp-action="DatLaiMatKhau" asp-route-id="@item.MaTaiKhoan" method="post" class="d-none">
+                                                        @Html.AntiForgeryToken()
+                                                    </form>
+                                                </li>
+                                                <li><hr class="dropdown-divider"></li>
+                                                <li>
+                                                    <a class="dropdown-item py-2" asp-controller="QuanTri" asp-action="NhatKyHeThong" asp-route-search="@item.TenDangNhap">
+                                                        <i class="bi bi-clock-history me-2 text-secondary"></i> Xem nhật ký hoạt động
+                                                    </a>
+                                                </li>
+                                            </ul>
+                                        </div>
+                                    </div>
+                                </td>
+                            </tr>
+                        }
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 1: Account Details -->
+<div class="modal fade" id="accountDetailModal" tabindex="-1" aria-labelledby="accountDetailModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow" style="border-radius: 12px;">
+            <div class="modal-header bg-light border-0 py-3" style="border-radius: 12px 12px 0 0;">
+                <h6 class="modal-title fw-bold text-dark" id="accountDetailModalLabel">
+                    <i class="bi bi-person-badge me-2 text-success"></i> Chi tiết tài khoản
+                </h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4">
+                <table class="table table-sm table-borderless mb-0 align-middle">
+                    <tbody>
+                        <tr>
+                            <td class="text-muted pb-2" style="width: 40%;">Tên đăng nhập:</td>
+                            <td class="fw-bold text-dark pb-2" id="detail-username"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted pb-2">Mã định danh (ID):</td>
+                            <td class="fw-semibold text-secondary pb-2" id="detail-id"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted pb-2">Chủ thể liên kết:</td>
+                            <td class="fw-bold text-dark pb-2" id="detail-owner"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted pb-2">Vai trò hệ thống:</td>
+                            <td class="pb-2"><span class="badge bg-light text-dark border" id="detail-role"></span></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted pb-2">Địa chỉ Email:</td>
+                            <td class="text-dark pb-2" id="detail-email"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted pb-2">Số điện thoại:</td>
+                            <td class="text-dark pb-2" id="detail-phone"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted pb-2">Ngày đăng ký tài khoản:</td>
+                            <td class="text-dark pb-2" id="detail-created"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted pb-2">Đăng nhập lần cuối:</td>
+                            <td class="text-dark pb-2" id="detail-login"></td>
+                        </tr>
+                        <tr>
+                            <td class="text-muted">Trạng thái:</td>
+                            <td id="detail-status-wrapper"></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+            <div class="modal-footer bg-light border-0 py-2" style="border-radius: 0 0 12px 12px;">
+                <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">Đóng</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Modal 2: Update Role -->
+<div class="modal fade" id="updateRoleModal" tabindex="-1" aria-labelledby="updateRoleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow" style="border-radius: 12px;">
+            <form asp-controller="QuanTri" asp-action="CapNhatVaiTroTaiKhoan" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" id="update-role-account-id" />
+                <div class="modal-header bg-light border-0 py-3" style="border-radius: 12px 12px 0 0;">
+                    <h6 class="modal-title fw-bold text-dark" id="updateRoleModalLabel">
+                        <i class="bi bi-shield-lock-fill me-2 text-primary"></i> Cập nhật vai trò
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body p-4 text-center">
+                    <p class="text-muted small mb-3">Chọn vai trò mới cho tài khoản <strong id="update-role-username" class="text-dark"></strong>:</p>
+                    <select class="form-select border-primary" name="maVaiTro" id="update-role-select">
+                        @foreach (var role in roles)
+                        {
+                            <option value="@role.MaVaiTro">@role.TenVaiTro</option>
+                        }
+                    </select>
+                </div>
+                <div class="modal-footer bg-light border-0 py-2" style="border-radius: 0 0 12px 12px;">
+                    <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-primary btn-sm px-3">Lưu thay đổi</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            // Fill details modal
+            const detailTriggers = document.querySelectorAll(".btn-detail-trigger");
+            detailTriggers.forEach(trigger => {
+                trigger.addEventListener("click", function () {
+                    document.getElementById("detail-username").textContent = this.getAttribute("data-username");
+                    document.getElementById("detail-id").textContent = this.getAttribute("data-id");
+                    document.getElementById("detail-owner").textContent = this.getAttribute("data-owner");
+                    document.getElementById("detail-role").textContent = this.getAttribute("data-role");
+                    document.getElementById("detail-email").textContent = this.getAttribute("data-email");
+                    document.getElementById("detail-phone").textContent = this.getAttribute("data-phone");
+                    document.getElementById("detail-created").textContent = this.getAttribute("data-created");
+                    document.getElementById("detail-login").textContent = this.getAttribute("data-login");
+
+                    // Status rendering
+                    const status = this.getAttribute("data-status");
+                    const statusWrapper = document.getElementById("detail-status-wrapper");
+                    statusWrapper.innerHTML = "";
+                    
+                    let badgeClass = "badge-neutral";
+                    if (status === "Hoạt động") {
+                        badgeClass = "bg-success text-white";
+                    } else if (status === "Khoá" || status === "Khóa") {
+                        badgeClass = "bg-danger text-white";
+                    } else if (status === "Chờ duyệt") {
+                        badgeClass = "bg-warning text-dark";
+                    }
+                    
+                    const span = document.createElement("span");
+                    span.className = `badge ${badgeClass} px-2.5 py-1 fw-bold`;
+                    span.textContent = status;
+                    statusWrapper.appendChild(span);
+                });
+            });
+
+            // Fill update role modal
+            const roleTriggers = document.querySelectorAll(".btn-update-role-trigger");
+            roleTriggers.forEach(trigger => {
+                trigger.addEventListener("click", function () {
+                    document.getElementById("update-role-account-id").value = this.getAttribute("data-id");
+                    document.getElementById("update-role-username").textContent = this.getAttribute("data-username");
+                    
+                    const roleId = this.getAttribute("data-role-id");
+                    const select = document.getElementById("update-role-select");
+                    if (select) {
+                        select.value = roleId;
+                    }
+                });
+            });
+        });
+    </script>
+}

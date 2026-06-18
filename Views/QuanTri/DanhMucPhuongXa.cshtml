@@ -1,50 +1,61 @@
 @model IEnumerable<ManagementOfForeigners.Models.Entities.PhuongXa>
-
 @{
     Layout = "~/Views/Shared/_AdminLayout.cshtml";
     ViewData["Title"] = "Danh mục Phường/Xã";
 }
 
-<div class="container py-4">
-    <div class="card border-0 shadow-sm">
-        <div class="card-header gov-card-header p-4">
-            <h5 class="fw-bold mb-0">Cập nhật danh mục Phường/Xã</h5>
-            <p class="text-white-50 mb-0 small">Danh mục địa bàn dùng cho cán bộ phụ trách và cơ sở lưu trú.</p>
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold text-dark mb-1">Cấu hình danh mục Phường/Xã</h4>
+            <p class="text-muted mb-0 small">Thiết lập danh sách các đơn vị hành chính Phường/Xã thuộc địa bàn Đà Nẵng.</p>
+        </div>
+        <button type="button" class="btn btn-success fw-semibold px-3 py-2 btn-add-ward" 
+                data-bs-toggle="modal" data-bs-target="#wardModal" style="border-radius: 8px;">
+            <i class="bi bi-plus-circle me-1"></i> Thêm mới Phường/Xã
+        </button>
+    </div>
+
+    <!-- Data Table Card -->
+    <div class="card border-0 shadow-sm" style="border-radius: 12px; background-color: #fff;">
+        <div class="card-header bg-white border-0 p-4 pb-0 d-flex justify-content-between align-items-center">
+            <h5 class="fw-bold text-dark mb-0"><i class="bi bi-map me-2 text-success"></i>Đơn vị hành chính cấp cơ sở</h5>
+            <span class="badge bg-light text-dark border px-3 py-1.5 fw-semibold">@Model.Count() địa bàn</span>
         </div>
         <div class="card-body p-4">
-            <form asp-action="LuuPhuongXa" method="post" class="row g-2 mb-4">
-                @Html.AntiForgeryToken()
-                <div class="col-md-10"><input name="tenPhuongXa" class="form-control" placeholder="Tên Phường/Xã" /></div>
-                <div class="col-md-2 d-grid"><button class="btn btn-primary" type="submit">Thêm mới</button></div>
-            </form>
-
             <div class="table-responsive">
-                <table class="table table-hover align-middle">
+                <table class="table align-middle mb-0" style="font-size: 0.88rem;">
                     <thead>
-                        <tr>
-                            <th>Mã</th>
-                            <th>Phường/Xã</th>
-                            <th class="text-end">Thao tác</th>
+                        <tr class="table-light">
+                            <th style="width: 15%;">Mã Phường/Xã</th>
+                            <th style="width: 45%;">Tên địa bàn Phường/Xã</th>
+                            <th style="width: 25%;">Thành phố trực thuộc</th>
+                            <th class="text-end" style="width: 15%;">Thao tác</th>
                         </tr>
                     </thead>
                     <tbody>
                         @foreach (var item in Model)
                         {
-                            var formId = $"ward-{item.MaPhuongXa}";
                             <tr>
-                                <td class="fw-semibold">@item.MaPhuongXa</td>
-                                <td><input name="tenPhuongXa" form="@formId" class="form-control form-control-sm" value="@item.TenPhuongXa" /></td>
+                                <td class="fw-bold text-secondary">#@item.MaPhuongXa</td>
+                                <td class="fw-semibold text-dark">@item.TenPhuongXa</td>
+                                <td>Thành phố Đà Nẵng</td>
                                 <td class="text-end">
                                     <div class="d-inline-flex gap-2">
-                                        <form id="@formId" asp-action="LuuPhuongXa" method="post">
+                                        <!-- Edit button trigger modal -->
+                                        <button type="button" class="btn btn-light btn-xs border fw-semibold btn-edit-ward"
+                                                data-bs-toggle="modal" data-bs-target="#wardModal"
+                                                data-id="@item.MaPhuongXa"
+                                                data-name="@item.TenPhuongXa">
+                                            Sửa
+                                        </button>
+                                        <!-- Delete form -->
+                                        <form asp-controller="QuanTri" asp-action="XoaPhuongXa" method="post" 
+                                              onsubmit="return confirm('Bạn có chắc chắn muốn xóa Phường/Xã @item.TenPhuongXa?');">
                                             @Html.AntiForgeryToken()
                                             <input type="hidden" name="maPhuongXa" value="@item.MaPhuongXa" />
-                                            <button class="btn btn-sm btn-primary" type="submit">Lưu</button>
-                                        </form>
-                                        <form asp-action="XoaPhuongXa" method="post" onsubmit="return confirm('Xóa Phường/Xã này?');">
-                                            @Html.AntiForgeryToken()
-                                            <input type="hidden" name="maPhuongXa" value="@item.MaPhuongXa" />
-                                            <button class="btn btn-sm btn-outline-danger" type="submit">Xóa</button>
+                                            <button class="btn btn-outline-danger btn-xs fw-semibold" type="submit">Xóa</button>
                                         </form>
                                     </div>
                                 </td>
@@ -56,3 +67,67 @@
         </div>
     </div>
 </div>
+
+<!-- Modal: Add/Edit Ward -->
+<div class="modal fade" id="wardModal" tabindex="-1" aria-labelledby="wardModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered modal-sm">
+        <div class="modal-content border-0 shadow" style="border-radius: 12px;">
+            <form asp-controller="QuanTri" asp-action="LuuPhuongXa" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="maPhuongXa" id="ward-id" />
+                
+                <div class="modal-header bg-light border-0 py-3" style="border-radius: 12px 12px 0 0;">
+                    <h6 class="modal-title fw-bold text-dark" id="wardModalLabel">
+                        Thêm mới Phường/Xã
+                    </h6>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label for="ward-name" class="form-label fw-bold text-secondary small text-uppercase">Tên Phường/Xã</label>
+                        <input type="text" class="form-control border-success" name="tenPhuongXa" id="ward-name" required 
+                               placeholder="Ví dụ: Phường Hải Châu I" />
+                    </div>
+                    <div class="mb-1">
+                        <label class="form-label fw-bold text-secondary small text-uppercase">Tỉnh / Thành phố</label>
+                        <input class="form-control bg-light border-0" value="Thành phố Đà Nẵng" readonly />
+                    </div>
+                </div>
+                
+                <div class="modal-footer bg-light border-0 py-2" style="border-radius: 0 0 12px 12px;">
+                    <button type="button" class="btn btn-secondary btn-sm px-3" data-bs-dismiss="modal">Hủy</button>
+                    <button type="submit" class="btn btn-success btn-sm px-3">Xác nhận</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const addBtn = document.querySelector(".btn-add-ward");
+            const editBtns = document.querySelectorAll(".btn-edit-ward");
+            const modalLabel = document.getElementById("wardModalLabel");
+            const wardIdInput = document.getElementById("ward-id");
+            const wardNameInput = document.getElementById("ward-name");
+
+            if (addBtn) {
+                addBtn.addEventListener("click", function () {
+                    modalLabel.textContent = "Thêm mới Phường/Xã";
+                    wardIdInput.value = "";
+                    wardNameInput.value = "";
+                });
+            }
+
+            editBtns.forEach(btn => {
+                btn.addEventListener("click", function () {
+                    modalLabel.textContent = "Cập nhật Phường/Xã";
+                    wardIdInput.value = this.getAttribute("data-id");
+                    wardNameInput.value = this.getAttribute("data-name");
+                });
+            });
+        });
+    </script>
+}

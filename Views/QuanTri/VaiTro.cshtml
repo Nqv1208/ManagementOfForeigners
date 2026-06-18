@@ -1,0 +1,111 @@
+@model IEnumerable<ManagementOfForeigners.Models.Entities.VaiTro>
+@using ManagementOfForeigners.Models.Entities
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Quản lý vai trò";
+    var selectedRole = ViewBag.SelectedRole as VaiTro;
+    var userCounts = ViewBag.UserCounts as Dictionary<int, int> ?? new Dictionary<int, int>();
+}
+
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold text-dark mb-1">Quản lý vai trò hệ thống</h4>
+            <p class="text-muted mb-0 small">Phân bổ cấu hình vai trò, cập nhật mô tả nhiệm vụ và kiểm soát trạng thái.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left Column: Role List (4/12 width) -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px; background-color: #fff;">
+                <div class="card-header bg-white border-0 p-4 pb-0">
+                    <h6 class="fw-bold text-dark mb-0"><i class="bi bi-list-task me-2 text-primary"></i>Danh sách vai trò</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="list-group list-group-flush">
+                        @foreach (var role in Model)
+                        {
+                            var isActive = selectedRole != null && selectedRole.MaVaiTro == role.MaVaiTro;
+                            var count = userCounts.ContainsKey(role.MaVaiTro) ? userCounts[role.MaVaiTro] : 0;
+                            var statusBadgeClass = role.TrangThai == "Hoạt động" ? "bg-success" : "bg-secondary";
+                            
+                            <a asp-controller="QuanTri" asp-action="VaiTro" asp-route-id="@role.MaVaiTro" 
+                               class="list-group-item list-group-item-action border-0 rounded-3 mb-2 p-3 d-flex justify-content-between align-items-center @(isActive ? "active bg-success bg-opacity-10 text-dark border-start border-success border-3" : "bg-light")"
+                               style="transition: all 0.2s ease;">
+                                <div>
+                                    <div class="fw-bold @(isActive ? "text-success" : "text-dark")">@role.TenVaiTro</div>
+                                    <small class="text-muted">@count tài khoản gán</small>
+                                </div>
+                                <span class="badge @statusBadgeClass text-white px-2 py-1 fs-8">@role.TrangThai</span>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Detail Form (8/12 width) -->
+        <div class="col-lg-8">
+            @if (selectedRole != null)
+            {
+                <div class="card border-0 shadow-sm" style="border-radius: 12px; background-color: #fff;">
+                    <div class="card-header bg-white border-0 p-4 pb-0">
+                        <h6 class="fw-bold text-dark mb-0"><i class="bi bi-pencil-square me-2 text-success"></i>Cập nhật thông tin vai trò: @selectedRole.TenVaiTro</h6>
+                    </div>
+                    <div class="card-body p-4">
+                        <form asp-controller="QuanTri" asp-action="LuuVaiTro" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="maVaiTro" value="@selectedRole.MaVaiTro" />
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Tên vai trò (Hệ thống)</label>
+                                <input class="form-control bg-light border-0" value="@selectedRole.TenVaiTro" readonly />
+                                <div class="form-text small">Tên vai trò hệ thống được cố định để đảm bảo tính toàn vẹn của mã nguồn phân quyền.</div>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary small text-uppercase" for="moTaVaiTro">Mô tả nhiệm vụ / Ghi chú</label>
+                                <textarea class="form-control" name="moTaVaiTro" id="moTaVaiTro" rows="4" placeholder="Nhập mô tả cụ thể về vai trò và nhiệm vụ trên hệ thống...">@selectedRole.MoTaVaiTro</textarea>
+                            </div>
+
+                            <div class="mb-4">
+                                <label class="form-label fw-bold text-secondary small text-uppercase">Trạng thái vai trò</label>
+                                <div class="d-flex gap-4 mt-2">
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="trangThai" id="trangThaiHoatDong" value="Hoạt động" @(selectedRole.TrangThai == "Hoạt động" ? "checked" : "")>
+                                        <label class="form-check-label fw-semibold text-success" for="trangThaiHoatDong">
+                                            <i class="bi bi-check-circle-fill me-1"></i> Hoạt động
+                                        </label>
+                                    </div>
+                                    <div class="form-check">
+                                        <input class="form-check-input" type="radio" name="trangThai" id="trangThaiNgung" value="Ngừng hoạt động" @(selectedRole.TrangThai != "Hoạt động" ? "checked" : "")>
+                                        <label class="form-check-label fw-semibold text-danger" for="trangThaiNgung">
+                                            <i class="bi bi-x-circle-fill me-1"></i> Tạm dừng hoạt động
+                                        </label>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end border-top pt-4">
+                                <button type="submit" class="btn btn-success px-4 py-2">
+                                    <i class="bi bi-save me-1"></i> Lưu cấu hình
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card border-0 shadow-sm h-100 d-flex align-items-center justify-content-center py-5" style="border-radius: 12px; background-color: #fff;">
+                    <div class="text-center">
+                        <i class="bi bi-shield-slash text-muted" style="font-size: 3rem;"></i>
+                        <p class="text-muted mt-3">Chọn một vai trò ở cột bên trái để cập nhật thông tin.</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>

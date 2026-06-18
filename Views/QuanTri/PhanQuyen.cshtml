@@ -1,0 +1,197 @@
+@model IEnumerable<ManagementOfForeigners.Models.Entities.VaiTro>
+@using ManagementOfForeigners.Models.Entities
+@{
+    Layout = "~/Views/Shared/_AdminLayout.cshtml";
+    ViewData["Title"] = "Cấu hình phân quyền";
+    var selectedRole = ViewBag.SelectedRole as VaiTro;
+}
+
+<div class="container-fluid py-4">
+    <!-- Page Header -->
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <div>
+            <h4 class="fw-bold text-dark mb-1">Cấu hình phân quyền hệ thống</h4>
+            <p class="text-muted mb-0 small">Bật/tắt các quyền hạn nghiệp vụ cho từng vai trò người dùng trong hệ thống.</p>
+        </div>
+    </div>
+
+    <div class="row g-4">
+        <!-- Left Column: Role List (4/12 width) -->
+        <div class="col-lg-4">
+            <div class="card border-0 shadow-sm" style="border-radius: 12px; background-color: #fff;">
+                <div class="card-header bg-white border-0 p-4 pb-0">
+                    <h6 class="fw-bold text-dark mb-0"><i class="bi bi-shield-check me-2 text-primary"></i>Chọn vai trò</h6>
+                </div>
+                <div class="card-body p-4">
+                    <div class="list-group list-group-flush">
+                        @foreach (var role in Model)
+                        {
+                            var isActive = selectedRole != null && selectedRole.MaVaiTro == role.MaVaiTro;
+                            <a asp-controller="QuanTri" asp-action="PhanQuyen" asp-route-id="@role.MaVaiTro" 
+                               class="list-group-item list-group-item-action border-0 rounded-3 mb-2 p-3 d-flex justify-content-between align-items-center @(isActive ? "active bg-success bg-opacity-10 text-dark border-start border-success border-3" : "bg-light")"
+                               style="transition: all 0.2s ease;">
+                                <div>
+                                    <div class="fw-bold @(isActive ? "text-success" : "text-dark")">@role.TenVaiTro</div>
+                                    <small class="text-muted">@role.MoTaVaiTro</small>
+                                </div>
+                                <i class="bi bi-chevron-right @(isActive ? "text-success" : "text-muted")"></i>
+                            </a>
+                        }
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Right Column: Permission Matrix (8/12 width) -->
+        <div class="col-lg-8">
+            @if (selectedRole != null)
+            {
+                <div class="card border-0 shadow-sm" style="border-radius: 12px; background-color: #fff;">
+                    <div class="card-header bg-white border-0 p-4 pb-0 d-flex justify-content-between align-items-center">
+                        <h6 class="fw-bold text-dark mb-0"><i class="bi bi-key-fill me-2 text-success"></i>Bảng phân quyền: @selectedRole.TenVaiTro</h6>
+                        <span class="badge bg-light text-dark border px-2.5 py-1">@selectedRole.QuyenHans.Count() quyền được cấp</span>
+                    </div>
+                    <div class="card-body p-4">
+                        <form asp-controller="QuanTri" asp-action="LuuPhanQuyen" method="post">
+                            @Html.AntiForgeryToken()
+                            <input type="hidden" name="maVaiTro" value="@selectedRole.MaVaiTro" />
+
+                            <div class="d-flex flex-column gap-4 mb-4">
+                                <!-- Group 1: Foreigner Module -->
+                                <div class="border rounded-3 p-3 bg-light bg-opacity-50">
+                                    <h6 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-person me-2 text-primary"></i>Phân hệ Người nước ngoài (Foreigner)</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-check card p-3 border-0 bg-white shadow-sm">
+                                                <input class="form-check-input" type="checkbox" name="selectedPermissions" value="Foreigner.Profile" id="perm-foreigner-profile" @(selectedRole.QuyenHans.Any(q => q.TenQuyen == "Foreigner.Profile") ? "checked" : "")>
+                                                <label class="form-check-label fw-bold text-dark fs-8" for="perm-foreigner-profile">
+                                                    Quản lý thông tin cá nhân (Foreigner.Profile)
+                                                    <span class="d-block text-muted fw-normal mt-1 fs-9">Cho phép người nước ngoài xem và cập nhật hồ sơ cá nhân, hộ chiếu, visa.</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check card p-3 border-0 bg-white shadow-sm">
+                                                <input class="form-check-input" type="checkbox" name="selectedPermissions" value="Foreigner.ResidenceDeclaration" id="perm-foreigner-declare" @(selectedRole.QuyenHans.Any(q => q.TenQuyen == "Foreigner.ResidenceDeclaration") ? "checked" : "")>
+                                                <label class="form-check-label fw-bold text-dark fs-8" for="perm-foreigner-declare">
+                                                    Khai báo tạm trú (Foreigner.ResidenceDeclaration)
+                                                    <span class="d-block text-muted fw-normal mt-1 fs-9">Khai báo tạm trú tự do trực tiếp gửi lên Công an phường/xã phê duyệt.</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Group 2: Accommodation Owner Module -->
+                                <div class="border rounded-3 p-3 bg-light bg-opacity-50">
+                                    <h6 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-house-door me-2 text-success"></i>Phân hệ Chủ cơ sở lưu trú (Accommodation)</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-check card p-3 border-0 bg-white shadow-sm">
+                                                <input class="form-check-input" type="checkbox" name="selectedPermissions" value="Accommodation.StayDeclaration" id="perm-accommodation-stay" @(selectedRole.QuyenHans.Any(q => q.TenQuyen == "Accommodation.StayDeclaration") ? "checked" : "")>
+                                                <label class="form-check-label fw-bold text-dark fs-8" for="perm-accommodation-stay">
+                                                    Khai báo lưu trú tại cơ sở (Accommodation.StayDeclaration)
+                                                    <span class="d-block text-muted fw-normal mt-1 fs-9">Khai báo lưu trú và cập nhật trạng thái cư trú của khách tại khách sạn/nhà nghỉ.</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check card p-3 border-0 bg-white shadow-sm">
+                                                <input class="form-check-input" type="checkbox" name="selectedPermissions" value="Accommodation.FacilityProfile" id="perm-accommodation-profile" @(selectedRole.QuyenHans.Any(q => q.TenQuyen == "Accommodation.FacilityProfile") ? "checked" : "")>
+                                                <label class="form-check-label fw-bold text-dark fs-8" for="perm-accommodation-profile">
+                                                    Cập nhật thông tin cơ sở (Accommodation.FacilityProfile)
+                                                    <span class="d-block text-muted fw-normal mt-1 fs-9">Quản lý và cập nhật thông tin tên, địa chỉ, số phòng của cơ sở lưu trú.</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Group 3: Ward Police Module -->
+                                <div class="border rounded-3 p-3 bg-light bg-opacity-50">
+                                    <h6 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-shield me-2 text-warning"></i>Phân hệ Công an Phường/Xã (Police)</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-check card p-3 border-0 bg-white shadow-sm">
+                                                <input class="form-check-input" type="checkbox" name="selectedPermissions" value="Police.ApproveDeclaration" id="perm-police-approve" @(selectedRole.QuyenHans.Any(q => q.TenQuyen == "Police.ApproveDeclaration") ? "checked" : "")>
+                                                <label class="form-check-label fw-bold text-dark fs-8" for="perm-police-approve">
+                                                    Phê duyệt khai báo (Police.ApproveDeclaration)
+                                                    <span class="d-block text-muted fw-normal mt-1 fs-9">Xét duyệt hoặc từ chối các yêu cầu khai báo tạm trú trong địa bàn phụ trách.</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check card p-3 border-0 bg-white shadow-sm">
+                                                <input class="form-check-input" type="checkbox" name="selectedPermissions" value="Police.ViolationReport" id="perm-police-violation" @(selectedRole.QuyenHans.Any(q => q.TenQuyen == "Police.ViolationReport") ? "checked" : "")>
+                                                <label class="form-check-label fw-bold text-dark fs-8" for="perm-police-violation">
+                                                    Cảnh báo & Báo cáo vi phạm (Police.ViolationReport)
+                                                    <span class="d-block text-muted fw-normal mt-1 fs-9">Gửi cảnh báo cho khách, báo cáo vi phạm lên Cán bộ Xuất nhập cảnh cấp trên.</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Group 4: Immigration Officer Module -->
+                                <div class="border rounded-3 p-3 bg-light bg-opacity-50">
+                                    <h6 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-globe me-2 text-info"></i>Phân hệ Cán bộ Quản lý Xuất nhập cảnh (Officer)</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-6">
+                                            <div class="form-check card p-3 border-0 bg-white shadow-sm">
+                                                <input class="form-check-input" type="checkbox" name="selectedPermissions" value="Officer.SearchForeigner" id="perm-officer-search" @(selectedRole.QuyenHans.Any(q => q.TenQuyen == "Officer.SearchForeigner") ? "checked" : "")>
+                                                <label class="form-check-label fw-bold text-dark fs-8" for="perm-officer-search">
+                                                    Tra cứu toàn thành phố (Officer.SearchForeigner)
+                                                    <span class="d-block text-muted fw-normal mt-1 fs-9">Tìm kiếm và rà soát thông tin người nước ngoài trên địa bàn toàn thành phố.</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-6">
+                                            <div class="form-check card p-3 border-0 bg-white shadow-sm">
+                                                <input class="form-check-input" type="checkbox" name="selectedPermissions" value="Officer.ReportStatistics" id="perm-officer-stats" @(selectedRole.QuyenHans.Any(q => q.TenQuyen == "Officer.ReportStatistics") ? "checked" : "")>
+                                                <label class="form-check-label fw-bold text-dark fs-8" for="perm-officer-stats">
+                                                    Thống kê & Tổng hợp (Officer.ReportStatistics)
+                                                    <span class="d-block text-muted fw-normal mt-1 fs-9">Lập báo cáo định kỳ, xem biểu đồ phân tích và tiếp nhận thông báo vi phạm từ cơ sở.</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Group 5: System Administrator Module -->
+                                <div class="border rounded-3 p-3 bg-light bg-opacity-50">
+                                    <h6 class="fw-bold text-dark border-bottom pb-2 mb-3"><i class="bi bi-cpu me-2 text-danger"></i>Phân hệ Quản trị viên hệ thống (Admin)</h6>
+                                    <div class="row g-3">
+                                        <div class="col-md-12">
+                                            <div class="form-check card p-3 border-0 bg-white shadow-sm">
+                                                <input class="form-check-input" type="checkbox" name="selectedPermissions" value="Admin.AccountRole" id="perm-admin-role" @(selectedRole.QuyenHans.Any(q => q.TenQuyen == "Admin.AccountRole") ? "checked" : "")>
+                                                <label class="form-check-label fw-bold text-dark fs-8" for="perm-admin-role">
+                                                    Quản lý tài khoản & Cấu hình (Admin.AccountRole)
+                                                    <span class="d-block text-muted fw-normal mt-1 fs-9">Quyền cao nhất để tạo vai trò, thiết lập cây phân quyền, quản lý tài khoản và danh mục phường xã.</span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <div class="d-flex justify-content-end border-top pt-4">
+                                <button type="submit" class="btn btn-success px-4 py-2">
+                                    <i class="bi bi-shield-lock me-1"></i> Lưu phân quyền
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            }
+            else
+            {
+                <div class="card border-0 shadow-sm h-100 d-flex align-items-center justify-content-center py-5" style="border-radius: 12px; background-color: #fff;">
+                    <div class="text-center">
+                        <i class="bi bi-shield-slash text-muted" style="font-size: 3rem;"></i>
+                        <p class="text-muted mt-3">Chọn một vai trò ở cột bên trái để thiết lập quyền.</p>
+                    </div>
+                </div>
+            }
+        </div>
+    </div>
+</div>
