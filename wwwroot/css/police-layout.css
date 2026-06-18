@@ -13,9 +13,18 @@ body {
     background-color: var(--police-bg);
 }
 
+.portal-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1100;
+}
+
 .police-wrapper {
     display: flex;
-    min-height: 100vh;
+    min-height: calc(100vh - var(--portal-topbar-height));
+    margin-top: var(--portal-topbar-height);
 }
 
 /* Sidebar styling */
@@ -24,9 +33,10 @@ body {
     background-color: var(--police-primary-dark);
     color: white;
     position: fixed;
-    top: 0;
+    top: var(--portal-topbar-height);
     bottom: 0;
     left: 0;
+    height: calc(100vh - var(--portal-topbar-height));
     z-index: 1000;
     transition: all 0.3s ease;
     display: flex;
@@ -109,7 +119,7 @@ body {
     margin-left: var(--police-sidebar-width);
     display: flex;
     flex-direction: column;
-    min-height: 100vh;
+    min-height: calc(100vh - var(--portal-topbar-height));
     transition: all 0.3s ease;
 }
 
@@ -121,7 +131,7 @@ body {
     justify-content: space-between;
     align-items: center;
     position: sticky;
-    top: 0;
+    top: var(--portal-topbar-height);
     z-index: 900;
 }
 
@@ -164,17 +174,11 @@ body {
     font-weight: 600;
 }
 
-/* Watermarked Content Area */
+/* Content Area */
 .police-content {
     flex-grow: 1;
     padding: 30px;
-    background-image: 
-        linear-gradient(rgba(246, 248, 247, 0.94), rgba(246, 248, 247, 0.94)),
-        url('/images/police/police-logo.png');
-    background-repeat: no-repeat;
-    background-position: center 40%;
-    background-size: 400px;
-    background-attachment: fixed;
+    background: radial-gradient(circle at top right, rgba(31, 122, 31, 0.05), transparent 360px), #f6f8f5;
 }
 
 /* Mobile responsive */
@@ -191,4 +195,287 @@ body {
     .police-sidebar-toggle {
         display: block;
     }
+}
+
+/* Stat Cards Styling */
+.police-stat-card {
+    background: #ffffff;
+    border: 1px solid #e1e7df;
+    border-radius: 14px;
+    padding: 22px 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 8px 20px rgba(15, 91, 18, 0.04);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.police-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 25px rgba(15, 91, 18, 0.08);
+}
+
+.police-stat-card .stat-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.police-stat-card .stat-label {
+    font-size: 0.88rem;
+    font-weight: 700;
+    color: #5f6368;
+    margin-bottom: 8px;
+}
+
+.police-stat-card .stat-value {
+    font-size: 2.1rem;
+    line-height: 1;
+    font-weight: 800;
+    color: #1f7a1f;
+}
+
+.police-stat-card .stat-icon {
+    width: 56px;
+    height: 56px;
+    border-radius: 999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    transition: transform 0.2s ease;
+}
+
+.police-stat-card:hover .stat-icon {
+    transform: scale(1.05);
+}
+
+/* Modifiers */
+.police-stat-card.is-warning {
+    background: #fff8e1;
+    border-color: #f2c94c;
+}
+
+.police-stat-card.is-warning .stat-label {
+    color: #8a6100;
+}
+
+.police-stat-card.is-warning .stat-value {
+    color: #8a6100;
+}
+
+.police-stat-card.is-warning .stat-icon {
+    background: #ffeebf;
+    color: #8a6100;
+}
+
+.police-stat-card.is-success .stat-icon {
+    background: #eaf7e6;
+    color: #1f7a1f;
+}
+
+.police-stat-card.is-success .stat-value {
+    color: #1f7a1f;
+}
+
+.police-stat-card.is-info .stat-icon {
+    background: #eaf7e6;
+    color: #1f7a1f;
+}
+
+.police-stat-card.is-info-teal .stat-icon {
+    background: #e8f6f2;
+    color: #087f5b;
+}
+
+.police-stat-card.is-info-teal .stat-value {
+    color: #087f5b;
+}
+
+.police-stat-card.is-neutral .stat-icon {
+    background: #f1f3f5;
+    color: #495057;
+}
+
+.police-stat-card.is-neutral .stat-value {
+    color: #495057;
+}
+
+.police-stat-card.is-danger .stat-icon {
+    background: #fff1f2;
+    color: #dc2626;
+}
+
+.police-stat-card.is-danger .stat-value {
+    color: #dc2626;
+}
+
+/* 1. Police Hero Panel */
+.police-hero {
+    background-color: #ffffff;
+    border-left: 4px solid var(--primary-dark);
+    border-radius: 16px;
+    padding: 24px 28px;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05), 0 2px 4px -1px rgba(0, 0, 0, 0.03);
+}
+
+/* 3. Segmented Control Tabs */
+.filter-tabs {
+    display: inline-flex;
+    background: #f3f7f1;
+    padding: 4px;
+    border-radius: 10px;
+}
+
+.filter-tab {
+    border-radius: 8px;
+    padding: 6px 14px;
+    color: var(--text);
+    border: none;
+    background: none;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+    font-weight: 500;
+}
+
+.filter-tab:hover {
+    color: var(--primary-dark);
+}
+
+.filter-tab.active {
+    background: var(--primary-dark);
+    color: white !important;
+    font-weight: 600;
+}
+
+/* 4. Themed Table Style */
+.police-table-themed {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    border: 1px solid #e1e7df;
+    border-radius: 12px;
+    overflow: hidden;
+    background-color: #ffffff;
+}
+
+.police-table-themed thead tr {
+    background-color: #eaf7e6;
+}
+
+.police-table-themed thead th {
+    color: var(--primary-darker);
+    font-weight: 700;
+    border-bottom: 2px solid #bfe5b6;
+    padding: 14px 18px;
+    font-size: 0.9rem;
+    text-align: left;
+}
+
+.police-table-themed tbody td {
+    padding: 14px 18px;
+    border-bottom: 1px solid #e1e7df;
+    font-size: 0.9rem;
+    color: var(--text);
+    vertical-align: middle;
+}
+
+.police-table-themed tbody tr:last-child td {
+    border-bottom: none;
+}
+
+.police-table-themed tbody tr {
+    transition: background-color 0.15s ease;
+}
+
+.police-table-themed tbody tr:hover {
+    background-color: rgba(47, 143, 31, 0.03);
+}
+
+/* 5. Clean Page Header */
+.police-page-header {
+    background-color: #ffffff;
+    border: 1px solid #e1e7df;
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    border-left: 4px solid var(--primary-dark);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+}
+
+/* 6. Standardize Buttons */
+.police-content .btn,
+.btn-police {
+    border-radius: 8px;
+    font-weight: 600;
+    padding: 8px 16px;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+/* Primary Button (Xanh lá) */
+.police-content .btn-primary,
+.police-content .btn-success,
+.btn-police-primary {
+    background-color: var(--primary-dark) !important;
+    border-color: var(--primary-dark) !important;
+    color: white !important;
+}
+.police-content .btn-primary:hover,
+.police-content .btn-success:hover,
+.btn-police-primary:hover {
+    background-color: var(--primary-darker) !important;
+    border-color: var(--primary-darker) !important;
+    box-shadow: 0 4px 12px rgba(31, 111, 18, 0.15);
+}
+
+/* Secondary Button (Outline xám/xanh) */
+.police-content .btn-secondary,
+.police-content .btn-outline-secondary,
+.btn-police-secondary {
+    background-color: transparent !important;
+    border: 1px solid #c3d2bf !important;
+    color: var(--primary-dark) !important;
+}
+.police-content .btn-secondary:hover,
+.police-content .btn-outline-secondary:hover,
+.btn-police-secondary:hover {
+    background-color: #f4fbf2 !important;
+    border-color: var(--primary-dark) !important;
+    color: var(--primary-darker) !important;
+}
+
+/* Warning Button (Vàng) */
+.police-content .btn-warning,
+.btn-police-warning {
+    background-color: #f59e0b !important;
+    border-color: #f59e0b !important;
+    color: white !important;
+}
+.police-content .btn-warning:hover,
+.btn-police-warning:hover {
+    background-color: #d97706 !important;
+    border-color: #d97706 !important;
+    box-shadow: 0 4px 12px rgba(245, 158, 11, 0.15);
+}
+
+/* Danger Button (Đỏ) */
+.police-content .btn-danger,
+.btn-police-danger {
+    background-color: #dc2626 !important;
+    border-color: #dc2626 !important;
+    color: white !important;
+}
+.police-content .btn-danger:hover,
+.btn-police-danger:hover {
+    background-color: #b91c1c !important;
+    border-color: #b91c1c !important;
+    box-shadow: 0 4px 12px rgba(220, 38, 38, 0.15);
+}
+
+/* Extra Small Buttons */
+.police-content .btn-xs,
+.btn-police-xs {
+    padding: 4px 8px !important;
+    font-size: 0.75rem !important;
+    border-radius: 6px;
 }
