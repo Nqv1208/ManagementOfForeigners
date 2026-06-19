@@ -36,7 +36,7 @@
 
                 <!-- Advanced Filter Toggle -->
                 <div class="mt-3">
-                    <button type="button" class="btn btn-link btn-xs text-success text-decoration-none fw-semibold p-0" data-bs-toggle="collapse" data-bs-target="#advancedFilterCollapse" aria-expanded="@expandedVal">
+                    <button type="button" class="btn btn-outline-secondary btn-xs text-success" data-bs-toggle="collapse" data-bs-target="#advancedFilterCollapse" aria-expanded="@expandedVal">
                         <i class="bi bi-sliders me-1"></i> Bộ lọc nâng cao
                     </button>
                 </div>
@@ -123,15 +123,24 @@
                                     <td><span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-20 px-2 py-1">@foreigner.LoaiVisa</span></td>
                                     <td><small class="text-muted">@foreigner.NoiCuTruHienTai</small></td>
                                     <td class="text-center">
-                                        <div class="d-inline-flex gap-2">
-                                            <a asp-action="CanhBaoViPham" asp-route-maNguoiNuocNgoai="@foreigner.MaNguoiNuocNgoai" class="btn btn-outline-warning btn-xs text-dark border-warning d-flex align-items-center gap-1" style="border-radius: 6px;">
-                                                <i class="bi bi-exclamation-triangle"></i> Cảnh báo
-                                            </a>
-                                            <a asp-action="BaoCaoViPham" asp-route-maNguoiNuocNgoai="@foreigner.MaNguoiNuocNgoai" class="btn btn-outline-danger btn-xs d-flex align-items-center gap-1" style="border-radius: 6px;">
-                                                <i class="bi bi-flag"></i> Báo cáo XNC
-                                            </a>
-                                        </div>
-                                    </td>
+                                         <div class="dropdown">
+                                             <button class="btn btn-outline-secondary border-0 p-1 btn-xs" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                 <i class="bi bi-three-dots"></i>
+                                             </button>
+                                             <ul class="dropdown-menu dropdown-menu-end shadow-sm border" style="border-radius: 8px; font-size: 0.85rem;">
+                                                 <li>
+                                                     <a class="dropdown-item py-2 text-warning fw-semibold" asp-action="CanhBaoViPham" asp-route-maNguoiNuocNgoai="@foreigner.MaNguoiNuocNgoai">
+                                                         <i class="bi bi-exclamation-triangle me-2 text-warning"></i>Gửi cảnh báo
+                                                     </a>
+                                                 </li>
+                                                 <li>
+                                                     <a class="dropdown-item py-2 text-danger fw-semibold" asp-action="BaoCaoViPham" asp-route-maNguoiNuocNgoai="@foreigner.MaNguoiNuocNgoai">
+                                                         <i class="bi bi-flag me-2 text-danger"></i>Báo cáo XNC
+                                                     </a>
+                                                 </li>
+                                             </ul>
+                                         </div>
+                                     </td>
                                 </tr>
                             }
                         </tbody>
