@@ -71,7 +71,7 @@
         }
 
         var accountTypeInput = form.querySelector("#AccountType");
-        var buttons = Array.from(form.querySelectorAll("[data-auth-account-type]"));
+        var buttons = Array.from(document.querySelectorAll("[data-auth-account-type]"));
         var sections = Array.from(form.querySelectorAll("[data-auth-section]"));
         var currentStep = 1;
 
