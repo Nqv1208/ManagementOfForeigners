@@ -2,7 +2,7 @@
 
 .lodging-declaration-page {
     font-family: 'Inter', sans-serif;
-    background-color: #f8fafc;
+    background-color: var(--coso-bg, #f5f7f4);
 }
 
 .lodging-declaration-shell {
@@ -12,10 +12,10 @@
 }
 
 .lodging-declaration-shell .card {
-    border: 1px solid #e2e8f0;
+    border: 1px solid var(--coso-border, #dfe8dc);
     border-radius: 12px;
     overflow: hidden;
-    background-color: #ffffff;
+    background-color: var(--coso-surface, #ffffff);
 }
 
 .declaration-header {
@@ -24,8 +24,8 @@
 }
 
 .declaration-section {
-    background: #ffffff;
-    border: 1px solid #f1f5f9;
+    background: var(--coso-surface, #ffffff);
+    border: 1px solid var(--coso-border, #dfe8dc);
     border-radius: 8px;
     padding: 20px;
     margin-bottom: 24px;
@@ -34,8 +34,8 @@
 .section-title {
     font-size: 1.05rem;
     font-weight: 700;
-    color: var(--primary-dark, #1b5e11);
-    border-bottom: 2px solid #f1f5f9;
+    color: var(--coso-primary-dark, #0b3d1b);
+    border-bottom: 2px solid var(--coso-border, #dfe8dc);
     padding-bottom: 8px;
     margin-bottom: 20px;
     text-transform: uppercase;
@@ -44,8 +44,8 @@
 
 /* Readonly facility styling */
 .readonly-facility {
-    background-color: #f8fafc;
-    border: 1px dashed #cbd5e1;
+    background-color: var(--brand-green-50, #f5fbf6);
+    border: 1px dashed var(--coso-border, #dfe8dc);
 }
 
 .readonly-facility span.text-muted {
@@ -83,7 +83,7 @@
 /* Form Controls Custom Style */
 .lodging-declaration-shell .form-control,
 .lodging-declaration-shell .form-select {
-    border: 1px solid #cbd5e1;
+    border: 1px solid var(--coso-border, #dfe8dc);
     border-radius: 6px;
     padding: 10px 12px;
     font-size: 0.9rem;

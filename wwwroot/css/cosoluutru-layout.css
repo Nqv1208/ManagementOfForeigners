@@ -1,0 +1,423 @@
+:root {
+    --coso-sidebar-width: 280px;
+
+    /* === Deep Forest Green palette — Chủ cơ sở lưu trú === */
+    --brand-green-900: #0b3d1b;
+    --brand-green-800: #0f4f24;
+    --brand-green-700: #166534;
+    --brand-green-600: #238636;
+    --brand-green-100: #eaf7ec;
+    --brand-green-50:  #f5fbf6;
+
+    --accent-gold: #f2b705;
+
+    /* Sidebar tokens */
+    --coso-sidebar-bg:     #0b3d1b;
+    --coso-sidebar-bg-2:   #082f17;
+    --coso-sidebar-active:  #166534;
+    --coso-sidebar-hover:   rgba(255, 255, 255, 0.08);
+    --coso-sidebar-text:    #eef8ec;
+    --coso-sidebar-muted:   #b7d7b5;
+    --coso-sidebar-icon:    #d8f3dc;
+    --coso-sidebar-active-border: #f2b705;
+
+    /* Surface & content tokens */
+    --coso-bg:         #f5f7f4;
+    --coso-surface:    #ffffff;
+    --coso-border:     #dfe8dc;
+    --coso-text-main:  #1f2937;
+    --coso-text-muted: #667085;
+
+    /* Legacy aliases (kept for elements outside sidebar) */
+    --coso-primary:      #166534;
+    --coso-primary-dark: #0b3d1b;
+    --coso-accent:       #238636;
+}
+
+body {
+    margin: 0;
+    padding: 0;
+    font-family: 'Inter', sans-serif;
+    background-color: var(--coso-bg);
+}
+
+.portal-topbar {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 1100;
+}
+
+.coso-wrapper {
+    display: flex;
+    min-height: calc(100vh - var(--portal-topbar-height));
+    margin-top: var(--portal-topbar-height);
+}
+
+/* Sidebar styling — Deep Forest Green */
+.coso-sidebar {
+    width: var(--coso-sidebar-width);
+    background: linear-gradient(180deg, var(--coso-sidebar-bg) 0%, var(--coso-sidebar-bg-2) 100%);
+    color: var(--coso-sidebar-text);
+    position: fixed;
+    top: var(--portal-topbar-height);
+    bottom: 0;
+    left: 0;
+    height: calc(100vh - var(--portal-topbar-height));
+    z-index: 1000;
+    transition: all 0.3s ease;
+    display: flex;
+    flex-direction: column;
+    box-shadow: 4px 0 10px rgba(0, 0, 0, 0.15);
+}
+
+.coso-sidebar-header {
+    padding: 20px;
+    background: rgba(255, 255, 255, 0.06);
+    border-bottom: 1px solid rgba(255, 255, 255, 0.10);
+    display: flex;
+    align-items: center;
+    gap: 12px;
+}
+
+.coso-sidebar-logo-container {
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    background-color: rgba(255, 255, 255, 0.10);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.4rem;
+    color: var(--coso-sidebar-icon);
+}
+
+.coso-sidebar-title h1 {
+    font-size: 0.9rem;
+    font-weight: 800;
+    margin: 0;
+    color: white;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    max-width: 180px;
+}
+
+.coso-sidebar-title span {
+    font-size: 0.7rem;
+    color: var(--coso-sidebar-muted);
+    font-weight: 600;
+    display: block;
+    margin-top: 2px;
+}
+
+.coso-sidebar-menu {
+    flex-grow: 1;
+    overflow-y: auto;
+    padding: 20px 10px;
+    list-style: none;
+    margin: 0;
+}
+
+.coso-menu-item a {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 15px;
+    color: var(--coso-sidebar-text);
+    text-decoration: none;
+    border-radius: 8px;
+    margin-bottom: 6px;
+    font-size: 0.9rem;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+.coso-menu-item a:hover {
+    color: #fff;
+    background: var(--coso-sidebar-hover);
+}
+
+.coso-menu-item.active a {
+    color: #fff;
+    background-color: var(--coso-sidebar-active);
+    border-left: 4px solid var(--coso-sidebar-active-border);
+    font-weight: 600;
+}
+
+.coso-menu-item.active a i {
+    color: #fff;
+}
+
+.coso-menu-item a i {
+    font-size: 1.1rem;
+    color: var(--coso-sidebar-icon);
+}
+
+/* Main container styling */
+.coso-main-container {
+    flex-grow: 1;
+    margin-left: var(--coso-sidebar-width);
+    display: flex;
+    flex-direction: column;
+    min-height: calc(100vh - var(--portal-topbar-height));
+    transition: all 0.3s ease;
+}
+
+.coso-topbar {
+    background-color: var(--coso-surface);
+    border-bottom: 1px solid var(--coso-border);
+    padding: 15px 30px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    position: sticky;
+    top: var(--portal-topbar-height);
+    z-index: 900;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.coso-topbar-left {
+    display: flex;
+    align-items: center;
+    gap: 15px;
+}
+
+.coso-sidebar-toggle {
+    display: none;
+    background: none;
+    border: none;
+    font-size: 1.5rem;
+    cursor: pointer;
+    color: var(--brand-green-700);
+}
+
+.coso-topbar-right {
+    display: flex;
+    align-items: center;
+    gap: 20px;
+}
+
+.coso-user-info {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+}
+
+.coso-user-name {
+    font-size: 0.9rem;
+    font-weight: 700;
+    color: var(--coso-primary-dark);
+}
+
+.coso-user-role {
+    font-size: 0.72rem;
+    color: var(--coso-text-muted);
+    font-weight: 600;
+}
+
+/* Content Area */
+.coso-content {
+    flex-grow: 1;
+    padding: 30px;
+    background-color: var(--coso-bg);
+}
+
+/* Clean Page Header */
+.coso-page-header {
+    background-color: var(--coso-surface);
+    border: 1px solid var(--coso-border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 24px;
+    border-left: 4px solid var(--brand-green-700);
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.02);
+}
+
+/* Stat Cards */
+.coso-stat-card {
+    background: var(--coso-surface);
+    border: 1px solid var(--coso-border);
+    border-radius: 14px;
+    padding: 22px 26px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.05);
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.coso-stat-card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+}
+
+.coso-stat-card .stat-content {
+    display: flex;
+    flex-direction: column;
+}
+
+.coso-stat-card .stat-label {
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: var(--coso-text-muted);
+    margin-bottom: 6px;
+}
+
+.coso-stat-card .stat-value {
+    font-size: 2rem;
+    line-height: 1;
+    font-weight: 800;
+    color: var(--coso-primary-dark);
+}
+
+.coso-stat-card .stat-icon {
+    width: 52px;
+    height: 52px;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 22px;
+    transition: transform 0.2s ease;
+}
+
+.coso-stat-card:hover .stat-icon {
+    transform: scale(1.05);
+}
+
+/* =============================================
+   Custom Badge System — Chủ cơ sở lưu trú
+   Bypasses site.css !important overrides on
+   .bg-success, .text-success, .border-success
+   ============================================= */
+
+/* Success badges (Đang hoạt động, Đã duyệt) */
+.coso-badge-success {
+    background-color: #f0fdf4 !important;
+    color: #15803d !important;
+    border: 1px solid #bbf7d0 !important;
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Warning badges (Chờ duyệt) */
+.coso-badge-warning {
+    background-color: #fffbeb !important;
+    color: #92400e !important;
+    border: 1px solid #fde68a !important;
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Danger badges (Từ chối, Quá hạn, Chưa duyệt) */
+.coso-badge-danger {
+    background-color: #fef2f2 !important;
+    color: #b91c1c !important;
+    border: 1px solid #fecaca !important;
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Info badges (Sắp check-out) */
+.coso-badge-info {
+    background-color: #f0f9ff !important;
+    color: #0369a1 !important;
+    border: 1px solid #bae6fd !important;
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Primary badge (Tổng hồ sơ) */
+.coso-badge-primary {
+    background-color: #eaf7ec !important;
+    color: #166534 !important;
+    border: 1px solid #bbf7d0 !important;
+    font-weight: 600;
+    font-size: 0.78rem;
+    padding: 4px 10px;
+    border-radius: 6px;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+/* Larger pill badge (header status) */
+.coso-badge-pill {
+    border-radius: 20px;
+    padding: 6px 14px;
+    font-size: 0.82rem;
+}
+
+/* Stat card icon circles — bypass .bg-success !important */
+.coso-icon-success {
+    background-color: #f0fdf4 !important;
+    color: #15803d !important;
+}
+
+.coso-icon-warning {
+    background-color: #fffbeb !important;
+    color: #b45309 !important;
+}
+
+.coso-icon-danger {
+    background-color: #fef2f2 !important;
+    color: #b91c1c !important;
+}
+
+.coso-icon-info {
+    background-color: #f0f9ff !important;
+    color: #0369a1 !important;
+}
+
+/* Header icon accent — replaces .text-success on <i> inside headers */
+.coso-header-icon {
+    color: var(--brand-green-600, #238636) !important;
+}
+
+/* Section icon colors */
+.coso-icon-inline {
+    color: var(--brand-green-700, #166534) !important;
+}
+
+/* Mobile responsive styling */
+@media (max-width: 767.98px) {
+    .coso-sidebar {
+        left: calc(-1 * var(--coso-sidebar-width));
+    }
+    .coso-sidebar.show {
+        left: 0;
+    }
+    .coso-main-container {
+        margin-left: 0;
+    }
+    .coso-sidebar-toggle {
+        display: block;
+    }
+    .coso-content {
+        padding: 15px;
+    }
+}
