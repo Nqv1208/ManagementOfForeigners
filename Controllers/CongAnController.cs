@@ -108,6 +108,12 @@ public class CongAnController : Controller
         }
 
         var query = WardDeclarations(canBo.MaPhuongXa);
+
+        var baseQuery = WardDeclarations(canBo.MaPhuongXa);
+        ViewBag.CountPending = await baseQuery.CountAsync(h => h.TrangThai == TrangThaiKhaiBao.ChoDuyet);
+        ViewBag.CountApproved = await baseQuery.CountAsync(h => h.TrangThai == TrangThaiKhaiBao.DaDuyet);
+        ViewBag.CountRejected = await baseQuery.CountAsync(h => h.TrangThai == TrangThaiKhaiBao.TuChoi);
+
         if (!string.IsNullOrWhiteSpace(trangThai))
         {
             query = query.Where(h => h.TrangThai == trangThai);
@@ -282,7 +288,7 @@ public class CongAnController : Controller
 
     // GET: /police/search
     [HttpGet("search")]
-    public async Task<IActionResult> TraCuu(string? search, int? page)
+    public async Task<IActionResult> TraCuu(string? search, string? quocTich, string? loaiVisa, int? page)
     {
         var canBo = await GetCurrentCanBoAsync();
         if (canBo == null)
@@ -290,10 +296,25 @@ public class CongAnController : Controller
             return RedirectToAction("TuChoiTruyCap", "TaiKhoan");
         }
 
+        ViewBag.Nationalities = await WardForeigners(canBo.MaPhuongXa).Select(n => n.QuocTich).Distinct().ToListAsync();
+        ViewBag.VisaTypes = await WardForeigners(canBo.MaPhuongXa).Select(n => n.LoaiVisa).Distinct().ToListAsync();
+        ViewBag.SelectedQuocTich = quocTich;
+        ViewBag.SelectedLoaiVisa = loaiVisa;
+
         var query = WardForeigners(canBo.MaPhuongXa);
         if (!string.IsNullOrWhiteSpace(search))
         {
             query = query.Where(n => n.HoTen.Contains(search) || n.SoHoChieu.Contains(search));
+        }
+
+        if (!string.IsNullOrWhiteSpace(quocTich))
+        {
+            query = query.Where(n => n.QuocTich == quocTich);
+        }
+
+        if (!string.IsNullOrWhiteSpace(loaiVisa))
+        {
+            query = query.Where(n => n.LoaiVisa == loaiVisa);
         }
 
         ViewBag.Search = search;

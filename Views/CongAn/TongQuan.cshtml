@@ -8,18 +8,18 @@
     <!-- Header banner -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card gov-hero-card border-0 shadow-sm overflow-hidden" style="border-radius: 20px;">
-                <div class="p-5 d-flex align-items-center justify-content-between flex-wrap gap-4">
+            <div class="police-hero">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-4">
                     <div>
                         <span class="badge bg-success px-3 py-2 mb-2" style="border-radius: 30px;">Công an Phường/Xã phụ trách</span>
-                        <h2 class="fw-bold mb-1">Địa bàn: @Model.TenDiaBan, Đà Nẵng</h2>
-                        <p class="text-white-50 mb-0">Quản lý tạm trú, phê duyệt khai báo, gửi cảnh báo & báo cáo vi phạm người nước ngoài trên địa bàn</p>
+                        <h2 class="fw-bold mb-1" style="color: #1f2937;">Địa bàn: @Model.TenDiaBan, Đà Nẵng</h2>
+                        <p class="text-muted mb-0">Quản lý tạm trú, phê duyệt khai báo, gửi cảnh báo & báo cáo vi phạm người nước ngoài trên địa bàn</p>
                     </div>
                     <div class="d-flex gap-2">
-                        <a asp-action="DanhSachKhaiBao" class="btn btn-success fw-semibold px-4 py-2" style="border-radius: 10px;">
+                        <a asp-action="DanhSachKhaiBao" class="btn btn-success">
                             <i class="bi bi-patch-check me-1"></i> Duyệt khai báo
                         </a>
-                        <a asp-action="TraCuu" class="btn btn-outline-light fw-semibold px-4 py-2" style="border-radius: 10px;">
+                        <a asp-action="TraCuu" class="btn btn-outline-success">
                             <i class="bi bi-search me-1"></i> Tra cứu địa bàn
                         </a>
                     </div>
@@ -31,57 +31,49 @@
     <!-- Analytics Cards -->
     <div class="row g-4 mb-4">
         <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm text-white bg-warning h-100" style="border-radius: 16px;">
-                <div class="card-body p-4 d-flex align-items-center justify-content-between">
-                    <div>
-                        <h6 class="text-dark-50 fw-semibold mb-1 fs-7 text-dark">Chờ duyệt tạm trú</h6>
-                        <h2 class="fw-bold mb-0 text-dark">@Model.TotalPending</h2>
-                    </div>
-                    <div class="bg-white bg-opacity-20 text-dark rounded-circle p-3 fs-3 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                        <i class="bi bi-clock-history"></i>
-                    </div>
+            <div class="police-stat-card is-warning">
+                <div class="stat-content">
+                    <span class="stat-label">Chờ duyệt tạm trú</span>
+                    <span class="stat-value">@Model.TotalPending</span>
+                </div>
+                <div class="stat-icon warning">
+                    <i class="bi bi-clock-history"></i>
                 </div>
             </div>
         </div>
 
         <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm text-white bg-success h-100" style="border-radius: 16px;">
-                <div class="card-body p-4 d-flex align-items-center justify-content-between">
-                    <div>
-                        <h6 class="text-white-50 fw-semibold mb-1 fs-7">Đã duyệt tạm trú</h6>
-                        <h2 class="fw-bold mb-0">@Model.TotalApproved</h2>
-                    </div>
-                    <div class="bg-white bg-opacity-10 text-white rounded-circle p-3 fs-3 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                        <i class="bi bi-check-circle-fill"></i>
-                    </div>
+            <div class="police-stat-card is-success">
+                <div class="stat-content">
+                    <span class="stat-label">Đã duyệt tạm trú</span>
+                    <span class="stat-value">@Model.TotalApproved</span>
+                </div>
+                <div class="stat-icon success">
+                    <i class="bi bi-check-circle-fill"></i>
                 </div>
             </div>
         </div>
 
         <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm text-white bg-primary h-100" style="border-radius: 16px;">
-                <div class="card-body p-4 d-flex align-items-center justify-content-between">
-                    <div>
-                        <h6 class="text-white-50 fw-semibold mb-1 fs-7">NNN trong địa bàn</h6>
-                        <h2 class="fw-bold mb-0">@Model.TotalForeigners</h2>
-                    </div>
-                    <div class="bg-white bg-opacity-10 text-white rounded-circle p-3 fs-3 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                        <i class="bi bi-people-fill"></i>
-                    </div>
+            <div class="police-stat-card is-info-teal">
+                <div class="stat-content">
+                    <span class="stat-label">NNN trong địa bàn</span>
+                    <span class="stat-value">@Model.TotalForeigners</span>
+                </div>
+                <div class="stat-icon info-teal">
+                    <i class="bi bi-people-fill"></i>
                 </div>
             </div>
         </div>
 
         <div class="col-xl-3 col-md-6">
-            <div class="card border-0 shadow-sm gov-stat-card h-100" style="border-radius: 16px;">
-                <div class="card-body p-4 d-flex align-items-center justify-content-between">
-                    <div>
-                        <h6 class="text-white-50 fw-semibold mb-1 fs-7">Cảnh báo đã gửi</h6>
-                        <h2 class="fw-bold mb-0">@Model.TotalWarnings</h2>
-                    </div>
-                    <div class="bg-white bg-opacity-10 text-white rounded-circle p-3 fs-3 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
-                        <i class="bi bi-exclamation-octagon-fill"></i>
-                    </div>
+            <div class="police-stat-card is-neutral">
+                <div class="stat-content">
+                    <span class="stat-label">Cảnh báo đã gửi</span>
+                    <span class="stat-value">@Model.TotalWarnings</span>
+                </div>
+                <div class="stat-icon neutral">
+                    <i class="bi bi-exclamation-octagon-fill"></i>
                 </div>
             </div>
         </div>
@@ -106,9 +98,9 @@
                     else
                     {
                         <div class="table-responsive">
-                            <table class="table table-hover align-middle mb-0 fs-8">
+                            <table class="police-table-themed align-middle mb-0 fs-8">
                                 <thead>
-                                    <tr class="table-light">
+                                    <tr>
                                         <th>Họ tên khách</th>
                                         <th>Hộ chiếu</th>
                                         <th>Địa chỉ lưu trú</th>
@@ -124,13 +116,13 @@
                                             <td><small class="text-muted style-multiline-ellipsis">@dec.DiaChiLuuTru</small></td>
                                             <td>
                                                 <div class="d-inline-flex gap-1 align-items-center">
-                                                    <a asp-action="ChiTietKhaiBao" asp-route-id="@dec.MaHSKhaiBao" class="btn btn-outline-primary btn-xs" style="border-radius: 5px; font-size: 0.75rem;">
+                                                    <a asp-action="ChiTietKhaiBao" asp-route-id="@dec.MaHSKhaiBao" class="btn btn-outline-success btn-xs">
                                                         <i class="bi bi-eye"></i> Chi tiết
                                                     </a>
                                                     <form asp-action="PheDuyet" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn phê duyệt hồ sơ khai báo này?');" style="display:inline-block; margin: 0;">
                                                         @Html.AntiForgeryToken()
                                                         <input type="hidden" name="id" value="@dec.MaHSKhaiBao" />
-                                                        <button type="submit" class="btn btn-success btn-xs fw-semibold text-white px-2 py-1" style="border-radius: 5px; font-size: 0.75rem; border: none; background-color: var(--primary);">
+                                                        <button type="submit" class="btn btn-success btn-xs">
                                                             <i class="bi bi-check-circle"></i> Duyệt
                                                         </button>
                                                     </form>
@@ -165,12 +157,33 @@
                         <div class="d-flex flex-column gap-3">
                             @foreach (var warn in Model.RecentWarnings)
                             {
-                                <div class="p-3 bg-light rounded-3">
-                                    <div class="d-flex justify-content-between flex-wrap gap-2 mb-1">
+                                var borderStyle = "border-left: 4px solid #6c757d !important;";
+                                var badgeClass = "bg-secondary-subtle text-secondary";
+                                if (warn.MucDoViPham == "Nghiêm trọng")
+                                {
+                                    borderStyle = "border-left: 4px solid #dc2626 !important;";
+                                    badgeClass = "bg-danger-subtle text-danger";
+                                }
+                                else if (warn.MucDoViPham == "Trung bình")
+                                {
+                                    borderStyle = "border-left: 4px solid #f59e0b !important;";
+                                    badgeClass = "bg-warning-subtle text-warning-emphasis";
+                                }
+                                else if (warn.MucDoViPham == "Nhẹ")
+                                {
+                                    borderStyle = "border-left: 4px solid #087f5b !important;";
+                                    badgeClass = "bg-success-subtle text-success";
+                                }
+                                <div class="p-3 bg-white border rounded-3 shadow-xs" style="@borderStyle">
+                                    <div class="d-flex justify-content-between align-items-center mb-1">
                                         <span class="fw-bold text-dark fs-7">@warn.NguoiNuocNgoai.HoTen</span>
                                         <small class="text-muted fs-8">@warn.NgayCanhBao.ToString("dd/MM/yyyy")</small>
                                     </div>
-                                    <div class="text-muted fs-8 mb-2">Loại: <span class="text-dark fw-semibold">@warn.LoaiViPham</span> | Mức độ: <span class="badge bg-danger">@warn.MucDoViPham</span></div>
+                                    <div class="d-flex align-items-center gap-2 mb-2 fs-8 text-muted">
+                                        <span>Loại: <strong class="text-dark">@warn.LoaiViPham</strong></span>
+                                        <span class="vr"></span>
+                                        <span class="badge @badgeClass">@warn.MucDoViPham</span>
+                                    </div>
                                     <p class="mb-0 text-secondary fs-8 style-multiline-ellipsis">@warn.NoiDungCanhBao</p>
                                 </div>
                             }

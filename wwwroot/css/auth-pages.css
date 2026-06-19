@@ -27,7 +27,7 @@
 
 .auth-form-link {
     color: var(--auth-primary-dark);
-    font-weight: 800;
+    font-weight: 500;
     text-decoration: none;
 }
 

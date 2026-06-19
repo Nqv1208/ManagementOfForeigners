@@ -45,7 +45,6 @@
                             <input asp-for="GhiNho" class="form-check-input" />
                             <label asp-for="GhiNho" class="form-check-label"></label>
                         </div>
-                        <span class="auth-helper-text">Tài khoản chờ duyệt sẽ được thông báo trạng thái riêng.</span>
                     </div>
 
                     <button type="submit" class="btn btn-primary btn-lg w-100">
@@ -55,20 +54,20 @@
 
                 <div class="auth-register-cta">
                     <span class="auth-helper-text">Chưa có tài khoản?</span>
-                    <a asp-controller="TaiKhoan" asp-action="DangKy" class="auth-form-link">Đăng ký tài khoản dịch vụ công</a>
+                    <a asp-controller="TaiKhoan" asp-action="DangKy" class="auth-form-link">Đăng ký tài khoản</a>
                 </div>
 
-                <aside class="auth-support-box" aria-label="Hỗ trợ đăng nhập">
+                <!-- <aside class="auth-support-box" aria-label="Hỗ trợ đăng nhập">
                     <h2 class="auth-support-title">Hỗ trợ người dùng</h2>
                     <div class="auth-support-links">
                         <a asp-controller="TrangChu" asp-action="Index" class="auth-form-link">Hướng dẫn sử dụng</a>
                         <a asp-controller="TrangChu" asp-action="Index" class="auth-form-link">Liên hệ hỗ trợ</a>
                     </div>
-                </aside>
+                </aside> -->
             </div>
         </section>
 
-        @if (Env.EnvironmentName == "Development")
+        <!-- @if (Env.EnvironmentName == "Development")
         {
             <section class="card auth-dev-accounts" aria-label="Tài khoản kiểm thử">
                 <div class="card-body">
@@ -115,7 +114,7 @@
                     </div>
                 </div>
             </section>
-        }
+        } -->
     </div>
 </div>
 

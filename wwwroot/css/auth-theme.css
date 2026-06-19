@@ -303,7 +303,7 @@ body.auth-layout-body {
 .auth-password-toggle {
     position: absolute;
     right: 7px;
-    top: 50%;
+    top: 12%;
     width: 34px;
     height: 34px;
     display: inline-flex;

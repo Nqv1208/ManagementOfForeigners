@@ -4,26 +4,89 @@
 @{
     Layout = "~/Views/Shared/_PoliceLayout.cshtml";
     ViewBag.Title = "Tra cứu địa bàn - Công an";
+
+    var showAdvanced = ViewBag.SelectedQuocTich != null || ViewBag.SelectedLoaiVisa != null;
+    var expandedVal = showAdvanced ? "true" : "false";
+    var collapseClass = showAdvanced ? "show" : "";
+    var nationalities = ViewBag.Nationalities as List<string>;
+    var visaTypes = ViewBag.VisaTypes as List<string>;
 }
 
 <div class="container-fluid">
-    <div class="card border-0 shadow-sm" style="border-radius: 16px;">
-        <div class="card-header bg-success text-white p-4" style="background-color: var(--police-primary) !important;">
-            <h5 class="fw-bold mb-0">Tra cứu người nước ngoài tại @ViewBag.TenDiaBan</h5>
-            <p class="text-white-50 mb-0 fs-7">Danh sách người nước ngoài đang sinh sống và cư trú thực tế trong địa bàn phụ trách của Công an phường</p>
-        </div>
+    <div class="police-page-header mb-4">
+        <h5 class="fw-bold mb-1" style="color: var(--police-primary-dark);">Tra cứu người nước ngoài tại @ViewBag.TenDiaBan</h5>
+        <p class="text-muted mb-0 fs-7">Danh sách người nước ngoài đang sinh sống và cư trú thực tế trong địa bàn phụ trách của Công an phường/xã</p>
+    </div>
 
+    <div class="card border-0 shadow-sm" style="border-radius: 16px;">
         <div class="card-body p-4">
             <!-- Search Form -->
-            <form asp-action="TraCuu" method="get" class="row g-3 mb-4">
-                <div class="col-md-9">
-                    <div class="input-group">
-                        <span class="input-group-text bg-white border-end-0" style="border-radius: 8px 0 0 8px;"><i class="bi bi-search text-muted"></i></span>
-                        <input type="text" name="search" class="form-control border-start-0" value="@ViewBag.Search" placeholder="Tìm theo họ tên, số hộ chiếu, địa chỉ tạm trú..." style="border-radius: 0 8px 8px 0;" />
+            <form asp-action="TraCuu" method="get" class="mb-4">
+                <div class="row g-3">
+                    <div class="col-md-9">
+                        <div class="input-group">
+                            <span class="input-group-text bg-white border-end-0" style="border-radius: 8px 0 0 8px;"><i class="bi bi-search text-muted"></i></span>
+                            <input type="text" name="search" class="form-control border-start-0" value="@ViewBag.Search" placeholder="Tìm theo họ tên, số hộ chiếu, địa chỉ tạm trú..." style="border-radius: 0 8px 8px 0;" />
+                        </div>
+                    </div>
+                    <div class="col-md-3">
+                        <button type="submit" class="btn btn-success w-100 fw-semibold" style="border-radius: 8px;">Tìm kiếm</button>
                     </div>
                 </div>
-                <div class="col-md-3">
-                    <button type="submit" class="btn btn-primary w-100 fw-semibold" style="border-radius: 8px;">Tìm kiếm</button>
+
+                <!-- Advanced Filter Toggle -->
+                <div class="mt-3">
+                    <button type="button" class="btn btn-link btn-xs text-success text-decoration-none fw-semibold p-0" data-bs-toggle="collapse" data-bs-target="#advancedFilterCollapse" aria-expanded="@expandedVal">
+                        <i class="bi bi-sliders me-1"></i> Bộ lọc nâng cao
+                    </button>
+                </div>
+
+                <!-- Collapsible Panel -->
+                <div class="collapse @collapseClass" id="advancedFilterCollapse">
+                    <div class="card card-body bg-light border-0 mt-3 p-3" style="border-radius: 12px;">
+                        <div class="row g-3">
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-muted">Quốc tịch</label>
+                                <select name="quocTich" class="form-select" style="border-radius: 8px;">
+                                    <option value="">-- Tất cả quốc tịch --</option>
+                                    @if (nationalities != null)
+                                    {
+                                        foreach (var nationality in nationalities)
+                                        {
+                                            if (nationality == ViewBag.SelectedQuocTich)
+                                            {
+                                                <option value="@nationality" selected="selected">@nationality</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@nationality">@nationality</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                            <div class="col-md-6">
+                                <label class="form-label small fw-semibold text-muted">Loại Visa</label>
+                                <select name="loaiVisa" class="form-select" style="border-radius: 8px;">
+                                    <option value="">-- Tất cả loại Visa --</option>
+                                    @if (visaTypes != null)
+                                    {
+                                        foreach (var visa in visaTypes)
+                                        {
+                                            if (visa == ViewBag.SelectedLoaiVisa)
+                                            {
+                                                <option value="@visa" selected="selected">@visa</option>
+                                            }
+                                            else
+                                            {
+                                                <option value="@visa">@visa</option>
+                                            }
+                                        }
+                                    }
+                                </select>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </form>
 
@@ -37,9 +100,9 @@
             else
             {
                 <div class="table-responsive">
-                    <table class="table table-hover align-middle mb-0 fs-7">
+                    <table class="police-table-themed align-middle mb-0 fs-7">
                         <thead>
-                            <tr class="table-gov-header">
+                            <tr>
                                 <th>Mã NNN</th>
                                 <th>Họ và tên</th>
                                 <th>Số hộ chiếu</th>
@@ -57,14 +120,14 @@
                                     <td class="fw-bold text-dark">@foreigner.HoTen</td>
                                     <td>@foreigner.SoHoChieu</td>
                                     <td>@foreigner.QuocTich</td>
-                                    <td><span class="badge bg-primary">@foreigner.LoaiVisa</span></td>
+                                    <td><span class="badge bg-primary bg-opacity-10 text-primary border border-primary border-opacity-20 px-2 py-1">@foreigner.LoaiVisa</span></td>
                                     <td><small class="text-muted">@foreigner.NoiCuTruHienTai</small></td>
                                     <td class="text-center">
                                         <div class="d-inline-flex gap-2">
-                                            <a asp-action="CanhBaoViPham" asp-route-maNguoiNuocNgoai="@foreigner.MaNguoiNuocNgoai" class="btn btn-warning btn-xs text-dark" style="border-radius: 6px;">
+                                            <a asp-action="CanhBaoViPham" asp-route-maNguoiNuocNgoai="@foreigner.MaNguoiNuocNgoai" class="btn btn-outline-warning btn-xs text-dark border-warning d-flex align-items-center gap-1" style="border-radius: 6px;">
                                                 <i class="bi bi-exclamation-triangle"></i> Cảnh báo
                                             </a>
-                                            <a asp-action="BaoCaoViPham" asp-route-maNguoiNuocNgoai="@foreigner.MaNguoiNuocNgoai" class="btn btn-danger btn-xs" style="border-radius: 6px;">
+                                            <a asp-action="BaoCaoViPham" asp-route-maNguoiNuocNgoai="@foreigner.MaNguoiNuocNgoai" class="btn btn-outline-danger btn-xs d-flex align-items-center gap-1" style="border-radius: 6px;">
                                                 <i class="bi bi-flag"></i> Báo cáo XNC
                                             </a>
                                         </div>
@@ -77,7 +140,7 @@
 
                 <!-- Pagination -->
                 <div class="d-flex justify-content-center mt-4">
-                    @Html.PagedListPager(Model, page => Url.Action("TraCuu", new { page, search = ViewBag.Search }),
+                    @Html.PagedListPager(Model, page => Url.Action("TraCuu", new { page, search = ViewBag.Search, quocTich = ViewBag.SelectedQuocTich, loaiVisa = ViewBag.SelectedLoaiVisa }),
                         new X.PagedList.Mvc.Core.PagedListRenderOptions {
                             LiElementClasses = new string[] { "page-item" },
                             PageClasses = new string[] { "page-link" },

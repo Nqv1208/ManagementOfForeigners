@@ -5,11 +5,9 @@
 }
 
 <div class="container-fluid">
-    <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px; border-left: 4px solid var(--danger) !important;">
-        <div class="card-body p-4">
-            <h5 class="fw-bold text-dark mb-1">Báo cáo vi phạm lên Cục/Phòng XNC</h5>
-            <p class="text-muted mb-0 fs-7">Báo cáo các trường hợp vi phạm cư trú nghiêm trọng cần Phòng Quản lý Xuất Nhập Cảnh xử lý trực tiếp hoặc trục xuất</p>
-        </div>
+    <div class="police-page-header mb-4" style="border-left: 4px solid #dc2626 !important;">
+        <h5 class="fw-bold mb-1" style="color: #b91c1c;">Báo cáo vi phạm lên Cục/Phòng XNC</h5>
+        <p class="text-muted mb-0 fs-7">Báo cáo các trường hợp vi phạm cư trú nghiêm trọng cần Phòng Quản lý Xuất Nhập Cảnh xử lý trực tiếp hoặc trục xuất</p>
     </div>
 
     <div class="row g-4">
@@ -24,10 +22,11 @@
                         <div class="row g-3">
                             <!-- Search & Select Foreigner -->
                             <div class="col-md-12">
-                                <label class="form-label fw-semibold text-dark fs-7">Tìm kiếm nhanh người nước ngoài</label>
-                                <input type="text" id="foreignerSearch" class="form-control mb-2" placeholder="Nhập tên hoặc số hộ chiếu để lọc nhanh..." style="border-radius: 8px;" />
-                                
-                                <label asp-for="MaNguoiNuocNgoai" class="form-label fw-semibold text-dark fs-7">Người nước ngoài liên quan <span class="text-danger">*</span></label>
+                                <label class="form-label fw-semibold text-dark fs-7">Người nước ngoài liên quan <span class="text-danger">*</span></label>
+                                <div class="input-group mb-2">
+                                    <span class="input-group-text bg-white border-end-0" style="border-radius: 8px 0 0 8px;"><i class="bi bi-search text-muted"></i></span>
+                                    <input type="text" id="foreignerSearch" class="form-control border-start-0" placeholder="Nhập tên hoặc số hộ chiếu để tìm kiếm..." style="border-radius: 0 8px 8px 0;" />
+                                </div>
                                 <select asp-for="MaNguoiNuocNgoai" asp-items="ViewBag.NguoiNuocNgoais" class="form-select" id="MaNguoiNuocNgoai" style="border-radius: 8px;" required>
                                     <option value="">-- Chọn người nước ngoài --</option>
                                 </select>
