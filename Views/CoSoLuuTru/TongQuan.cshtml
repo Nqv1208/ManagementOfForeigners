@@ -3,68 +3,68 @@
     ViewBag.Title = "Bảng điều khiển - Chủ cơ sở";
 }
 
-<div class="container py-4">
+<div class="container-fluid">
     <!-- Welcome Header -->
     <div class="row mb-4">
         <div class="col-md-12">
-            <div class="card gov-hero-card border-0 shadow-sm overflow-hidden" style="border-radius: 16px;">
-                <div class="card-body p-4">
-                    <div class="row align-items-center">
-                        <div class="col-md-8">
-                            <h4 class="fw-bold mb-1">Cơ sở: @Model.CoSoInfo.TenCoSo 🏢</h4>
-                            <p class="text-white-50 mb-0">Địa chỉ: <strong>@Model.CoSoInfo.DiaChi</strong> | Hotline: <strong>@Model.CoSoInfo.SoDienThoai</strong></p>
-                        </div>
-                        <div class="col-md-4 text-md-end mt-3 mt-md-0">
-                            <span class="badge bg-success px-3 py-2 fs-7" style="border-radius: 8px;">Cơ sở: Đang hoạt động</span>
-                        </div>
-                    </div>
+            <div class="coso-page-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+                <div>
+                    <h5 class="fw-bold mb-1" style="color: var(--coso-primary-dark);"><i class="bi bi-grid-fill me-2 text-success"></i>Bảng điều khiển cơ sở lưu trú</h5>
+                    <p class="text-muted mb-0 fs-7">Cơ sở: <strong>@Model.CoSoInfo.TenCoSo</strong> | Địa chỉ: <strong>@Model.CoSoInfo.DiaChi</strong></p>
                 </div>
+                <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20 px-3 py-2 fw-bold" style="border-radius: 20px;">
+                    <i class="bi bg-transparent bi-check-circle-fill me-1"></i> Cơ sở: Đang hoạt động
+                </span>
             </div>
         </div>
     </div>
 
-    <!-- Alert TempData (Handled globally by layout toasts) -->
-
     <!-- Stat Cards -->
     <div class="row g-4 mb-4">
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm" style="border-radius: 16px; border-left: 5px solid var(--success);">
-                <div class="card-body p-4 d-flex align-items-center justify-content-between">
-                    <div>
-                        <span class="text-muted fs-7 d-block">Khách đang ở</span>
-                        <h3 class="fw-bold text-dark mb-0 mt-1">@Model.TotalStaying</h3>
-                    </div>
-                    <div class="bg-success text-white p-3 rounded-3">
-                        <i class="bi bi-people-fill fs-3"></i>
-                    </div>
+        <div class="col-md-3">
+            <div class="coso-stat-card">
+                <div class="stat-content">
+                    <span class="stat-label">Khách đang lưu trú</span>
+                    <span class="stat-value">@Model.TotalStaying</span>
+                </div>
+                <div class="stat-icon bg-success bg-opacity-10 text-success">
+                    <i class="bi bi-people-fill"></i>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm" style="border-radius: 16px; border-left: 5px solid var(--danger);">
-                <div class="card-body p-4 d-flex align-items-center justify-content-between">
-                    <div>
-                        <span class="text-muted fs-7 d-block">Lưu trú quá hạn</span>
-                        <h3 class="fw-bold text-dark mb-0 mt-1">@Model.TotalOverdue</h3>
-                    </div>
-                    <div class="bg-danger text-white p-3 rounded-3">
-                        <i class="bi bi-exclamation-octagon-fill fs-3"></i>
-                    </div>
+        <div class="col-md-3">
+            <div class="coso-stat-card">
+                <div class="stat-content">
+                    <span class="stat-label">Hồ sơ chờ duyệt</span>
+                    <span class="stat-value text-warning">@Model.TotalPendingDeclarations</span>
+                </div>
+                <div class="stat-icon bg-warning bg-opacity-10 text-warning">
+                    <i class="bi bi-file-earmark-text-fill"></i>
                 </div>
             </div>
         </div>
 
-        <div class="col-md-4">
-            <div class="card border-0 shadow-sm" style="border-radius: 16px; border-left: 5px solid var(--primary);">
-                <div class="card-body p-4 d-flex align-items-center justify-content-between">
-                    <div>
-                        <span class="text-muted fs-7 d-block">Tổng lượt đã rời đi</span>
-                        <h3 class="fw-bold text-dark mb-0 mt-1">@Model.TotalStayed</h3>
-                    </div>
-                    <div class="gov-icon-box p-3 rounded-3">
-                        <i class="bi bi-door-open-fill fs-3 text-white"></i>
-                    </div>
+        <div class="col-md-3">
+            <div class="coso-stat-card">
+                <div class="stat-content">
+                    <span class="stat-label">Sắp check-out (hôm nay)</span>
+                    <span class="stat-value text-info">@Model.TotalLeavingToday</span>
+                </div>
+                <div class="stat-icon bg-info bg-opacity-10 text-info">
+                    <i class="bi bi-door-open-fill"></i>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-md-3">
+            <div class="coso-stat-card">
+                <div class="stat-content">
+                    <span class="stat-label">Lưu trú quá hạn</span>
+                    <span class="stat-value text-danger">@Model.TotalOverdue</span>
+                </div>
+                <div class="stat-icon bg-danger bg-opacity-10 text-danger">
+                    <i class="bi bi-exclamation-octagon-fill"></i>
                 </div>
             </div>
         </div>
@@ -74,48 +74,61 @@
     <div class="row g-4">
         <!-- Quick Actions & Info -->
         <div class="col-lg-4">
-            <div class="card border-0 shadow-sm h-100" style="border-radius: 16px;">
+            <div class="card border-0 shadow-sm h-100" style="border-radius: 16px; border: 1px solid var(--coso-border) !important;">
                 <div class="card-header bg-transparent border-0 pt-4 pb-0 px-4">
-                    <h5 class="fw-bold text-dark mb-0">Hành động nhanh</h5>
+                    <h6 class="fw-bold text-dark mb-0"><i class="bi bi-lightning-charge me-2 text-warning"></i>Thao tác vận hành nhanh</h6>
                 </div>
                 <div class="card-body px-4">
                     <div class="d-grid gap-3">
-                        <a asp-action="KhaiBaoLuuTru" class="btn btn-primary btn-lg fs-6 py-3" style="border-radius: 12px;">
-                            <i class="bi bi-person-plus-fill me-2"></i> Khai báo lưu trú mới
+                        <a asp-action="KhaiBaoLuuTru" class="btn btn-success btn-lg fs-7 py-3" style="border-radius: 12px; font-weight: 600;">
+                            <i class="bi bi-person-plus-fill me-2"></i> Khai báo khách mới
                         </a>
-                        <a asp-action="DanhSachLuuTru" class="btn btn-outline-primary btn-lg fs-6 py-3" style="border-radius: 12px;">
-                            <i class="bi bi-list-stars me-2"></i> Danh sách đang lưu trú
+                        <a asp-action="DanhSachKhaiBao" class="btn btn-outline-success btn-lg fs-7 py-3" style="border-radius: 12px; font-weight: 600;">
+                            <i class="bi bi-file-earmark-text-fill me-2"></i> Xem hồ sơ khai báo
                         </a>
-                        <a asp-action="LichSuCuTru" class="btn btn-outline-secondary btn-lg fs-6 py-3" style="border-radius: 12px;">
-                            <i class="bi bi-clock-history me-2"></i> Lịch sử lưu trú
+                        <a asp-action="DanhSachLuuTru" class="btn btn-outline-secondary btn-lg fs-7 py-3" style="border-radius: 12px; font-weight: 600;">
+                            <i class="bi bi-people-fill me-2"></i> Xem khách đang ở
                         </a>
                     </div>
 
+                    @if (Model.TotalOverdue > 0)
+                    {
+                        <div class="alert alert-danger mt-4 d-flex align-items-center gap-2" role="alert" style="border-radius: 10px;">
+                            <i class="bi bi-exclamation-triangle-fill fs-5"></i>
+                            <div class="fs-7">
+                                Có <strong>@Model.TotalOverdue</strong> lượt lưu trú bị quá hạn. Vui lòng xác nhận check-out hoặc cập nhật thông tin.
+                            </div>
+                        </div>
+                    }
+
                     <div class="mt-4 pt-4 border-top">
-                        <h6 class="fw-bold text-dark mb-2">Thông tin liên hệ cơ sở</h6>
+                        <h6 class="fw-bold text-dark mb-3"><i class="bi bi-info-circle me-2 text-info"></i>Thông tin cơ sở lưu trú</h6>
                         <ul class="list-unstyled fs-7 text-secondary mb-0">
-                            <li class="mb-2"><i class="bi bi-telephone me-2"></i> @Model.CoSoInfo.SoDienThoai</li>
-                            <li class="mb-2"><i class="bi bi-envelope me-2"></i> @Model.CoSoInfo.Email</li>
-                            <li><i class="bi bi-shield-check me-2"></i> Người chịu trách nhiệm đăng ký</li>
+                            <li class="mb-2"><i class="bi bi-telephone me-2 text-success"></i> @Model.CoSoInfo.SoDienThoai</li>
+                            <li class="mb-2"><i class="bi bi-envelope me-2 text-success"></i> @Model.CoSoInfo.Email</li>
+                            <li><i class="bi bi-shield-check me-2 text-success"></i> Người đại diện: @Model.CoSoInfo.ChuCoSoLuuTru.HoTen</li>
                         </ul>
-                        <a asp-action="ThongTinCoSo" class="btn btn-link p-0 fs-7 mt-2 text-decoration-none fw-semibold">Xem & Sửa Hồ Sơ Cơ Sở</a>
+                        <a asp-action="ThongTinCoSo" class="btn btn-link p-0 fs-7 mt-3 text-decoration-none fw-semibold text-success">
+                            Xem & Sửa Hồ Sơ Cơ Sở <i class="bi bi-arrow-right small"></i>
+                        </a>
                     </div>
                 </div>
             </div>
         </div>
 
-        <!-- Recent Checkins -->
+        <!-- Main listings area -->
         <div class="col-lg-8">
-            <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+            <!-- Recent Declarations -->
+            <div class="card border-0 shadow-sm mb-4" style="border-radius: 16px; border: 1px solid var(--coso-border) !important;">
                 <div class="card-header bg-transparent border-0 pt-4 pb-0 px-4 d-flex justify-content-between align-items-center">
-                    <h5 class="fw-bold text-dark mb-0">Khách nước ngoài đăng ký lưu trú gần đây</h5>
-                    <a asp-action="LichSuCuTru" class="text-decoration-none fs-7 text-primary fw-semibold">Xem lịch sử</a>
+                    <h6 class="fw-bold text-dark mb-0"><i class="bi bi-file-earmark-text-fill me-2 text-success"></i>Hồ sơ khai báo gần đây</h6>
+                    <a asp-action="DanhSachKhaiBao" class="text-decoration-none fs-7 text-success fw-semibold">Xem toàn bộ <i class="bi bi-arrow-right"></i></a>
                 </div>
                 <div class="card-body px-4">
-                    @if (!Model.RecentCheckins.Any())
+                    @if (!Model.RecentDeclarations.Any())
                     {
-                        <div class="text-center py-5">
-                            <p class="text-muted fs-7 mb-0">Chưa có ai đăng ký lưu trú tại cơ sở của bạn.</p>
+                        <div class="text-center py-4">
+                            <p class="text-muted fs-7 mb-0">Chưa có hồ sơ khai báo nào.</p>
                         </div>
                     }
                     else
@@ -124,23 +137,80 @@
                             <table class="table table-hover align-middle mb-0 fs-7">
                                 <thead>
                                     <tr class="text-muted">
+                                        <th>Mã HS</th>
                                         <th>Khách hàng</th>
                                         <th>Hộ chiếu</th>
-                                        <th>Quốc tịch</th>
-                                        <th>Phòng</th>
-                                        <th>Ngày Check-in</th>
+                                        <th>Thời gian lưu trú</th>
                                         <th>Trạng thái</th>
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @foreach (var stay in Model.RecentCheckins)
+                                    @foreach (var dec in Model.RecentDeclarations)
                                     {
                                         <tr>
+                                            <td class="fw-semibold"><code>@dec.MaHSKhaiBao</code></td>
+                                            <td class="fw-bold text-dark">@dec.TaiKhoan.NguoiNuocNgoai?.HoTen</td>
+                                            <td>@dec.TaiKhoan.NguoiNuocNgoai?.SoHoChieu</td>
+                                            <td>@dec.NgayBatDau.ToString("dd/MM/yyyy") - @dec.NgayKetThuc.ToString("dd/MM/yyyy")</td>
+                                            <td>
+                                                @if (dec.TrangThai == "Chờ duyệt")
+                                                {
+                                                    <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-20">Chờ duyệt</span>
+                                                }
+                                                else if (dec.TrangThai == "Đã duyệt")
+                                                {
+                                                    <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20">Đã duyệt</span>
+                                                }
+                                                else
+                                                {
+                                                    <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-20">Từ từ chối</span>
+                                                }
+                                            </td>
+                                        </tr>
+                                    }
+                                </tbody>
+                            </table>
+                        </div>
+                    }
+                </div>
+            </div>
+
+            <!-- Active Guests -->
+            <div class="card border-0 shadow-sm" style="border-radius: 16px; border: 1px solid var(--coso-border) !important;">
+                <div class="card-header bg-transparent border-0 pt-4 pb-0 px-4 d-flex justify-content-between align-items-center">
+                    <h6 class="fw-bold text-dark mb-0"><i class="bi bi-people me-2 text-success"></i>Khách đang lưu trú tại cơ sở</h6>
+                    <a asp-action="DanhSachLuuTru" class="text-decoration-none fs-7 text-success fw-semibold">Quản lý khách <i class="bi bi-arrow-right"></i></a>
+                </div>
+                <div class="card-body px-4">
+                    @if (!Model.ActiveStays.Any())
+                    {
+                        <div class="text-center py-4">
+                            <p class="text-muted fs-7 mb-0">Hiện chưa có khách đang ở thực tế.</p>
+                        </div>
+                    }
+                    else
+                    {
+                        <div class="table-responsive">
+                            <table class="table table-hover align-middle mb-0 fs-7">
+                                <thead>
+                                    <tr class="text-muted">
+                                        <th>Phòng</th>
+                                        <th>Khách hàng</th>
+                                        <th>Số hộ chiếu</th>
+                                        <th>Ngày Check-in</th>
+                                        <th>Dự kiến rời đi</th>
+                                        <th>Trạng thái</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    @foreach (var stay in Model.ActiveStays)
+                                    {
+                                        <tr>
+                                            <td><span class="badge bg-light text-dark border">Phòng @stay.Phong</span></td>
                                             <td class="fw-bold text-dark">@stay.NguoiNuocNgoai.HoTen</td>
                                             <td>@stay.NguoiNuocNgoai.SoHoChieu</td>
-                                            <td>@stay.NguoiNuocNgoai.QuocTich</td>
-                                            <td><span class="badge bg-light text-dark border">Phòng @stay.Phong</span></td>
                                             <td>@stay.NgayBatDau.ToString("dd/MM/yyyy")</td>
+                                            <td>@(stay.NgayKetThuc.HasValue ? stay.NgayKetThuc.Value.ToString("dd/MM/yyyy") : "Chưa đăng ký")</td>
                                             <td>
                                                 @await Html.PartialAsync("_StatusBadge", stay.TrangThai)
                                             </td>

@@ -2,34 +2,33 @@
 @using X.PagedList
 @model IPagedList<ManagementOfForeigners.Models.Entities.LichSuCuTru>
 @{
-    ViewBag.Title = "Danh sách khách hàng đang lưu trú";
+    ViewBag.Title = "Khách hàng đang lưu trú";
 }
 
-<div class="container py-4">
-    <div class="card border-0 shadow-sm" style="border-radius: 16px;">
-        <div class="card-header gov-card-header p-4 d-flex justify-content-between align-items-center flex-wrap gap-3">
-            <div>
-                <h5 class="fw-bold mb-0">Khách nước ngoài đang lưu trú</h5>
-                <p class="text-white-50 mb-0 fs-7">Danh sách người nước ngoài đang cư trú thực tế tại cơ sở của bạn</p>
-            </div>
-            <a asp-action="KhaiBaoLuuTru" class="btn btn-light btn-sm fw-bold px-3 py-2" style="border-radius: 8px;">
-                <i class="bi bi-person-plus me-1"></i> Khai báo mới
-            </a>
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="coso-page-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h5 class="fw-bold mb-1" style="color: var(--coso-primary-dark);"><i class="bi bi-people-fill me-2 text-success"></i>Khách nước ngoài đang lưu trú</h5>
+            <p class="text-muted mb-0 fs-7">Danh sách người nước ngoài đang cư trú thực tế tại cơ sở của bạn</p>
         </div>
+        <a asp-action="KhaiBaoLuuTru" class="btn btn-success fw-bold px-3 py-2 d-flex align-items-center gap-1" style="border-radius: 8px;">
+            <i class="bi bi-person-plus-fill"></i> Khai báo mới
+        </a>
+    </div>
 
+    <div class="card border-0 shadow-sm" style="border-radius: 16px; border: 1px solid var(--coso-border) !important;">
         <div class="card-body p-4">
-            <!-- Alerts (Handled globally by layout toasts) -->
-
             <!-- Search Form -->
             <form asp-action="DanhSachLuuTru" method="get" class="row g-3 mb-4">
-                <div class="col-md-8">
+                <div class="col-md-9">
                     <div class="input-group">
                         <span class="input-group-text bg-white border-end-0" style="border-radius: 8px 0 0 8px;"><i class="bi bi-search text-muted"></i></span>
                         <input type="text" name="search" class="form-control border-start-0" value="@ViewBag.Search" placeholder="Tìm theo họ tên, số hộ chiếu hoặc phòng..." style="border-radius: 0 8px 8px 0;" />
                     </div>
                 </div>
-                <div class="col-md-4">
-                    <button type="submit" class="btn btn-primary w-100 fw-semibold" style="border-radius: 8px;">Tìm kiếm</button>
+                <div class="col-md-3">
+                    <button type="submit" class="btn btn-success w-100 fw-semibold" style="border-radius: 8px;">Tìm kiếm</button>
                 </div>
             </form>
 
@@ -45,7 +44,7 @@
                 <div class="table-responsive">
                     <table class="table table-hover align-middle mb-0 fs-7">
                         <thead>
-                            <tr class="table-gov-header">
+                            <tr class="text-muted border-bottom">
                                 <th>Phòng</th>
                                 <th>Họ và tên</th>
                                 <th>Số hộ chiếu</th>
@@ -53,15 +52,15 @@
                                 <th>Ngày Check-in</th>
                                 <th>Rời đi dự kiến</th>
                                 <th>Trạng thái</th>
-                                <th class="text-center">Thao tác / Cập nhật lưu trú</th>
+                                <th class="text-center" style="width: 220px;">Thao tác / Cập nhật</th>
                             </tr>
                         </thead>
                         <tbody>
                             @foreach (var stay in Model)
                             {
-                                <tr>
-                                    <td><span class="fw-bold">@stay.Phong</span></td>
-                                    <td class="fw-bold">@stay.NguoiNuocNgoai.HoTen</td>
+                                <tr class="@(stay.TrangThai == "Quá hạn" ? "table-danger table-opacity-10" : "")">
+                                    <td><span class="badge bg-light text-dark border">Phòng @stay.Phong</span></td>
+                                    <td class="fw-bold text-dark">@stay.NguoiNuocNgoai.HoTen</td>
                                     <td>@stay.NguoiNuocNgoai.SoHoChieu</td>
                                     <td>@stay.NguoiNuocNgoai.QuocTich</td>
                                     <td>@stay.NgayBatDau.ToString("dd/MM/yyyy")</td>
@@ -71,24 +70,25 @@
                                     </td>
                                     <td class="text-center">
                                         <div class="d-inline-flex gap-2">
-                                            <!-- Check-out button -->
-                                            <form asp-action="CapNhatTrangThai" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn trả phòng (check-out) cho vị khách này?');">
-                                                @Html.AntiForgeryToken()
-                                                <input type="hidden" name="id" value="@stay.MaLSLuuTru" />
-                                                <input type="hidden" name="actionType" value="checkout" />
-                                                <button type="submit" class="btn btn-success btn-xs" style="border-radius: 6px;">
-                                                    <i class="bi bi-door-open-fill"></i> Check-out
-                                                </button>
-                                            </form>
+                                            <!-- Check-out button triggering modal -->
+                                            <button type="button" class="btn btn-outline-success btn-xs btn-checkout-trigger" 
+                                                    data-bs-toggle="modal" data-bs-target="#checkoutModal"
+                                                    data-stay-id="@stay.MaLSLuuTru"
+                                                    data-guest-name="@stay.NguoiNuocNgoai.HoTen"
+                                                    data-room="@stay.Phong"
+                                                    data-checkin-date="@stay.NgayBatDau.ToString("dd/MM/yyyy")"
+                                                    style="border-radius: 6px; font-weight: 600;">
+                                                <i class="bi bi-door-open-fill"></i> Check-out
+                                            </button>
 
                                             <!-- Overdue button -->
                                             @if (stay.TrangThai != "Quá hạn")
                                             {
-                                                <form asp-action="CapNhatTrangThai" method="post" onsubmit="return confirm('Bạn muốn đánh dấu trạng thái lưu trú của người này thành Quá hạn?');">
+                                                <form asp-action="CapNhatTrangThai" method="post" onsubmit="return confirm('Bạn muốn cập nhật trạng thái lưu trú của người này thành Quá hạn?');">
                                                     @Html.AntiForgeryToken()
                                                     <input type="hidden" name="id" value="@stay.MaLSLuuTru" />
                                                     <input type="hidden" name="actionType" value="overdue" />
-                                                    <button type="submit" class="btn btn-warning btn-xs text-dark" style="border-radius: 6px;">
+                                                    <button type="submit" class="btn btn-outline-warning btn-xs text-dark" style="border-radius: 6px; font-weight: 600;">
                                                         <i class="bi bi-exclamation-triangle"></i> Quá hạn
                                                     </button>
                                                 </form>
@@ -114,3 +114,79 @@
         </div>
     </div>
 </div>
+
+<!-- Checkout Modal -->
+<div class="modal fade" id="checkoutModal" tabindex="-1" aria-labelledby="checkoutModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content" style="border-radius: 16px; border: 1px solid var(--coso-border);">
+            <div class="modal-header border-0 pb-0">
+                <h6 class="modal-title fw-bold text-dark" id="checkoutModalLabel"><i class="bi bi-door-open-fill me-2 text-success"></i>Xác nhận khách trả phòng (Check-out)</h6>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <form asp-action="CapNhatTrangThai" method="post">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" id="modalStayId" />
+                <input type="hidden" name="actionType" value="checkout" />
+                
+                <div class="modal-body py-3">
+                    <div class="p-3 bg-light rounded-3 mb-3 border fs-7">
+                        <div class="row g-2">
+                            <div class="col-6">
+                                <span class="text-muted d-block">Khách hàng:</span>
+                                <strong class="text-dark" id="modalGuestName">--</strong>
+                            </div>
+                            <div class="col-6">
+                                <span class="text-muted d-block">Phòng:</span>
+                                <strong class="text-dark" id="modalRoom">--</strong>
+                            </div>
+                            <div class="col-12 mt-2">
+                                <span class="text-muted d-block">Ngày Check-in:</span>
+                                <strong class="text-dark" id="modalCheckinDate">--</strong>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="modalCheckoutDate" class="form-label fw-semibold text-dark fs-7">Ngày trả phòng thực tế <span class="text-danger">*</span></label>
+                        <input type="date" name="checkoutDate" id="modalCheckoutDate" class="form-control" required style="border-radius: 8px;" />
+                    </div>
+                    
+                    <div class="mb-0">
+                        <label for="modalCheckoutNote" class="form-label fw-semibold text-dark fs-7">Ghi chú Check-out (nếu có)</label>
+                        <textarea name="note" id="modalCheckoutNote" class="form-control" rows="2" placeholder="Ví dụ: trả phòng đúng hạn, thanh toán đầy đủ..." style="border-radius: 8px;"></textarea>
+                    </div>
+                </div>
+                
+                <div class="modal-footer border-0 pt-0 d-flex justify-content-between">
+                    <button type="button" class="btn btn-outline-secondary" data-bs-dismiss="modal" style="border-radius: 8px; font-weight:600;">Hủy</button>
+                    <button type="submit" class="btn btn-success px-4" style="border-radius: 8px; font-weight:600;">Xác nhận Check-out</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        document.addEventListener("DOMContentLoaded", function () {
+            const checkoutTriggers = document.querySelectorAll(".btn-checkout-trigger");
+            checkoutTriggers.forEach(btn => {
+                btn.addEventListener("click", function () {
+                    const stayId = this.getAttribute("data-stay-id");
+                    const guestName = this.getAttribute("data-guest-name");
+                    const room = this.getAttribute("data-room");
+                    const checkinDate = this.getAttribute("data-checkin-date");
+                    
+                    document.getElementById("modalStayId").value = stayId;
+                    document.getElementById("modalGuestName").textContent = guestName;
+                    document.getElementById("modalRoom").textContent = "Phòng " + room;
+                    document.getElementById("modalCheckinDate").textContent = checkinDate;
+                    
+                    // Pre-fill check-out date with today
+                    const today = new Date().toISOString().split('T')[0];
+                    document.getElementById("modalCheckoutDate").value = today;
+                });
+            });
+        });
+    </script>
+}

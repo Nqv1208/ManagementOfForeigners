@@ -5,22 +5,24 @@
 
 <link rel="stylesheet" href="~/css/lodging-declaration.css" asp-append-version="true" />
 
-<div class="lodging-declaration-page py-4">
-    <div class="lodging-declaration-shell">
-        <div class="card border-0 shadow-sm">
-            <!-- Header form -->
-            <div class="card-header declaration-header text-white p-3">
-                <h4 class="mb-1 fw-bold fs-5"><i class="bi bi-file-earmark-text-fill me-2"></i>Khai báo lưu trú người nước ngoài</h4>
-                <p class="mb-0 opacity-75 fs-7">Chủ cơ sở nhập thông tin khách nước ngoài đang lưu trú thực tế tại cơ sở.</p>
-            </div>
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="coso-page-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h5 class="fw-bold mb-1" style="color: var(--coso-primary-dark);"><i class="bi bi-file-earmark-plus-fill me-2 text-success"></i>Khai báo lưu trú người nước ngoài</h5>
+            <p class="text-muted mb-0 fs-7">Chủ cơ sở nhập thông tin khách nước ngoài đang lưu trú thực tế tại cơ sở.</p>
+        </div>
+    </div>
 
+    <div class="lodging-declaration-shell mb-4">
+        <div class="card border-0 shadow-sm" style="border: 1px solid var(--coso-border) !important; border-radius: 16px; overflow: hidden;">
             <form asp-action="KhaiBaoLuuTru" method="post" id="declarationForm">
                 @Html.AntiForgeryToken()
                 <div class="card-body p-4">
                     <div asp-validation-summary="ModelOnly" class="text-danger mb-4 p-3 bg-danger-subtle rounded border border-danger-subtle fs-7"></div>
 
                     <!-- B. Thông tin cơ sở lưu trú -->
-                    <div class="declaration-section mb-4">
+                    <div class="declaration-section mb-4" style="border: 1px solid var(--coso-border);">
                         <h5 class="section-title"><i class="bi bi-building me-2"></i>Thông tin cơ sở lưu trú</h5>
                         <div class="readonly-facility p-3 rounded">
                             <div class="row g-3">
@@ -44,11 +46,11 @@
                                     <span class="d-block text-muted small">Trạng thái cơ sở:</span>
                                     @if (Model.CoSoDaDuocDuyet)
                                     {
-                                        <span class="badge bg-success-subtle text-success border border-success-subtle px-2 py-1"><i class="bi bi-check-circle me-1"></i>Đang hoạt động</span>
+                                        <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20 px-2 py-1"><i class="bi bi-check-circle me-1"></i>Đang hoạt động</span>
                                     }
                                     else
                                     {
-                                        <span class="badge bg-danger-subtle text-danger border border-danger-subtle px-2 py-1"><i class="bi bi-exclamation-triangle-fill me-1"></i>Chưa duyệt</span>
+                                        <span class="badge bg-danger bg-opacity-10 text-danger border border-danger-border px-2 py-1"><i class="bi bi-exclamation-triangle-fill me-1"></i>Chưa duyệt</span>
                                     }
                                 </div>
                             </div>
@@ -66,7 +68,7 @@
                     </div>
 
                     <!-- C. Thông tin người nước ngoài -->
-                    <div class="declaration-section mb-4">
+                    <div class="declaration-section mb-4" style="border: 1px solid var(--coso-border);">
                         <h5 class="section-title"><i class="bi bi-person-badge me-2"></i>Thông tin người nước ngoài</h5>
                         
                         <!-- D. Hộ chiếu / nhập cảnh (Passport search row) -->
@@ -75,7 +77,7 @@
                                 <label asp-for="SoHoChieu" class="form-label fw-semibold text-dark fs-7"></label><span class="text-danger ms-1">*</span>
                                 <div class="input-group passport-search-row">
                                     <input asp-for="SoHoChieu" class="form-control" placeholder="Nhập số hộ chiếu..." id="txtPassport" />
-                                    <button class="btn btn-primary" type="button" id="btnSearchPassport">
+                                    <button class="btn btn-success" type="button" id="btnSearchPassport">
                                         <i class="bi bi-search me-1"></i> Tra cứu khách cũ
                                     </button>
                                 </div>
@@ -155,7 +157,7 @@
                     </div>
 
                     <!-- D. Thông tin nhập cảnh / cư trú -->
-                    <div class="declaration-section mb-4">
+                    <div class="declaration-section mb-4" style="border: 1px solid var(--coso-border);">
                         <h5 class="section-title"><i class="bi bi-airplane me-2"></i>Thông tin cư trú & nhập cảnh</h5>
                         <div class="form-grid">
                             <div class="form-group">
@@ -208,7 +210,7 @@
                     </div>
 
                     <!-- E. Thông tin lưu trú -->
-                    <div class="declaration-section mb-4">
+                    <div class="declaration-section mb-4" style="border: 1px solid var(--coso-border);">
                         <h5 class="section-title"><i class="bi bi-clock-history me-2"></i>Thông tin lưu trú tại cơ sở</h5>
                         <div class="form-grid">
                             <div class="form-group">
@@ -250,10 +252,10 @@
 
                 <div class="card-footer bg-transparent border-0 p-4 d-flex justify-content-between declaration-actions">
                     <div>
-                        <a asp-action="TongQuan" class="btn btn-outline-secondary px-4 me-2">Hủy</a>
-                        <button type="button" class="btn btn-outline-warning px-4" id="btnResetForm">Làm mới</button>
+                        <a asp-action="TongQuan" class="btn btn-outline-secondary px-4 me-2" style="border-radius: 8px;">Hủy</a>
+                        <button type="button" class="btn btn-outline-warning px-4" id="btnResetForm" style="border-radius: 8px;">Làm mới</button>
                     </div>
-                    <button type="submit" class="btn btn-success px-5 fw-bold" id="btnSubmit" data-facility-approved="@Model.CoSoDaDuocDuyet.ToString().ToLower()" disabled>
+                    <button type="submit" class="btn btn-success px-5 fw-bold" id="btnSubmit" data-facility-approved="@Model.CoSoDaDuocDuyet.ToString().ToLower()" style="border-radius: 8px;" disabled>
                         <i class="bi bi-send me-1"></i> Khai báo ngay
                     </button>
                 </div>

@@ -53,8 +53,11 @@ public class CoSoLuuTruController : Controller
             .ToListAsync();
 
         var totalStaying = stays.Count(s => s.TrangThai == TrangThaiLuuTru.DangO);
-        var totalStayed = stays.Count(s => s.TrangThai == TrangThaiLuuTru.DaRoi);
         var totalOverdue = stays.Count(s => s.TrangThai == TrangThaiLuuTru.QuaHan);
+        var totalLeavingToday = stays.Count(s => s.TrangThai == TrangThaiLuuTru.DangO && s.NgayKetThuc.HasValue && s.NgayKetThuc.Value.Date == DateTime.Today);
+
+        var totalPending = await _context.HoSoKhaiBaoTamTrus
+            .CountAsync(h => h.MaCoSoLuuTru == facility.MaCoSoLuuTru && h.TrangThai == TrangThaiKhaiBao.ChoDuyet);
 
         var activeStaysList = await _context.LichSuCuTrus
             .Include(l => l.NguoiNuocNgoai)
@@ -70,14 +73,24 @@ public class CoSoLuuTruController : Controller
             .Take(5)
             .ToListAsync();
 
+        var recentDeclarations = await _context.HoSoKhaiBaoTamTrus
+            .Include(h => h.TaiKhoan)
+            .ThenInclude(t => t.NguoiNuocNgoai)
+            .Where(h => h.MaCoSoLuuTru == facility.MaCoSoLuuTru)
+            .OrderByDescending(h => h.NgayKhaiBao)
+            .Take(5)
+            .ToListAsync();
+
         var viewModel = new TongQuanViewModel
         {
             CoSoInfo = facility,
             TotalStaying = totalStaying,
-            TotalStayed = totalStayed,
+            TotalPendingDeclarations = totalPending,
+            TotalLeavingToday = totalLeavingToday,
             TotalOverdue = totalOverdue,
             ActiveStays = activeStaysList,
-            RecentCheckins = recentCheckins
+            RecentCheckins = recentCheckins,
+            RecentDeclarations = recentDeclarations
         };
 
         return View(viewModel);
@@ -156,10 +169,25 @@ public class CoSoLuuTruController : Controller
 
         if (foreigner == null)
         {
+            // Tạo TaiKhoan cho người nước ngoài
+            var newAccount = new TaiKhoan
+            {
+                MaTaiKhoan = IdGenerator.NewMaTaiKhoan(_context),
+                TenDangNhap = model.SoHoChieu.Trim().ToLower(),
+                MatKhauHash = BCrypt.Net.BCrypt.HashPassword("Guest@123"),
+                MaVaiTro = 1, // Vai trò người nước ngoài là 1
+                Email = string.IsNullOrWhiteSpace(model.EmailKhach) ? $"{model.SoHoChieu.Trim().ToLower()}@example.com" : model.EmailKhach.Trim(),
+                SoDienThoai = string.IsNullOrWhiteSpace(model.SoDienThoaiKhach) ? "0000000000" : model.SoDienThoaiKhach.Trim(),
+                TrangThai = "Hoạt động",
+                NgayTao = DateTime.Now
+            };
+            _context.TaiKhoans.Add(newAccount);
+            await _context.SaveChangesAsync();
+
             foreigner = new NguoiNuocNgoai
             {
                 MaNguoiNuocNgoai = IdGenerator.NewMaNguoiNuocNgoai(_context),
-                MaTaiKhoan = null!,
+                MaTaiKhoan = newAccount.MaTaiKhoan,
                 HoTen = model.HoTen.Trim(),
                 NgaySinh = model.NgaySinh ?? DateTime.Today,
                 GioiTinh = model.GioiTinh,
@@ -175,6 +203,26 @@ public class CoSoLuuTruController : Controller
         }
         else
         {
+            if (string.IsNullOrEmpty(foreigner.MaTaiKhoan))
+            {
+                // Tạo TaiKhoan cho người nước ngoài đã có thông tin cá nhân nhưng chưa có tài khoản
+                var newAccount = new TaiKhoan
+                {
+                    MaTaiKhoan = IdGenerator.NewMaTaiKhoan(_context),
+                    TenDangNhap = foreigner.SoHoChieu.Trim().ToLower(),
+                    MatKhauHash = BCrypt.Net.BCrypt.HashPassword("Guest@123"),
+                    MaVaiTro = 1,
+                    Email = string.IsNullOrWhiteSpace(model.EmailKhach) ? $"{foreigner.SoHoChieu.Trim().ToLower()}@example.com" : model.EmailKhach.Trim(),
+                    SoDienThoai = string.IsNullOrWhiteSpace(model.SoDienThoaiKhach) ? "0000000000" : model.SoDienThoaiKhach.Trim(),
+                    TrangThai = "Hoạt động",
+                    NgayTao = DateTime.Now
+                };
+                _context.TaiKhoans.Add(newAccount);
+                await _context.SaveChangesAsync();
+
+                foreigner.MaTaiKhoan = newAccount.MaTaiKhoan;
+            }
+
             foreigner.HoTen = model.HoTen.Trim();
             foreigner.NgaySinh = model.NgaySinh ?? foreigner.NgaySinh;
             foreigner.GioiTinh = model.GioiTinh;
@@ -188,26 +236,94 @@ public class CoSoLuuTruController : Controller
             await _context.SaveChangesAsync();
         }
 
-        // Tạo bản ghi LichSuCuTru
-        var stay = new LichSuCuTru
+        // Tạo bản ghi HoSoKhaiBaoTamTru
+        var mucDich = model.MucDichLuuTru == "Khác" ? model.MucDichKhac! : model.MucDichLuuTru;
+        var ghiChu = string.IsNullOrWhiteSpace(model.SoPhong) 
+            ? model.GhiChu 
+            : $"Phòng: {model.SoPhong}. {(string.IsNullOrWhiteSpace(model.GhiChu) ? "" : model.GhiChu)}";
+
+        var declaration = new HoSoKhaiBaoTamTru
         {
-            MaLSLuuTru = IdGenerator.NewMaLichSuCuTru(_context),
-            MaNguoiNuocNgoai = foreigner.MaNguoiNuocNgoai,
+            MaHSKhaiBao = IdGenerator.NewMaHSKhaiBao(_context),
             MaCoSoLuuTru = facility.MaCoSoLuuTru,
+            MaTaiKhoan = foreigner.MaTaiKhoan!,
+            NgayKhaiBao = DateTime.Now,
             NgayBatDau = model.NgayBatDau,
-            NgayKetThuc = model.NgayKetThucDuKien,
-            Phong = model.SoPhong.Trim(),
-            TrangThai = TrangThaiLuuTru.DangO,
-            GhiChu = string.IsNullOrWhiteSpace(model.GhiChu)
-                ? $"Mục đích: {model.MucDichLuuTru}{(model.MucDichLuuTru == "Khác" ? $" ({model.MucDichKhac})" : "")}"
-                : $"Mục đích: {model.MucDichLuuTru}{(model.MucDichLuuTru == "Khác" ? $" ({model.MucDichKhac})" : "")}. {model.GhiChu.Trim()}"
+            NgayKetThuc = model.NgayKetThucDuKien ?? model.NgayBatDau.AddDays(30),
+            MucDichLuuTru = mucDich,
+            DiaChiLuuTru = $"{facility.TenCoSo} - {facility.DiaChi}",
+            TrangThai = TrangThaiKhaiBao.ChoDuyet,
+            GhiChu = ghiChu
         };
 
-        _context.LichSuCuTrus.Add(stay);
+        _context.HoSoKhaiBaoTamTrus.Add(declaration);
         await _context.SaveChangesAsync();
 
-        TempData["SuccessMessage"] = "Khai báo lưu trú đã được gửi thành công.";
-        return RedirectToAction(nameof(DanhSachLuuTru));
+        TempData["SuccessMessage"] = "Gửi hồ sơ khai báo lưu trú thành công! Đang chờ Công an Phường/Xã phê duyệt.";
+        return RedirectToAction(nameof(DanhSachKhaiBao));
+    }
+
+    // GET: /accommodation/declarations
+    [HttpGet("declarations")]
+    public async Task<IActionResult> DanhSachKhaiBao(string? search, string? status, int? page)
+    {
+        var facility = await GetCurrentFacility();
+        if (facility == null) return NotFound();
+
+        int pageSize = 10;
+        int pageNumber = page ?? 1;
+
+        var query = _context.HoSoKhaiBaoTamTrus
+            .Include(h => h.TaiKhoan)
+            .ThenInclude(t => t.NguoiNuocNgoai)
+            .Where(h => h.MaCoSoLuuTru == facility.MaCoSoLuuTru);
+
+        if (!string.IsNullOrEmpty(search))
+        {
+            query = query.Where(h => h.TaiKhoan.NguoiNuocNgoai != null && 
+                                     (h.TaiKhoan.NguoiNuocNgoai.HoTen.Contains(search) || 
+                                      h.TaiKhoan.NguoiNuocNgoai.SoHoChieu.Contains(search)) ||
+                                     h.MaHSKhaiBao.Contains(search));
+        }
+
+        if (!string.IsNullOrEmpty(status))
+        {
+            query = query.Where(h => h.TrangThai == status);
+        }
+
+        ViewBag.Search = search;
+        ViewBag.Status = status;
+        
+        var pagedList = query.OrderByDescending(h => h.NgayKhaiBao).ToPagedList(pageNumber, pageSize);
+        return View(pagedList);
+    }
+
+    // POST: /accommodation/declarations/cancel
+    [HttpPost("declarations/cancel")]
+    [ValidateAntiForgeryToken]
+    public async Task<IActionResult> HuyKhaiBao(string id)
+    {
+        if (string.IsNullOrEmpty(id)) return NotFound();
+
+        var facility = await GetCurrentFacility();
+        if (facility == null) return NotFound();
+
+        var declaration = await _context.HoSoKhaiBaoTamTrus
+            .FirstOrDefaultAsync(h => h.MaHSKhaiBao == id && h.MaCoSoLuuTru == facility.MaCoSoLuuTru);
+
+        if (declaration == null) return NotFound();
+
+        if (declaration.TrangThai != TrangThaiKhaiBao.ChoDuyet)
+        {
+            TempData["ErrorMessage"] = "Chỉ có thể hủy hồ sơ đang chờ duyệt.";
+            return RedirectToAction(nameof(DanhSachKhaiBao));
+        }
+
+        _context.HoSoKhaiBaoTamTrus.Remove(declaration);
+        await _context.SaveChangesAsync();
+
+        TempData["SuccessMessage"] = "Đã hủy hồ sơ khai báo lưu trú thành công.";
+        return RedirectToAction(nameof(DanhSachKhaiBao));
     }
 
     // GET: /LuuTru/SearchForeignerByPassport
@@ -269,7 +385,7 @@ public class CoSoLuuTruController : Controller
 
     // GET: /accommodation/stay-history
     [HttpGet("stay-history")]
-    public async Task<IActionResult> LichSuCuTru(string? search, int? page)
+    public async Task<IActionResult> LichSuCuTru(string? search, string? status, DateTime? fromDate, DateTime? toDate, int? page)
     {
         var facility = await GetCurrentFacility();
         if (facility == null) return NotFound();
@@ -284,10 +400,30 @@ public class CoSoLuuTruController : Controller
         if (!string.IsNullOrEmpty(search))
         {
             query = query.Where(l => l.NguoiNuocNgoai.HoTen.Contains(search) || 
-                                     l.NguoiNuocNgoai.SoHoChieu.Contains(search));
+                                     l.NguoiNuocNgoai.SoHoChieu.Contains(search) ||
+                                     (l.Phong != null && l.Phong.Contains(search)));
+        }
+
+        if (!string.IsNullOrEmpty(status))
+        {
+            query = query.Where(l => l.TrangThai == status);
+        }
+
+        if (fromDate.HasValue)
+        {
+            query = query.Where(l => l.NgayBatDau >= fromDate.Value);
+        }
+
+        if (toDate.HasValue)
+        {
+            query = query.Where(l => l.NgayBatDau <= toDate.Value);
         }
 
         ViewBag.Search = search;
+        ViewBag.Status = status;
+        ViewBag.FromDate = fromDate?.ToString("yyyy-MM-dd");
+        ViewBag.ToDate = toDate?.ToString("yyyy-MM-dd");
+
         var pagedList = query.OrderByDescending(l => l.NgayBatDau).ToPagedList(pageNumber, pageSize);
         return View(pagedList);
     }
@@ -295,7 +431,7 @@ public class CoSoLuuTruController : Controller
     // POST: /accommodation/update-status
     [HttpPost("update-status")]
     [ValidateAntiForgeryToken]
-    public async Task<IActionResult> CapNhatTrangThai(string id, string actionType)
+    public async Task<IActionResult> CapNhatTrangThai(string id, string actionType, DateTime? checkoutDate, string? note)
     {
         if (string.IsNullOrEmpty(id)) return NotFound();
 
@@ -310,8 +446,14 @@ public class CoSoLuuTruController : Controller
         if (actionType == "checkout")
         {
             stay.TrangThai = TrangThaiLuuTru.DaRoi;
-            stay.NgayKetThuc = DateTime.Now;
-            TempData["SuccessMessage"] = "Đã xác nhận người nước ngoài trả phòng (Check-out) thành công.";
+            stay.NgayKetThuc = checkoutDate ?? DateTime.Now;
+            if (!string.IsNullOrWhiteSpace(note))
+            {
+                stay.GhiChu = string.IsNullOrWhiteSpace(stay.GhiChu)
+                    ? $"[Check-out: {note.Trim()}]"
+                    : $"{stay.GhiChu} | [Check-out: {note.Trim()}]";
+            }
+            TempData["SuccessMessage"] = "Đã xác nhận khách trả phòng (Check-out) thành công.";
         }
         else if (actionType == "overdue")
         {
@@ -333,6 +475,16 @@ public class CoSoLuuTruController : Controller
             .FirstOrDefaultAsync(c => c.ChuCoSoLuuTru.MaTaiKhoan == GetCurrentAccountId());
 
         if (facility == null) return NotFound();
+
+        // Query activity metrics
+        ViewBag.ActiveGuestsCount = await _context.LichSuCuTrus
+            .CountAsync(l => l.MaCoSoLuuTru == facility.MaCoSoLuuTru && l.TrangThai == TrangThaiLuuTru.DangO);
+        ViewBag.TotalDeclarationsCount = await _context.HoSoKhaiBaoTamTrus
+            .CountAsync(h => h.MaCoSoLuuTru == facility.MaCoSoLuuTru);
+        ViewBag.PendingDeclarationsCount = await _context.HoSoKhaiBaoTamTrus
+            .CountAsync(h => h.MaCoSoLuuTru == facility.MaCoSoLuuTru && h.TrangThai == TrangThaiKhaiBao.ChoDuyet);
+        ViewBag.RejectedDeclarationsCount = await _context.HoSoKhaiBaoTamTrus
+            .CountAsync(h => h.MaCoSoLuuTru == facility.MaCoSoLuuTru && h.TrangThai == TrangThaiKhaiBao.TuChoi);
 
         return View(facility);
     }

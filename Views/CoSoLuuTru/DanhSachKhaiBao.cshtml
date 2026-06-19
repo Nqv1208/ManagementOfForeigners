@@ -1,0 +1,137 @@
+@using X.PagedList.Mvc.Core
+@using X.PagedList
+@model IPagedList<ManagementOfForeigners.Models.Entities.HoSoKhaiBaoTamTru>
+@{
+    ViewBag.Title = "Hồ sơ khai báo lưu trú";
+}
+
+<div class="container-fluid">
+    <!-- Page Header -->
+    <div class="coso-page-header d-flex justify-content-between align-items-center flex-wrap gap-3">
+        <div>
+            <h5 class="fw-bold mb-1" style="color: var(--coso-primary-dark);"><i class="bi bi-file-earmark-text-fill me-2 text-success"></i>Hồ sơ khai báo lưu trú</h5>
+            <p class="text-muted mb-0 fs-7">Quản lý và theo dõi trạng thái phê duyệt của các hồ sơ khai báo gửi lên cơ quan Công an</p>
+        </div>
+        <a asp-action="KhaiBaoLuuTru" class="btn btn-success fw-bold px-3 py-2 d-flex align-items-center gap-1" style="border-radius: 8px;">
+            <i class="bi bi-person-plus-fill"></i> Khai báo mới
+        </a>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="border-radius: 16px; border: 1px solid var(--coso-border) !important;">
+        <div class="card-body p-4">
+            <!-- Search and Filter Form -->
+            <form asp-action="DanhSachKhaiBao" method="get" class="row g-3 mb-4">
+                <div class="col-md-5">
+                    <label class="form-label fw-semibold text-dark fs-7">Tìm kiếm</label>
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0" style="border-radius: 8px 0 0 8px;"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="search" class="form-control border-start-0" value="@ViewBag.Search" placeholder="Tìm theo mã hồ sơ, họ tên, hộ chiếu..." style="border-radius: 0 8px 8px 0;" />
+                    </div>
+                </div>
+                <div class="col-md-4">
+                    <label class="form-label fw-semibold text-dark fs-7">Trạng thái hồ sơ</label>
+                    <select name="status" class="form-select" style="border-radius: 8px;">
+                        <option value="">-- Tất cả trạng thái --</option>
+                        <option value="Chờ duyệt" selected="@(ViewBag.Status == "Chờ duyệt")">Chờ duyệt</option>
+                        <option value="Đã duyệt" selected="@(ViewBag.Status == "Đã duyệt")">Đã duyệt</option>
+                        <option value="Từ chối" selected="@(ViewBag.Status == "Từ chối")">Bị từ chối</option>
+                    </select>
+                </div>
+                <div class="col-md-3 d-flex align-items-end">
+                    <button type="submit" class="btn btn-success w-100 fw-semibold" style="border-radius: 8px; padding-top: 10px; padding-bottom: 10px;">Lọc kết quả</button>
+                </div>
+            </form>
+
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-file-earmark-x text-muted" style="font-size: 3rem;"></i>
+                    <p class="text-muted mt-3 mb-0">Không tìm thấy hồ sơ khai báo nào tương thích với bộ lọc.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="table table-hover align-middle mb-0 fs-7">
+                        <thead>
+                            <tr class="text-muted border-bottom">
+                                <th>Mã hồ sơ</th>
+                                <th>Ngày nộp</th>
+                                <th>Họ tên khách</th>
+                                <th>Số hộ chiếu</th>
+                                <th>Quốc tịch</th>
+                                <th>Thời gian lưu trú</th>
+                                <th>Trạng thái</th>
+                                <th>Ghi chú / Lý do từ chối</th>
+                                <th class="text-center" style="width: 130px;">Thao tác</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var dec in Model)
+                            {
+                                <tr>
+                                    <td><code class="fw-semibold">@dec.MaHSKhaiBao</code></td>
+                                    <td>@dec.NgayKhaiBao.ToString("dd/MM/yyyy HH:mm")</td>
+                                    <td class="fw-bold text-dark">@dec.TaiKhoan.NguoiNuocNgoai?.HoTen</td>
+                                    <td>@dec.TaiKhoan.NguoiNuocNgoai?.SoHoChieu</td>
+                                    <td>@dec.TaiKhoan.NguoiNuocNgoai?.QuocTich</td>
+                                    <td>
+                                        <small class="d-block text-dark fw-semibold">@dec.NgayBatDau.ToString("dd/MM/yyyy")</small>
+                                        <small class="text-muted">đến @dec.NgayKetThuc.ToString("dd/MM/yyyy")</small>
+                                    </td>
+                                    <td>
+                                        @if (dec.TrangThai == "Chờ duyệt")
+                                        {
+                                            <span class="badge bg-warning bg-opacity-10 text-warning border border-warning border-opacity-20 px-2 py-1"><i class="bi bi-hourglass-split me-1"></i>Chờ duyệt</span>
+                                        }
+                                        else if (dec.TrangThai == "Đã duyệt")
+                                        {
+                                            <span class="badge bg-success bg-opacity-10 text-success border border-success border-opacity-20 px-2 py-1"><i class="bi bi-check-circle-fill me-1"></i>Đã duyệt</span>
+                                        }
+                                        else
+                                        {
+                                            <span class="badge bg-danger bg-opacity-10 text-danger border border-danger border-opacity-20 px-2 py-1"><i class="bi bi-x-circle-fill me-1"></i>Từ chối</span>
+                                        }
+                                    </td>
+                                    <td>
+                                        @if (dec.TrangThai == "Từ chối")
+                                        {
+                                            <small class="text-danger fw-semibold d-block">Lý do: @(dec.LyDoTuChoi ?? "Chưa cập nhật lý do")</small>
+                                        }
+                                        <small class="text-muted">@dec.GhiChu</small>
+                                    </td>
+                                    <td class="text-center">
+                                        @if (dec.TrangThai == "Chờ duyệt")
+                                        {
+                                            <form asp-action="HuyKhaiBao" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn hủy hồ sơ khai báo @dec.MaHSKhaiBao?');">
+                                                @Html.AntiForgeryToken()
+                                                <input type="hidden" name="id" value="@dec.MaHSKhaiBao" />
+                                                <button type="submit" class="btn btn-outline-danger btn-xs" style="border-radius: 6px; font-weight: 600;">
+                                                    <i class="bi bi-trash"></i> Hủy nộp
+                                                </button>
+                                            </form>
+                                        }
+                                        else
+                                        {
+                                            <span class="text-muted small">-</span>
+                                        }
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="d-flex justify-content-center mt-4">
+                    @Html.PagedListPager(Model, page => Url.Action("DanhSachKhaiBao", new { page, search = ViewBag.Search, status = ViewBag.Status }),
+                        new X.PagedList.Mvc.Core.PagedListRenderOptions {
+                            LiElementClasses = new string[] { "page-item" },
+                            PageClasses = new string[] { "page-link" },
+                            UlElementClasses = new string[] { "pagination", "pagination-sm" }
+                        })
+                </div>
+            }
+        </div>
+    </div>
+</div>
