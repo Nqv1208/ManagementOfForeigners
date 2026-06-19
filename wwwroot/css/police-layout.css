@@ -479,3 +479,78 @@ body {
     font-size: 0.75rem !important;
     border-radius: 6px;
 }
+
+/* Refined Badge System */
+.police-badge {
+    display: inline-block;
+    padding: 6px 12px;
+    font-size: 0.75rem;
+    font-weight: 700;
+    border-radius: 6px;
+    border: 1px solid transparent;
+    text-transform: uppercase;
+    letter-spacing: 0.3px;
+}
+.police-badge.is-warning {
+    background-color: #fffbeb !important;
+    color: #b45309 !important;
+    border-color: #fde68a !important;
+}
+.police-badge.is-success {
+    background-color: #f0fdf4 !important;
+    color: #15803d !important;
+    border-color: #bbf7d0 !important;
+}
+.police-badge.is-danger {
+    background-color: #fef2f2 !important;
+    color: #b91c1c !important;
+    border-color: #fecaca !important;
+}
+.police-badge.is-info {
+    background-color: #f0f9ff !important;
+    color: #0369a1 !important;
+    border-color: #bae6fd !important;
+}
+.police-badge.is-neutral {
+    background-color: #f8fafc !important;
+    color: #475569 !important;
+    border-color: #e2e8f0 !important;
+}
+
+/* Autocomplete Suggestion List */
+.autocomplete-wrapper {
+    position: relative;
+}
+.autocomplete-suggestions {
+    position: absolute;
+    top: 100%;
+    left: 0;
+    right: 0;
+    background: white;
+    border: 1px solid #cbd5e1;
+    border-radius: 8px;
+    max-height: 220px;
+    overflow-y: auto;
+    z-index: 1050;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    margin-top: 4px;
+}
+.autocomplete-suggestion {
+    padding: 10px 14px;
+    cursor: pointer;
+    font-size: 0.85rem;
+    transition: background 0.15s ease;
+}
+.autocomplete-suggestion:hover {
+    background: #f1f5f9;
+}
+.autocomplete-suggestion.no-result {
+    color: #64748b;
+    cursor: default;
+}
+
+/* Style for action menus */
+.dropdown-menu {
+    border-color: #e2e8f0 !important;
+    box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.05), 0 4px 6px -4px rgba(0, 0, 0, 0.05) !important;
+}
