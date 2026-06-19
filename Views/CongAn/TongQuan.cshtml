@@ -45,7 +45,7 @@
         <div class="col-xl-3 col-md-6">
             <div class="police-stat-card is-success">
                 <div class="stat-content">
-                    <span class="stat-label">Đã duyệt tạm trú</span>
+                    <span class="stat-label">Đã duyệt hôm nay</span>
                     <span class="stat-value">@Model.TotalApproved</span>
                 </div>
                 <div class="stat-icon success">
@@ -57,7 +57,7 @@
         <div class="col-xl-3 col-md-6">
             <div class="police-stat-card is-info-teal">
                 <div class="stat-content">
-                    <span class="stat-label">NNN trong địa bàn</span>
+                    <span class="stat-label">Người nước ngoài địa bàn</span>
                     <span class="stat-value">@Model.TotalForeigners</span>
                 </div>
                 <div class="stat-icon info-teal">
@@ -115,18 +115,9 @@
                                             <td>@dec.TaiKhoan.NguoiNuocNgoai?.SoHoChieu</td>
                                             <td><small class="text-muted style-multiline-ellipsis">@dec.DiaChiLuuTru</small></td>
                                             <td>
-                                                <div class="d-inline-flex gap-1 align-items-center">
-                                                    <a asp-action="ChiTietKhaiBao" asp-route-id="@dec.MaHSKhaiBao" class="btn btn-outline-success btn-xs">
-                                                        <i class="bi bi-eye"></i> Chi tiết
-                                                    </a>
-                                                    <form asp-action="PheDuyet" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn phê duyệt hồ sơ khai báo này?');" style="display:inline-block; margin: 0;">
-                                                        @Html.AntiForgeryToken()
-                                                        <input type="hidden" name="id" value="@dec.MaHSKhaiBao" />
-                                                        <button type="submit" class="btn btn-success btn-xs">
-                                                            <i class="bi bi-check-circle"></i> Duyệt
-                                                        </button>
-                                                    </form>
-                                                </div>
+                                                <a asp-action="ChiTietKhaiBao" asp-route-id="@dec.MaHSKhaiBao" class="btn btn-outline-success btn-xs">
+                                                    <i class="bi bi-eye"></i> Chi tiết
+                                                </a>
                                             </td>
                                         </tr>
                                     }

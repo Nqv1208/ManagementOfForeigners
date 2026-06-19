@@ -268,12 +268,21 @@ body {
     color: #8a6100;
 }
 
-.police-stat-card.is-success .stat-icon {
-    background: #eaf7e6;
-    color: #1f7a1f;
+.police-stat-card.is-success {
+    background: #f0fdf4;
+    border-color: #bbf7d0;
+}
+
+.police-stat-card.is-success .stat-label {
+    color: #15803d;
 }
 
 .police-stat-card.is-success .stat-value {
+    color: #15803d;
+}
+
+.police-stat-card.is-success .stat-icon {
+    background: #eaf7e6;
     color: #1f7a1f;
 }
 
@@ -282,21 +291,39 @@ body {
     color: #1f7a1f;
 }
 
+.police-stat-card.is-info-teal {
+    background: #f0f9ff;
+    border-color: #bae6fd;
+}
+
+.police-stat-card.is-info-teal .stat-label {
+    color: #0369a1;
+}
+
+.police-stat-card.is-info-teal .stat-value {
+    color: #0369a1;
+}
+
 .police-stat-card.is-info-teal .stat-icon {
     background: #e8f6f2;
     color: #087f5b;
 }
 
-.police-stat-card.is-info-teal .stat-value {
-    color: #087f5b;
+.police-stat-card.is-neutral {
+    background: #fef2f2;
+    border-color: #fecaca;
+}
+
+.police-stat-card.is-neutral .stat-label {
+    color: #b91c1c;
+}
+
+.police-stat-card.is-neutral .stat-value {
+    color: #b91c1c;
 }
 
 .police-stat-card.is-neutral .stat-icon {
     background: #f1f3f5;
-    color: #495057;
-}
-
-.police-stat-card.is-neutral .stat-value {
     color: #495057;
 }
 
