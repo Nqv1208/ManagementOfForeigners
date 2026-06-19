@@ -54,13 +54,10 @@
                     <table class="police-table-themed align-middle mb-0 fs-7">
                         <thead>
                             <tr>
-                                <th>Mã hồ sơ</th>
-                                <th>Khách nước ngoài</th>
-                                <th>Số hộ chiếu</th>
-                                <th>Quốc tịch</th>
-                                <th>Ngày khai báo</th>
-                                <th>Thời gian tạm trú</th>
-                                <th>Địa chỉ lưu trú</th>
+                                <th>Hồ sơ</th>
+                                <th>Người khai báo</th>
+                                <th>Lưu trú</th>
+                                <th>Thời gian</th>
                                 <th class="text-center">Trạng thái</th>
                                 <th class="text-center">Thao tác</th>
                             </tr>
@@ -69,48 +66,70 @@
                             @foreach (var dec in Model)
                             {
                                 <tr>
-                                    <td><code class="text-secondary fw-semibold">@dec.MaHSKhaiBao</code></td>
-                                    <td class="fw-bold text-dark">@dec.TaiKhoan.NguoiNuocNgoai?.HoTen</td>
-                                    <td>@dec.TaiKhoan.NguoiNuocNgoai?.SoHoChieu</td>
-                                    <td>@dec.TaiKhoan.NguoiNuocNgoai?.QuocTich</td>
-                                    <td>@dec.NgayKhaiBao.ToString("dd/MM/yyyy")</td>
                                     <td>
-                                        <small class="d-block fw-semibold text-dark">
-                                            @dec.NgayBatDau.ToString("dd/MM/yyyy") - @dec.NgayKetThuc.ToString("dd/MM/yyyy")
-                                        </small>
+                                        <code class="text-secondary fw-semibold">@dec.MaHSKhaiBao</code>
+                                        <div class="text-muted small mt-1">Ngày nộp: @dec.NgayKhaiBao.ToString("dd/MM/yyyy")</div>
                                     </td>
                                     <td>
-                                        <small class="text-muted style-multiline-ellipsis" style="max-width: 180px; display: inline-block;">
+                                        <div class="fw-bold text-dark">@dec.TaiKhoan.NguoiNuocNgoai?.HoTen</div>
+                                        <div class="text-muted small mt-1">
+                                            HC: @(dec.TaiKhoan.NguoiNuocNgoai?.SoHoChieu ?? "N/A") | 
+                                            <span class="badge bg-light text-dark">@(dec.TaiKhoan.NguoiNuocNgoai?.QuocTich ?? "N/A")</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="style-multiline-ellipsis text-muted" style="max-width: 250px; display: inline-block;">
                                             @dec.DiaChiLuuTru
-                                        </small>
+                                        </div>
+                                        @if (dec.CoSoLuuTru != null)
+                                        {
+                                            <div class="text-success small mt-1">
+                                                Cơ sở: @dec.CoSoLuuTru.TenCoSo
+                                            </div>
+                                        }
+                                    </td>
+                                    <td>
+                                        <div class="small text-muted">
+                                            @dec.NgayBatDau.ToString("dd/MM/yyyy") đến @dec.NgayKetThuc.ToString("dd/MM/yyyy")
+                                        </div>
                                     </td>
                                     <td class="text-center">
                                         @await Html.PartialAsync("_StatusBadge", dec.TrangThai)
                                     </td>
-                                     <td class="text-center">
-                                         <div class="d-inline-flex gap-1 align-items-center justify-content-center">
-                                             <a asp-action="ChiTietKhaiBao" asp-route-id="@dec.MaHSKhaiBao" class="btn btn-outline-success btn-xs">
-                                                 <i class="bi bi-eye"></i> Chi tiết
-                                             </a>
-                                             @if (dec.TrangThai == "Chờ duyệt")
-                                             {
-                                                 <form asp-action="PheDuyet" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn phê duyệt hồ sơ khai báo này?');" style="display:inline-block; margin: 0;">
-                                                     @Html.AntiForgeryToken()
-                                                     <input type="hidden" name="id" value="@dec.MaHSKhaiBao" />
-                                                     <button type="submit" class="btn btn-success btn-xs">
-                                                         <i class="bi bi-check-circle"></i> Duyệt
-                                                     </button>
-                                                 </form>
-                                                 
-                                                 <button type="button" class="btn btn-danger btn-xs quick-reject-btn" 
-                                                         data-id="@dec.MaHSKhaiBao" 
-                                                         data-bs-toggle="modal" 
-                                                         data-bs-target="#quickRejectModal">
-                                                     <i class="bi bi-x-circle"></i> Từ chối
-                                                 </button>
-                                             }
-                                         </div>
-                                     </td>
+                                    <td class="text-center">
+                                        <div class="dropdown">
+                                            <button class="btn btn-outline-secondary border-0 p-1 btn-xs" type="button" data-bs-toggle="dropdown" aria-expanded="false">
+                                                <i class="bi bi-three-dots"></i>
+                                            </button>
+                                            <ul class="dropdown-menu dropdown-menu-end">
+                                                <li>
+                                                    <a class="dropdown-item" asp-action="ChiTietKhaiBao" asp-route-id="@dec.MaHSKhaiBao">
+                                                        <i class="bi bi-eye me-2"></i>Xem chi tiết
+                                                    </a>
+                                                </li>
+                                                @if (dec.TrangThai == "Chờ duyệt")
+                                                {
+                                                    <li>
+                                                        <form asp-action="PheDuyet" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn phê duyệt hồ sơ khai báo này?');" class="d-block">
+                                                            @Html.AntiForgeryToken()
+                                                            <input type="hidden" name="id" value="@dec.MaHSKhaiBao" />
+                                                            <button type="submit" class="dropdown-item text-success">
+                                                                <i class="bi bi-check-circle me-2"></i>Phê duyệt nhanh
+                                                            </button>
+                                                        </form>
+                                                    </li>
+                                                    <li>
+                                                        <button type="button" class="dropdown-item text-danger quick-reject-btn" 
+                                                                data-id="@dec.MaHSKhaiBao" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#quickRejectModal">
+                                                            <i class="bi bi-x-circle me-2"></i>Từ chối nhanh
+                                                        </button>
+                                                    </li>
+                                                }
+                                            </ul>
+                                        </div>
+                                    </td>
                                 </tr>
                             }
                         </tbody>
