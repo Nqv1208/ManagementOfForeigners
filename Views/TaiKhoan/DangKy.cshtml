@@ -11,41 +11,69 @@
     <div class="auth-register-shell">
         <section class="auth-card auth-register-card" aria-labelledby="register-title">
             <div class="auth-card-header auth-register-heading">
-                <div class="auth-register-heading-main">
-                    <h1 class="auth-card-title" id="register-title">Đăng ký tài khoản dịch vụ công</h1>
-                    <p class="auth-card-description">
-                        Vui lòng chọn loại tài khoản và nhập thông tin chính xác để phục vụ việc xác minh, quản lý cư trú theo quy định.
-                    </p>
-                </div>
-
-                <div class="auth-segmented" role="tablist" aria-label="Loại tài khoản đăng ký">
-                    <button type="button"
-                            class="auth-segmented-button @(isForeigner ? "is-active" : "")"
-                            data-auth-account-type="Foreigner"
-                            aria-selected="@(isForeigner ? "true" : "false")">
-                        <i class="bi bi-person-badge" aria-hidden="true"></i>
-                        <span>Người nước ngoài</span>
-                    </button>
-                    <button type="button"
-                            class="auth-segmented-button @(isLodgingOwner ? "is-active" : "")"
-                            data-auth-account-type="LodgingOwner"
-                            aria-selected="@(isLodgingOwner ? "true" : "false")">
-                        <i class="bi bi-building" aria-hidden="true"></i>
-                        <span>Cơ sở lưu trú</span>
-                    </button>
+                <div class="auth-register-heading-main w-100">
+                    <div class="d-flex justify-content-between align-items-start flex-wrap gap-2 mb-2">
+                        <div>
+                            <h1 class="auth-card-title" id="register-title">Đăng ký tài khoản dịch vụ công</h1>
+                            <p class="auth-card-description mb-0">
+                                Vui lòng chọn loại tài khoản và nhập thông tin chính xác để phục vụ việc xác minh, quản lý cư trú theo quy định.
+                            </p>
+                        </div>
+                        <a asp-action="DangNhap" class="auth-form-link fs-7 mt-1"><i class="bi bi-box-arrow-in-right me-1"></i>Đã có tài khoản? Đăng nhập</a>
+                    </div>
+                    
+                    <div class="auth-role-selector-wrap mt-3 d-flex align-items-center gap-3">
+                        <span class="auth-role-label fw-bold text-muted fs-7">Loại tài khoản:</span>
+                        <div class="auth-segmented" role="tablist" aria-label="Loại tài khoản đăng ký">
+                            <button type="button"
+                                    class="auth-segmented-button @(isForeigner ? "is-active" : "")"
+                                    data-auth-account-type="Foreigner"
+                                    aria-selected="@(isForeigner ? "true" : "false")">
+                                <i class="bi bi-person-badge" aria-hidden="true"></i>
+                                <span>Người nước ngoài</span>
+                            </button>
+                            <button type="button"
+                                    class="auth-segmented-button @(isLodgingOwner ? "is-active" : "")"
+                                    data-auth-account-type="LodgingOwner"
+                                    aria-selected="@(isLodgingOwner ? "true" : "false")">
+                                <i class="bi bi-building" aria-hidden="true"></i>
+                                <span>Cơ sở lưu trú</span>
+                            </button>
+                        </div>
+                    </div>
                 </div>
             </div>
 
             <div class="auth-card-body">
+                <!-- Stepper Progress Tracker (Only visible for LodgingOwner) -->
+                <div class="auth-stepper d-none mb-4" id="authStepper">
+                    <div class="auth-step is-active" data-step="1">
+                        <span class="auth-step-number">1</span>
+                        <span class="auth-step-label">Tài khoản</span>
+                    </div>
+                    <div class="auth-step-line"></div>
+                    <div class="auth-step" data-step="2">
+                        <span class="auth-step-number">2</span>
+                        <span class="auth-step-label">Người đại diện</span>
+                    </div>
+                    <div class="auth-step-line"></div>
+                    <div class="auth-step" data-step="3">
+                        <span class="auth-step-number">3</span>
+                        <span class="auth-step-label">Cơ sở lưu trú</span>
+                    </div>
+                </div>
+
                 <form asp-action="DangKy" asp-controller="TaiKhoan" method="post" class="auth-register-form" data-auth-register-form>
                     @Html.AntiForgeryToken()
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-0" role="alert"></div>
                     <input type="hidden" asp-for="AccountType" id="AccountType" />
 
-                    <section class="auth-register-section" aria-labelledby="account-section-title">
+                    <!-- STEP 1: Account Information -->
+                    <section class="auth-register-section" aria-labelledby="account-section-title" data-auth-step-section="1">
                         <h2 class="auth-section-title" id="account-section-title">
-                            <i class="bi bi-shield-lock" aria-hidden="true"></i>Thông tin tài khoản
+                             <i class="bi bi-shield-lock" aria-hidden="true"></i>Thông tin tài khoản
                         </h2>
+                        <p class="auth-section-desc mb-3 text-muted fs-7">Dùng để đăng nhập và nhận thông báo từ hệ thống.</p>
                         <div class="auth-form-grid">
                             <div class="auth-form-group">
                                 <label asp-for="TenDangNhap" class="auth-required"></label>
@@ -61,6 +89,9 @@
                                 <label asp-for="SoDienThoai" class="auth-required"></label>
                                 <input asp-for="SoDienThoai" class="form-control" autocomplete="tel" placeholder="Số điện thoại liên hệ" />
                                 <span asp-validation-for="SoDienThoai" class="field-validation-error"></span>
+                            </div>
+                            <div class="auth-form-group d-none d-md-block">
+                                <!-- Spacer for alignment -->
                             </div>
                             <div class="auth-form-group">
                                 <label asp-for="MatKhau" class="auth-required"></label>
@@ -85,12 +116,14 @@
                         </div>
                     </section>
 
+                    <!-- FOREIGNER FLOW ONLY: Personal Details -->
                     <section class="auth-register-section @(isForeigner ? "" : "auth-hidden")"
                              data-auth-section="Foreigner"
                              aria-labelledby="foreigner-section-title">
                         <h2 class="auth-section-title" id="foreigner-section-title">
                             <i class="bi bi-person-vcard" aria-hidden="true"></i>Thông tin người nước ngoài
                         </h2>
+                        <p class="auth-section-desc mb-3 text-muted fs-7">Vui lòng nhập đúng thông tin theo hộ chiếu.</p>
                         <div class="auth-form-grid">
                             <div class="auth-form-group">
                                 <label asp-for="HoTen" class="auth-required"></label>
@@ -140,12 +173,15 @@
                         </div>
                     </section>
 
+                    <!-- LODGING OWNER FLOW: STEP 2 - Representative Details -->
                     <section class="auth-register-section @(isLodgingOwner ? "" : "auth-hidden")"
                              data-auth-section="LodgingOwner"
+                             data-auth-step-section="2"
                              aria-labelledby="lodging-representative-title">
                         <h2 class="auth-section-title" id="lodging-representative-title">
                             <i class="bi bi-person-lines-fill" aria-hidden="true"></i>Thông tin người đại diện
                         </h2>
+                        <p class="auth-section-desc mb-3 text-muted fs-7">Thông tin cá nhân của chủ hoặc người đại diện cơ sở lưu trú.</p>
                         <div class="auth-form-grid">
                             <div class="auth-form-group">
                                 <label asp-for="HoTenNguoiDaiDien" class="auth-required"></label>
@@ -178,10 +214,17 @@
                                 <span asp-validation-for="ChucVu" class="field-validation-error"></span>
                             </div>
                         </div>
+                    </section>
 
-                        <h2 class="auth-section-title mt-4" id="lodging-facility-title">
+                    <!-- LODGING OWNER FLOW: STEP 3 - Facility Details -->
+                    <section class="auth-register-section @(isLodgingOwner ? "" : "auth-hidden")"
+                             data-auth-section="LodgingOwner"
+                             data-auth-step-section="3"
+                             aria-labelledby="lodging-facility-title">
+                        <h2 class="auth-section-title" id="lodging-facility-title">
                             <i class="bi bi-building-check" aria-hidden="true"></i>Thông tin cơ sở lưu trú
                         </h2>
+                        <p class="auth-section-desc mb-3 text-muted fs-7">Thông tin chi tiết về cơ sở lưu trú tại địa bàn quản lý.</p>
                         <div class="auth-form-grid">
                             <div class="auth-form-group">
                                 <label asp-for="TenCoSoLuuTru" class="auth-required"></label>
@@ -217,28 +260,45 @@
                         </div>
                     </section>
 
-                    <section class="auth-commitment" aria-label="Cam kết thông tin">
+                    <!-- COMMITMENT CHECKBOX (Hidden in LodgingOwner Step 1 & 2) -->
+                    <section class="auth-commitment" data-auth-commitment-section aria-label="Cam kết thông tin">
                         <div class="form-check">
                             <input asp-for="CamKetThongTin" class="form-check-input" type="checkbox" data-auth-commitment />
-                            <label asp-for="CamKetThongTin" class="form-check-label">
+                            <label asp-for="CamKetThongTin" class="form-check-label text-dark fw-semibold" style="font-size: 0.92rem;">
                                 Tôi cam đoan các thông tin khai báo là đúng sự thật và chịu trách nhiệm trước pháp luật.
                             </label>
                         </div>
                         <span asp-validation-for="CamKetThongTin" class="field-validation-error d-block"></span>
                     </section>
 
-                    <div class="auth-footer-actions">
-                        <a asp-controller="TrangChu" asp-action="Index" class="btn btn-outline-secondary">
-                            <i class="bi bi-x-circle me-2" aria-hidden="true"></i>Hủy bỏ
-                        </a>
-                        <button type="button" class="btn auth-btn-accent" data-auth-reset>
-                            <i class="bi bi-arrow-counterclockwise me-2" aria-hidden="true"></i>Làm mới
-                        </button>
-                        <button type="submit" class="btn btn-primary" data-auth-requires-commitment>
-                            <i class="bi bi-check2-circle me-2" aria-hidden="true"></i>Đăng ký
-                        </button>
+                    <!-- ACTIONS SECTION (Adapted with Back/Next controls for Stepper) -->
+                    <div class="auth-footer-actions d-flex align-items-center justify-content-between flex-wrap gap-2 w-100">
+                        <div class="d-flex align-items-center gap-2">
+                            <a asp-controller="TrangChu" asp-action="Index" class="btn btn-outline-secondary px-3 py-2" data-auth-btn-cancel>
+                                <i class="bi bi-x-circle me-2" aria-hidden="true"></i>Hủy bỏ
+                            </a>
+                            <button type="button" class="btn btn-outline-secondary px-3 py-2" data-auth-reset data-auth-btn-reset>
+                                <i class="bi bi-arrow-counterclockwise me-2" aria-hidden="true"></i>Làm mới
+                            </button>
+                            <button type="button" class="btn btn-outline-secondary px-3 py-2 d-none" data-auth-btn-prev>
+                                <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Quay lại
+                            </button>
+                        </div>
+                        <div class="d-flex align-items-center gap-2">
+                            <button type="button" class="btn btn-success px-4 py-2 d-none" data-auth-btn-next>
+                                <span>Tiếp tục</span><i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
+                            </button>
+                            <button type="submit" class="btn btn-primary px-4 py-2" data-auth-requires-commitment data-auth-btn-submit>
+                                <i class="bi bi-check2-circle me-2" aria-hidden="true"></i>Đăng ký
+                            </button>
+                        </div>
                     </div>
                 </form>
+
+                <div class="text-center mt-4 pt-3 border-top border-light">
+                    <span class="text-muted fs-7">Đã có tài khoản?</span>
+                    <a asp-action="DangNhap" class="auth-form-link fs-7 ms-1 fw-bold">Đăng nhập ngay</a>
+                </div>
             </div>
         </section>
     </div>

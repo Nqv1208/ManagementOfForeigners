@@ -283,3 +283,126 @@
         grid-template-columns: 1fr;
     }
 }
+
+/* Light Segmented Switch and Label Wrapper */
+.auth-role-selector-wrap {
+    background-color: #f8fafc;
+    padding: 10px 16px;
+    border-radius: 8px;
+    border: 1px solid var(--auth-border);
+}
+
+.auth-role-label {
+    letter-spacing: 0.2px;
+}
+
+.auth-segmented {
+    min-height: 38px;
+    min-width: 280px;
+    border-color: #cbd5e1;
+    background-color: #f1f5f9;
+}
+
+.auth-segmented-button {
+    min-height: 30px;
+    padding: 6px 12px;
+    font-size: 0.82rem;
+    font-weight: 700;
+    color: #475569;
+}
+
+.auth-segmented-button:hover {
+    background-color: #e2e8f0;
+}
+
+.auth-segmented-button.is-active,
+.auth-segmented-button[aria-selected="true"] {
+    background-color: var(--auth-primary-dark);
+    border-color: var(--auth-primary-dark);
+    color: #ffffff;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
+
+/* Stepper Component */
+.auth-stepper {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 24px;
+    background-color: #f8fafc;
+    border: 1px solid var(--auth-border);
+    border-radius: 8px;
+}
+
+.auth-step {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 6px;
+    z-index: 2;
+    position: relative;
+    min-width: 80px;
+}
+
+.auth-step-number {
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #e2e8f0;
+    color: #64748b;
+    font-weight: 700;
+    font-size: 0.88rem;
+    border: 2px solid #cbd5e1;
+    transition: all 0.2s ease-in-out;
+}
+
+.auth-step.is-active .auth-step-number {
+    background: var(--auth-primary);
+    border-color: var(--auth-primary);
+    color: #ffffff;
+    box-shadow: 0 0 0 4px var(--auth-primary-soft);
+}
+
+.auth-step.is-complete .auth-step-number {
+    background: var(--auth-primary-dark);
+    border-color: var(--auth-primary-dark);
+    color: #ffffff;
+}
+
+.auth-step-label {
+    font-size: 0.78rem;
+    font-weight: 700;
+    color: #64748b;
+    transition: color 0.2s ease-in-out;
+}
+
+.auth-step.is-active .auth-step-label {
+    color: var(--auth-primary-darker);
+}
+
+.auth-step.is-complete .auth-step-label {
+    color: var(--auth-primary-dark);
+}
+
+.auth-step-line {
+    flex: 1 1 auto;
+    height: 2px;
+    background: #cbd5e1;
+    margin-top: -18px;
+    z-index: 1;
+    transition: background-color 0.2s ease-in-out;
+}
+
+.auth-step.is-complete + .auth-step-line {
+    background-color: var(--auth-primary) !important;
+}
+
+/* Section descriptions */
+.auth-section-desc {
+    margin-top: -12px;
+    color: var(--auth-muted);
+}
+
