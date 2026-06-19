@@ -1,7 +1,23 @@
 @model ManagementOfForeigners.Models.ViewModels.CanBo.CanhBaoViewModel
+@using System.Text.Json
+@using Microsoft.AspNetCore.Mvc.Rendering
 @{
     Layout = "~/Views/Shared/_PoliceLayout.cshtml";
     ViewBag.Title = "Gửi cảnh báo vi phạm - Công an";
+
+    var foreignersJson = "[]";
+    if (ViewBag.NguoiNuocNgoais != null)
+    {
+        var selectList = ViewBag.NguoiNuocNgoais as IEnumerable<SelectListItem>;
+        if (selectList != null)
+        {
+            var serializedItems = selectList.Select(item => new {
+                value = item.Value,
+                text = item.Text
+            });
+            foreignersJson = JsonSerializer.Serialize(serializedItems);
+        }
+    }
 }
 
 <div class="container-fluid">
@@ -21,15 +37,14 @@
 
                         <div class="row g-3">
                             <!-- Search & Select Foreigner -->
-                            <div class="col-md-12">
+                            <div class="col-md-12 autocomplete-wrapper mb-3">
                                 <label class="form-label fw-semibold text-dark fs-7">Người nước ngoài liên quan <span class="text-danger">*</span></label>
-                                <div class="input-group mb-2">
-                                    <span class="input-group-text bg-white border-end-0" style="border-radius: 8px 0 0 8px;"><i class="bi bi-search text-muted"></i></span>
-                                    <input type="text" id="foreignerSearch" class="form-control border-start-0" placeholder="Nhập tên hoặc số hộ chiếu để tìm kiếm..." style="border-radius: 0 8px 8px 0;" />
+                                <div class="input-group">
+                                     <span class="input-group-text bg-white border-end-0" style="border-radius: 8px 0 0 8px;"><i class="bi bi-search text-muted"></i></span>
+                                     <input type="text" id="foreignerSearch" class="form-control border-start-0" placeholder="Nhập họ tên hoặc số hộ chiếu để tìm kiếm..." style="border-radius: 0 8px 8px 0;" autocomplete="off" required />
                                 </div>
-                                <select asp-for="MaNguoiNuocNgoai" asp-items="ViewBag.NguoiNuocNgoais" class="form-select" id="MaNguoiNuocNgoai" style="border-radius: 8px;" required>
-                                    <option value="">-- Chọn người nước ngoài --</option>
-                                </select>
+                                <input type="hidden" asp-for="MaNguoiNuocNgoai" id="MaNguoiNuocNgoai" />
+                                <div id="autocompleteSuggestions" class="autocomplete-suggestions d-none"></div>
                                 <span asp-validation-for="MaNguoiNuocNgoai" class="text-danger small"></span>
                             </div>
 
@@ -186,26 +201,15 @@
     @await Html.PartialAsync("_ValidationScriptsPartial")
     
     <script>
+        const foreignersData = @Html.Raw(foreignersJson);
+
         document.addEventListener("DOMContentLoaded", function () {
-            // 1. Filter dropdown list
+            // Autocomplete Suggestion Logic
             const searchInput = document.getElementById("foreignerSearch");
-            const select = document.getElementById("MaNguoiNuocNgoai");
-            if (searchInput && select) {
-                const originalOptions = Array.from(select.options);
+            const hiddenInput = document.getElementById("MaNguoiNuocNgoai");
+            const suggestionsContainer = document.getElementById("autocompleteSuggestions");
 
-                searchInput.addEventListener("input", function () {
-                    const query = searchInput.value.toLowerCase().trim();
-                    select.innerHTML = "";
-                    const filtered = originalOptions.filter((opt, index) => {
-                        if (index === 0) return true;
-                        return opt.text.toLowerCase().includes(query);
-                    });
-                    filtered.forEach(opt => select.appendChild(opt));
-                    triggerForeignerDetailsChange();
-                });
-            }
-
-            // 2. Dynamic Info Card
+            // Dynamic Info Card
             const foreignerSelectedInfo = document.getElementById("foreignerSelectedInfo");
             const noForeignerSelected = document.getElementById("noForeignerSelected");
             const infoName = document.getElementById("infoName");
@@ -213,29 +217,106 @@
             const infoNationality = document.getElementById("infoNationality");
 
             function triggerForeignerDetailsChange() {
-                if (!select || select.value === "") {
+                const selectedId = hiddenInput.value;
+                if (!selectedId) {
                     if (foreignerSelectedInfo) foreignerSelectedInfo.classList.add("d-none");
                     if (noForeignerSelected) noForeignerSelected.classList.remove("d-none");
                 } else {
-                    const selectedText = select.options[select.selectedIndex].text;
-                    const parts = selectedText.split(" - Hộ chiếu: ");
-                    const name = parts[0];
-                    const subParts = parts[1] ? parts[1].split(" (") : [];
-                    const passport = subParts[0] || "";
-                    const nationality = subParts[1] ? subParts[1].replace(")", "") : "";
+                    const option = foreignersData.find(opt => opt.value === selectedId);
+                    if (option) {
+                        const selectedText = option.text;
+                        const parts = selectedText.split(" - Hộ chiếu: ");
+                        const name = parts[0];
+                        const subParts = parts[1] ? parts[1].split(" (") : [];
+                        const passport = subParts[0] || "";
+                        const nationality = subParts[1] ? subParts[1].replace(")", "") : "";
 
-                    if (infoName) infoName.textContent = name;
-                    if (infoPassport) infoPassport.textContent = passport;
-                    if (infoNationality) infoNationality.textContent = nationality;
+                        if (infoName) infoName.textContent = name;
+                        if (infoPassport) infoPassport.textContent = passport;
+                        if (infoNationality) infoNationality.textContent = nationality;
 
-                    if (noForeignerSelected) noForeignerSelected.classList.add("d-none");
-                    if (foreignerSelectedInfo) foreignerSelectedInfo.classList.remove("d-none");
+                        if (noForeignerSelected) noForeignerSelected.classList.add("d-none");
+                        if (foreignerSelectedInfo) foreignerSelectedInfo.classList.remove("d-none");
+                    } else {
+                        if (foreignerSelectedInfo) foreignerSelectedInfo.classList.add("d-none");
+                        if (noForeignerSelected) noForeignerSelected.classList.remove("d-none");
+                    }
                 }
             }
 
-            if (select) {
-                select.addEventListener("change", triggerForeignerDetailsChange);
-                triggerForeignerDetailsChange();
+            if (searchInput && hiddenInput && suggestionsContainer) {
+                searchInput.addEventListener("input", function () {
+                    const query = searchInput.value.toLowerCase().trim();
+                    
+                    // Clear selected value when typing
+                    hiddenInput.value = "";
+                    triggerForeignerDetailsChange();
+                    
+                    if (query === "") {
+                        suggestionsContainer.classList.add("d-none");
+                        return;
+                    }
+
+                    const filtered = foreignersData.filter(item => 
+                        item.text.toLowerCase().includes(query)
+                    );
+
+                    suggestionsContainer.innerHTML = "";
+                    if (filtered.length === 0) {
+                        const noResultDiv = document.createElement("div");
+                        noResultDiv.className = "autocomplete-suggestion no-result";
+                        noResultDiv.textContent = "Không tìm thấy người nước ngoài nào";
+                        suggestionsContainer.appendChild(noResultDiv);
+                    } else {
+                        filtered.forEach(item => {
+                            const suggestionDiv = document.createElement("div");
+                            suggestionDiv.className = "autocomplete-suggestion";
+                            suggestionDiv.textContent = item.text;
+                            suggestionDiv.addEventListener("click", function () {
+                                const selectedText = item.text;
+                                const parts = selectedText.split(" - Hộ chiếu: ");
+                                const name = parts[0];
+                                
+                                searchInput.value = name;
+                                hiddenInput.value = item.value;
+                                searchInput.setCustomValidity("");
+                                
+                                suggestionsContainer.classList.add("d-none");
+                                triggerForeignerDetailsChange();
+                            });
+                            suggestionsContainer.appendChild(suggestionDiv);
+                        });
+                    }
+                    suggestionsContainer.classList.remove("d-none");
+                });
+
+                // Re-enable suggestions on focus if query is not empty
+                searchInput.addEventListener("focus", function () {
+                    const query = searchInput.value.trim();
+                    if (query !== "" && suggestionsContainer.children.length > 0) {
+                        suggestionsContainer.classList.remove("d-none");
+                    }
+                });
+
+                // Close suggestions when clicking outside
+                document.addEventListener("click", function (e) {
+                    if (!e.target.closest(".autocomplete-wrapper")) {
+                        suggestionsContainer.classList.add("d-none");
+                    }
+                });
+
+                // On page load, if a value is pre-selected, populate the search field and detail card
+                const preselectedId = hiddenInput.value;
+                if (preselectedId) {
+                    const option = foreignersData.find(opt => opt.value === preselectedId);
+                    if (option) {
+                        const selectedText = option.text;
+                        const parts = selectedText.split(" - Hộ chiếu: ");
+                        const name = parts[0];
+                        searchInput.value = name;
+                        triggerForeignerDetailsChange();
+                    }
+                }
             }
 
             // 3. Preset dropdown category
@@ -288,11 +369,23 @@
                 const modal = new bootstrap.Modal(submitConfirmModalEl);
 
                 btnSubmitConfirm.addEventListener("click", function () {
+                    // Validate foreigner selection
+                    const maNguoiNuocNgoai = hiddenInput ? hiddenInput.value : "";
+                    if (!maNguoiNuocNgoai) {
+                        if (searchInput) {
+                            searchInput.setCustomValidity("Vui lòng chọn người nước ngoài từ danh sách gợi ý.");
+                        }
+                    } else {
+                        if (searchInput) {
+                            searchInput.setCustomValidity("");
+                        }
+                    }
+
                     // Custom validate to ensure hidden input LoaiViPham has value
                     if (presetSelect && presetSelect.value === "") {
                         presetSelect.setCustomValidity("Vui lòng chọn loại vi phạm.");
                     } else {
-                        presetSelect.setCustomValidity("");
+                        if (presetSelect) presetSelect.setCustomValidity("");
                     }
 
                     if (!warningForm.checkValidity()) {
