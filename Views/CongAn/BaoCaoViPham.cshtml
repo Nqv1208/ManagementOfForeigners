@@ -1,7 +1,23 @@
 @model ManagementOfForeigners.Models.ViewModels.CongAn.BaoCaoViPhamViewModel
+@using System.Text.Json
+@using Microsoft.AspNetCore.Mvc.Rendering
 @{
     Layout = "~/Views/Shared/_PoliceLayout.cshtml";
     ViewBag.Title = "Báo cáo vi phạm lên XNC";
+
+    var foreignersJson = "[]";
+    if (ViewBag.NguoiNuocNgoais != null)
+    {
+        var selectList = ViewBag.NguoiNuocNgoais as IEnumerable<SelectListItem>;
+        if (selectList != null)
+        {
+            var serializedItems = selectList.Select(item => new {
+                value = item.Value,
+                text = item.Text
+            });
+            foreignersJson = JsonSerializer.Serialize(serializedItems);
+        }
+    }
 }
 
 <div class="container-fluid">
@@ -21,23 +37,54 @@
 
                         <div class="row g-3">
                             <!-- Search & Select Foreigner -->
-                            <div class="col-md-12">
+                            <div class="col-md-12 autocomplete-wrapper mb-3">
                                 <label class="form-label fw-semibold text-dark fs-7">Người nước ngoài liên quan <span class="text-danger">*</span></label>
-                                <div class="input-group mb-2">
-                                    <span class="input-group-text bg-white border-end-0" style="border-radius: 8px 0 0 8px;"><i class="bi bi-search text-muted"></i></span>
-                                    <input type="text" id="foreignerSearch" class="form-control border-start-0" placeholder="Nhập tên hoặc số hộ chiếu để tìm kiếm..." style="border-radius: 0 8px 8px 0;" />
+                                <div class="input-group">
+                                     <span class="input-group-text bg-white border-end-0" style="border-radius: 8px 0 0 8px;"><i class="bi bi-search text-muted"></i></span>
+                                     <input type="text" id="foreignerSearch" class="form-control border-start-0" placeholder="Nhập họ tên hoặc số hộ chiếu để tìm kiếm..." style="border-radius: 0 8px 8px 0;" autocomplete="off" required />
                                 </div>
-                                <select asp-for="MaNguoiNuocNgoai" asp-items="ViewBag.NguoiNuocNgoais" class="form-select" id="MaNguoiNuocNgoai" style="border-radius: 8px;" required>
-                                    <option value="">-- Chọn người nước ngoài --</option>
-                                </select>
+                                <input type="hidden" asp-for="MaNguoiNuocNgoai" id="MaNguoiNuocNgoai" />
+                                <div id="autocompleteSuggestions" class="autocomplete-suggestions d-none"></div>
                                 <span asp-validation-for="MaNguoiNuocNgoai" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Report Type & Emergency Level -->
+                            <div class="col-md-8">
+                                <label asp-for="LoaiBaoCao" class="form-label fw-semibold text-dark fs-7">Loại báo cáo vi phạm <span class="text-danger">*</span></label>
+                                <select asp-for="LoaiBaoCao" class="form-select" style="border-radius: 8px;" required>
+                                    <option value="">-- Chọn loại báo cáo --</option>
+                                    <option value="Hộ chiếu giả mạo">Hộ chiếu giả mạo</option>
+                                    <option value="Visa quá hạn dài ngày">Visa quá hạn dài ngày</option>
+                                    <option value="Hoạt động kinh doanh bất hợp pháp">Hoạt động kinh doanh bất hợp pháp</option>
+                                    <option value="Vi phạm pháp luật hình sự">Vi phạm pháp luật hình sự</option>
+                                    <option value="Khác">Khác</option>
+                                </select>
+                                <span asp-validation-for="LoaiBaoCao" class="text-danger small"></span>
+                            </div>
+
+                            <div class="col-md-4">
+                                <label asp-for="MucDoKhanCap" class="form-label fw-semibold text-dark fs-7">Mức độ khẩn cấp <span class="text-danger">*</span></label>
+                                <select asp-for="MucDoKhanCap" class="form-select" style="border-radius: 8px;" required>
+                                    <option value="">-- Chọn mức độ --</option>
+                                    <option value="Thấp">Thấp</option>
+                                    <option value="Trung bình">Trung bình</option>
+                                    <option value="Khẩn cấp">Khẩn cấp</option>
+                                </select>
+                                <span asp-validation-for="MucDoKhanCap" class="text-danger small"></span>
                             </div>
 
                             <!-- Report Content -->
                             <div class="col-12">
                                 <label asp-for="NoiDungBaoCao" class="form-label fw-semibold text-dark fs-7">Nội dung báo cáo chi tiết <span class="text-danger">*</span></label>
-                                <textarea asp-for="NoiDungBaoCao" class="form-control" rows="5" placeholder="Mô tả cụ thể hành vi vi phạm nghiêm trọng (Ví dụ: Cư trú bất hợp pháp, lao động trái phép, sử dụng Visa sai mục đích, có hoạt động nguy hiểm...)" style="border-radius: 8px;" required></textarea>
+                                <textarea asp-for="NoiDungBaoCao" class="form-control" rows="4" placeholder="Mô tả cụ thể hành vi vi phạm nghiêm trọng (Ví dụ: Cư trú bất hợp pháp, lao động trái phép, sử dụng Visa sai mục đích, có hoạt động nguy hiểm...)" style="border-radius: 8px;" required></textarea>
                                 <span asp-validation-for="NoiDungBaoCao" class="text-danger small"></span>
+                            </div>
+
+                            <!-- Proposal / Proposed Handling -->
+                            <div class="col-12">
+                                <label asp-for="DeXuatXuLy" class="form-label fw-semibold text-dark fs-7">Đề xuất xử lý / Kiến nghị</label>
+                                <textarea asp-for="DeXuatXuLy" class="form-control" rows="3" placeholder="Đề xuất biện pháp xử lý (ví dụ: yêu cầu trục xuất, phạt hành chính, rút giấy phép cư trú...)" style="border-radius: 8px;"></textarea>
+                                <span asp-validation-for="DeXuatXuLy" class="text-danger small"></span>
                             </div>
 
                             <!-- Buttons -->
@@ -78,7 +125,7 @@
                         </div>
                         <div class="mb-3">
                             <label class="text-muted fs-8 d-block">Quốc tịch</label>
-                            <span class="fw-bold text-dark fs-6" id="infoNationality"></span>
+                            <span class="fw-bold text-dark fs-6 animate-pulse" id="infoNationality"></span>
                         </div>
                         <div class="mb-0">
                             <label class="text-muted fs-8 d-block">Địa bàn theo dõi</label>
@@ -122,9 +169,17 @@
                         <span class="text-muted">Người vi phạm:</span>
                         <span class="fw-bold text-dark" id="modalForeignerName"></span>
                     </li>
+                    <li class="list-group-item d-flex justify-content-between px-0 py-2 border-0 bg-transparent">
+                        <span class="text-muted">Loại báo cáo:</span>
+                        <span class="fw-bold text-dark" id="modalReportType"></span>
+                    </li>
+                    <li class="list-group-item d-flex justify-content-between px-0 py-2 border-0 bg-transparent">
+                        <span class="text-muted">Mức độ khẩn cấp:</span>
+                        <span class="badge" id="modalEmergencyLevel"></span>
+                    </li>
                     <li class="list-group-item px-0 py-2 border-0 bg-transparent text-start">
-                        <span class="text-muted d-block mb-1">Nội dung báo cáo tóm tắt:</span>
-                        <span class="fw-bold text-dark style-multiline-ellipsis" id="modalReportSummary"></span>
+                        <span class="text-muted d-block mb-1">Đề xuất xử lý:</span>
+                        <span class="fw-bold text-dark style-multiline-ellipsis" id="modalProposal"></span>
                     </li>
                 </ul>
                 <p class="mb-0 text-muted small">Cán bộ lập báo cáo chịu trách nhiệm hoàn toàn về tính xác thực của thông tin cung cấp.</p>
@@ -141,26 +196,15 @@
     @await Html.PartialAsync("_ValidationScriptsPartial")
     
     <script>
+        const foreignersData = @Html.Raw(foreignersJson);
+
         document.addEventListener("DOMContentLoaded", function () {
-            // 1. Filter dropdown list
+            // Autocomplete Suggestion Logic
             const searchInput = document.getElementById("foreignerSearch");
-            const select = document.getElementById("MaNguoiNuocNgoai");
-            if (searchInput && select) {
-                const originalOptions = Array.from(select.options);
+            const hiddenInput = document.getElementById("MaNguoiNuocNgoai");
+            const suggestionsContainer = document.getElementById("autocompleteSuggestions");
 
-                searchInput.addEventListener("input", function () {
-                    const query = searchInput.value.toLowerCase().trim();
-                    select.innerHTML = "";
-                    const filtered = originalOptions.filter((opt, index) => {
-                        if (index === 0) return true;
-                        return opt.text.toLowerCase().includes(query);
-                    });
-                    filtered.forEach(opt => select.appendChild(opt));
-                    triggerForeignerDetailsChange();
-                });
-            }
-
-            // 2. Dynamic Info Card
+            // Dynamic Info Card
             const foreignerSelectedInfo = document.getElementById("foreignerSelectedInfo");
             const noForeignerSelected = document.getElementById("noForeignerSelected");
             const infoName = document.getElementById("infoName");
@@ -168,42 +212,133 @@
             const infoNationality = document.getElementById("infoNationality");
 
             function triggerForeignerDetailsChange() {
-                if (!select || select.value === "") {
+                const selectedId = hiddenInput.value;
+                if (!selectedId) {
                     if (foreignerSelectedInfo) foreignerSelectedInfo.classList.add("d-none");
                     if (noForeignerSelected) noForeignerSelected.classList.remove("d-none");
                 } else {
-                    const selectedText = select.options[select.selectedIndex].text;
-                    const parts = selectedText.split(" - Hộ chiếu: ");
-                    const name = parts[0];
-                    const subParts = parts[1] ? parts[1].split(" (") : [];
-                    const passport = subParts[0] || "";
-                    const nationality = subParts[1] ? subParts[1].replace(")", "") : "";
+                    const option = foreignersData.find(opt => opt.value === selectedId);
+                    if (option) {
+                        const selectedText = option.text;
+                        const parts = selectedText.split(" - Hộ chiếu: ");
+                        const name = parts[0];
+                        const subParts = parts[1] ? parts[1].split(" (") : [];
+                        const passport = subParts[0] || "";
+                        const nationality = subParts[1] ? subParts[1].replace(")", "") : "";
 
-                    if (infoName) infoName.textContent = name;
-                    if (infoPassport) infoPassport.textContent = passport;
-                    if (infoNationality) infoNationality.textContent = nationality;
+                        if (infoName) infoName.textContent = name;
+                        if (infoPassport) infoPassport.textContent = passport;
+                        if (infoNationality) infoNationality.textContent = nationality;
 
-                    if (noForeignerSelected) noForeignerSelected.classList.add("d-none");
-                    if (foreignerSelectedInfo) foreignerSelectedInfo.classList.remove("d-none");
+                        if (noForeignerSelected) noForeignerSelected.classList.add("d-none");
+                        if (foreignerSelectedInfo) foreignerSelectedInfo.classList.remove("d-none");
+                    } else {
+                        if (foreignerSelectedInfo) foreignerSelectedInfo.classList.add("d-none");
+                        if (noForeignerSelected) noForeignerSelected.classList.remove("d-none");
+                    }
                 }
             }
 
-            if (select) {
-                select.addEventListener("change", triggerForeignerDetailsChange);
-                triggerForeignerDetailsChange();
+            if (searchInput && hiddenInput && suggestionsContainer) {
+                searchInput.addEventListener("input", function () {
+                    const query = searchInput.value.toLowerCase().trim();
+                    
+                    // Clear selected value when typing
+                    hiddenInput.value = "";
+                    triggerForeignerDetailsChange();
+                    
+                    if (query === "") {
+                        suggestionsContainer.classList.add("d-none");
+                        return;
+                    }
+
+                    const filtered = foreignersData.filter(item => 
+                        item.text.toLowerCase().includes(query)
+                    );
+
+                    suggestionsContainer.innerHTML = "";
+                    if (filtered.length === 0) {
+                        const noResultDiv = document.createElement("div");
+                        noResultDiv.className = "autocomplete-suggestion no-result";
+                        noResultDiv.textContent = "Không tìm thấy người nước ngoài nào";
+                        suggestionsContainer.appendChild(noResultDiv);
+                    } else {
+                        filtered.forEach(item => {
+                            const suggestionDiv = document.createElement("div");
+                            suggestionDiv.className = "autocomplete-suggestion";
+                            suggestionDiv.textContent = item.text;
+                            suggestionDiv.addEventListener("click", function () {
+                                const selectedText = item.text;
+                                const parts = selectedText.split(" - Hộ chiếu: ");
+                                const name = parts[0];
+                                
+                                searchInput.value = name;
+                                hiddenInput.value = item.value;
+                                searchInput.setCustomValidity("");
+                                
+                                suggestionsContainer.classList.add("d-none");
+                                triggerForeignerDetailsChange();
+                            });
+                            suggestionsContainer.appendChild(suggestionDiv);
+                        });
+                    }
+                    suggestionsContainer.classList.remove("d-none");
+                });
+
+                // Re-enable suggestions on focus if query is not empty
+                searchInput.addEventListener("focus", function () {
+                    const query = searchInput.value.trim();
+                    if (query !== "" && suggestionsContainer.children.length > 0) {
+                        suggestionsContainer.classList.remove("d-none");
+                    }
+                });
+
+                // Close suggestions when clicking outside
+                document.addEventListener("click", function (e) {
+                    if (!e.target.closest(".autocomplete-wrapper")) {
+                        suggestionsContainer.classList.add("d-none");
+                    }
+                });
+
+                // On page load, if a value is pre-selected, populate the search field and detail card
+                const preselectedId = hiddenInput.value;
+                if (preselectedId) {
+                    const option = foreignersData.find(opt => opt.value === preselectedId);
+                    if (option) {
+                        const selectedText = option.text;
+                        const parts = selectedText.split(" - Hộ chiếu: ");
+                        const name = parts[0];
+                        searchInput.value = name;
+                        triggerForeignerDetailsChange();
+                    }
+                }
             }
 
-            // 3. Modal confirm
+            // Modal confirm
             const btnSubmitConfirm = document.getElementById("btnSubmitConfirm");
             const submitConfirmModalEl = document.getElementById("submitConfirmModal");
             const modalForeignerName = document.getElementById("modalForeignerName");
-            const modalReportSummary = document.getElementById("modalReportSummary");
+            const modalReportType = document.getElementById("modalReportType");
+            const modalEmergencyLevel = document.getElementById("modalEmergencyLevel");
+            const modalProposal = document.getElementById("modalProposal");
             const reportForm = document.getElementById("reportForm");
 
             if (btnSubmitConfirm && submitConfirmModalEl && reportForm) {
                 const modal = new bootstrap.Modal(submitConfirmModalEl);
 
                 btnSubmitConfirm.addEventListener("click", function () {
+                    // Validate foreigner selection
+                    const maNguoiNuocNgoai = hiddenInput ? hiddenInput.value : "";
+                    if (!maNguoiNuocNgoai) {
+                        if (searchInput) {
+                            searchInput.setCustomValidity("Vui lòng chọn người nước ngoài từ danh sách gợi ý.");
+                        }
+                    } else {
+                        if (searchInput) {
+                            searchInput.setCustomValidity("");
+                        }
+                    }
+
                     if (!reportForm.checkValidity()) {
                         reportForm.classList.add("was-validated");
                         reportForm.reportValidity();
@@ -212,9 +347,23 @@
 
                     // Populate modal data
                     modalForeignerName.textContent = infoName.textContent || "Chưa xác định";
+                    modalReportType.textContent = document.getElementById("LoaiBaoCao").value || "Chưa chọn";
                     
-                    const content = document.getElementById("NoiDungBaoCao").value;
-                    modalReportSummary.textContent = content.length > 150 ? content.substring(0, 150) + "..." : content;
+                    const emergencyLevel = document.getElementById("MucDoKhanCap").value;
+                    modalEmergencyLevel.textContent = emergencyLevel;
+                    
+                    // Style badge
+                    modalEmergencyLevel.className = "badge";
+                    if (emergencyLevel === "Thấp") {
+                        modalEmergencyLevel.classList.add("bg-secondary");
+                    } else if (emergencyLevel === "Trung bình") {
+                        modalEmergencyLevel.classList.add("bg-warning", "text-dark");
+                    } else {
+                        modalEmergencyLevel.classList.add("bg-danger");
+                    }
+
+                    const proposal = document.getElementById("DeXuatXuLy").value;
+                    modalProposal.textContent = proposal || "(Không có)";
 
                     modal.show();
                 });

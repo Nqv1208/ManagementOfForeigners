@@ -414,12 +414,18 @@ public class CongAnController : Controller
             return View(model);
         }
 
+        var combinedContent = $"[Loại: {model.LoaiBaoCao}] [Khẩn cấp: {model.MucDoKhanCap}] [Nội dung: {model.NoiDungBaoCao}]";
+        if (!string.IsNullOrWhiteSpace(model.DeXuatXuLy))
+        {
+            combinedContent += $" [Kiến nghị: {model.DeXuatXuLy}]";
+        }
+
         _context.BaoCaoViPhams.Add(new BaoCaoViPham
         {
             MaBaoCao = IdGenerator.NewMaBaoCao(_context),
             MaNguoiNuocNgoai = model.MaNguoiNuocNgoai,
             MaCanBo = canBo.MaCanBo,
-            NoiDungBaoCao = model.NoiDungBaoCao,
+            NoiDungBaoCao = combinedContent,
             NgayBaoCao = DateTime.Now,
             TrangThaiXuLy = TrangThaiXuLyConst.ChuaXuLy
         });
