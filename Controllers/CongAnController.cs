@@ -468,6 +468,52 @@ public class CongAnController : Controller
         return View();
     }
 
+    // GET: /police/warnings
+    [HttpGet("warnings")]
+    public async Task<IActionResult> DanhSachCanhBao(string? search, string? trangThai, int? page)
+    {
+        var canBo = await GetCurrentCanBoAsync();
+        if (canBo == null)
+        {
+            return RedirectToAction("TuChoiTruyCap", "TaiKhoan");
+        }
+
+        // Người nước ngoài đang cư trú trên địa bàn phụ trách
+        var wardForeignerIds = WardForeigners(canBo.MaPhuongXa).Select(n => n.MaNguoiNuocNgoai);
+
+        // Chỉ lấy cảnh báo do Cán bộ XNC ban hành, liên quan đến người nước ngoài trên địa bàn
+        var query = _context.CanhBaoViPhams
+            .Include(w => w.NguoiNuocNgoai)
+            .Include(w => w.CanBo)
+            .Where(w => wardForeignerIds.Contains(w.MaNguoiNuocNgoai) &&
+                        w.CanBo.TaiKhoan.VaiTro.TenVaiTro == VaiTroConst.CanBoXNC);
+
+        var baseQuery = query;
+        ViewBag.CountSent = await baseQuery.CountAsync(w => w.TrangThai == TrangThaiCanhBao.DaGui);
+        ViewBag.CountProcessing = await baseQuery.CountAsync(w => w.TrangThai == TrangThaiCanhBao.DangXuLy);
+        ViewBag.CountResolved = await baseQuery.CountAsync(w => w.TrangThai == TrangThaiCanhBao.DaXuLy);
+
+        if (!string.IsNullOrWhiteSpace(trangThai))
+        {
+            query = query.Where(w => w.TrangThai == trangThai);
+        }
+
+        if (!string.IsNullOrWhiteSpace(search))
+        {
+            query = query.Where(w =>
+                w.NguoiNuocNgoai.HoTen.Contains(search) ||
+                w.NguoiNuocNgoai.SoHoChieu.Contains(search) ||
+                w.LoaiViPham.Contains(search));
+        }
+
+        ViewBag.Search = search;
+        ViewBag.TrangThai = trangThai;
+        ViewBag.TenDiaBan = canBo.PhuongXa.TenPhuongXa;
+
+        var pagedList = query.OrderByDescending(w => w.NgayCanhBao).ToPagedList(page ?? 1, 10);
+        return View(pagedList);
+    }
+
     private async Task LoadWardForeignersAsync(int wardId, string? selectedForeignerId)
     {
         var foreigners = await WardForeigners(wardId)

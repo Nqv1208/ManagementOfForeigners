@@ -1,0 +1,134 @@
+@using X.PagedList.Mvc.Core
+@using X.PagedList
+@model IPagedList<ManagementOfForeigners.Models.Entities.CanhBaoViPham>
+@{
+    Layout = "~/Views/Shared/_PoliceLayout.cshtml";
+    ViewBag.Title = "Cảnh báo vi phạm từ Cán bộ XNC";
+}
+
+<div class="container-fluid">
+    <div class="police-page-header mb-4">
+        <h5 class="fw-bold mb-1" style="color: var(--police-primary-dark);">Cảnh báo vi phạm từ Cán bộ XNC - Địa bàn @ViewBag.TenDiaBan</h5>
+        <p class="text-muted mb-0 fs-7">Theo dõi các cảnh báo vi phạm do Cán bộ quản lý xuất nhập cảnh ban hành đối với người nước ngoài đang cư trú trên địa bàn</p>
+    </div>
+
+    <div class="card border-0 shadow-sm" style="border-radius: 16px;">
+        <div class="card-body p-4">
+            <!-- Filter Form & Tabs -->
+            <div class="d-flex flex-wrap justify-content-between align-items-center mb-4 gap-3">
+                <div class="filter-tabs" role="group" aria-label="Status Filter">
+                    <a asp-action="DanhSachCanhBao" class="filter-tab @(string.IsNullOrEmpty(ViewBag.TrangThai as string) ? "active" : "") text-decoration-none">
+                        <i class="bi bi-collection"></i> Tất cả
+                    </a>
+                    <a asp-action="DanhSachCanhBao" asp-route-trangThai="Đã gửi" class="filter-tab @(ViewBag.TrangThai == "Đã gửi" ? "active" : "") text-decoration-none">
+                        <i class="bi bi-send"></i> Đã gửi (@ViewBag.CountSent)
+                    </a>
+                    <a asp-action="DanhSachCanhBao" asp-route-trangThai="Đang xử lý" class="filter-tab @(ViewBag.TrangThai == "Đang xử lý" ? "active" : "") text-decoration-none">
+                        <i class="bi bi-hourglass-split"></i> Đang xử lý (@ViewBag.CountProcessing)
+                    </a>
+                    <a asp-action="DanhSachCanhBao" asp-route-trangThai="Đã xử lý" class="filter-tab @(ViewBag.TrangThai == "Đã xử lý" ? "active" : "") text-decoration-none">
+                        <i class="bi bi-check-circle"></i> Đã xử lý (@ViewBag.CountResolved)
+                    </a>
+                </div>
+
+                <!-- Search Input -->
+                <form asp-action="DanhSachCanhBao" method="get" class="d-flex gap-2">
+                    <input type="hidden" name="trangThai" value="@ViewBag.TrangThai" />
+                    <div class="input-group">
+                        <span class="input-group-text bg-white border-end-0" style="border-radius: 8px 0 0 8px;"><i class="bi bi-search text-muted"></i></span>
+                        <input type="text" name="search" class="form-control border-start-0" value="@ViewBag.Search" placeholder="Họ tên, hộ chiếu, loại vi phạm..." style="border-radius: 0 8px 8px 0;" />
+                    </div>
+                    <button type="submit" class="btn btn-primary fw-semibold" style="border-radius: 8px;">Tìm</button>
+                </form>
+            </div>
+
+            @if (!Model.Any())
+            {
+                <div class="text-center py-5">
+                    <i class="bi bi-shield-check text-muted" style="font-size: 3rem;"></i>
+                    <p class="text-muted mt-3 mb-0">Không có cảnh báo vi phạm nào từ Cán bộ XNC trên địa bàn.</p>
+                </div>
+            }
+            else
+            {
+                <div class="table-responsive">
+                    <table class="police-table-themed align-middle mb-0 fs-7">
+                        <thead>
+                            <tr>
+                                <th>Người nước ngoài</th>
+                                <th>Loại vi phạm</th>
+                                <th>Nội dung cảnh báo</th>
+                                <th class="text-center">Mức độ</th>
+                                <th>Cán bộ ban hành</th>
+                                <th class="text-center">Trạng thái</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach (var warning in Model)
+                            {
+                                var mucDoClass = warning.MucDoViPham switch
+                                {
+                                    "Nghiêm trọng" => "bg-danger",
+                                    "Trung bình" => "bg-warning text-dark",
+                                    _ => "bg-secondary"
+                                };
+                                var trangThaiClass = warning.TrangThai switch
+                                {
+                                    "Đã xử lý" => "bg-success",
+                                    "Đang xử lý" => "bg-warning text-dark",
+                                    _ => "bg-info text-dark"
+                                };
+
+                                <tr>
+                                    <td>
+                                        <div class="fw-bold text-dark">@warning.NguoiNuocNgoai?.HoTen</div>
+                                        <div class="text-muted small mt-1">
+                                            HC: @(warning.NguoiNuocNgoai?.SoHoChieu ?? "N/A") |
+                                            <span class="badge bg-light text-dark">@(warning.NguoiNuocNgoai?.QuocTich ?? "N/A")</span>
+                                        </div>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold text-dark">@warning.LoaiViPham</div>
+                                        <div class="text-muted small mt-1"><i class="bi bi-calendar-event me-1"></i>@warning.NgayCanhBao.ToString("dd/MM/yyyy HH:mm")</div>
+                                    </td>
+                                    <td>
+                                        <div class="style-multiline-ellipsis text-muted" style="max-width: 280px; display: inline-block;">
+                                            @warning.NoiDungCanhBao
+                                        </div>
+                                        @if (!string.IsNullOrWhiteSpace(warning.GhiChu))
+                                        {
+                                            <div class="text-secondary small mt-1 fst-italic">Ghi chú: @warning.GhiChu</div>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge @mucDoClass">@warning.MucDoViPham</span>
+                                    </td>
+                                    <td>
+                                        <div class="fw-semibold text-dark">@(warning.CanBo?.HoTen ?? "N/A")</div>
+                                        @if (!string.IsNullOrWhiteSpace(warning.CanBo?.DonViCongTac))
+                                        {
+                                            <div class="text-muted small mt-1">@warning.CanBo.DonViCongTac</div>
+                                        }
+                                    </td>
+                                    <td class="text-center">
+                                        <span class="badge @trangThaiClass">@warning.TrangThai</span>
+                                    </td>
+                                </tr>
+                            }
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Pagination -->
+                <div class="d-flex justify-content-center mt-4">
+                    @Html.PagedListPager(Model, page => Url.Action("DanhSachCanhBao", new { page, search = ViewBag.Search, trangThai = ViewBag.TrangThai }),
+                        new X.PagedList.Mvc.Core.PagedListRenderOptions {
+                            LiElementClasses = new string[] { "page-item" },
+                            PageClasses = new string[] { "page-link" },
+                            UlElementClasses = new string[] { "pagination", "pagination-sm" }
+                        })
+                </div>
+            }
+        </div>
+    </div>
+</div>
