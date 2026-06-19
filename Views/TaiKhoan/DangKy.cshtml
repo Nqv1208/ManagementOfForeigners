@@ -45,31 +45,13 @@
             </div>
 
             <div class="auth-card-body">
-                <!-- Stepper Progress Tracker (Only visible for LodgingOwner) -->
-                <div class="auth-stepper d-none mb-4" id="authStepper">
-                    <div class="auth-step is-active" data-step="1">
-                        <span class="auth-step-number">1</span>
-                        <span class="auth-step-label">Tài khoản</span>
-                    </div>
-                    <div class="auth-step-line"></div>
-                    <div class="auth-step" data-step="2">
-                        <span class="auth-step-number">2</span>
-                        <span class="auth-step-label">Người đại diện</span>
-                    </div>
-                    <div class="auth-step-line"></div>
-                    <div class="auth-step" data-step="3">
-                        <span class="auth-step-number">3</span>
-                        <span class="auth-step-label">Cơ sở lưu trú</span>
-                    </div>
-                </div>
-
                 <form asp-action="DangKy" asp-controller="TaiKhoan" method="post" class="auth-register-form" data-auth-register-form>
                     @Html.AntiForgeryToken()
                     <div asp-validation-summary="ModelOnly" class="alert alert-danger mb-0" role="alert"></div>
                     <input type="hidden" asp-for="AccountType" id="AccountType" />
 
-                    <!-- STEP 1: Account Information -->
-                    <section class="auth-register-section" aria-labelledby="account-section-title" data-auth-step-section="1">
+                    <!-- Account Information (Always Visible) -->
+                    <section class="auth-register-section" aria-labelledby="account-section-title">
                         <h2 class="auth-section-title" id="account-section-title">
                              <i class="bi bi-shield-lock" aria-hidden="true"></i>Thông tin tài khoản
                         </h2>
@@ -173,10 +155,9 @@
                         </div>
                     </section>
 
-                    <!-- LODGING OWNER FLOW: STEP 2 - Representative Details -->
+                    <!-- LODGING OWNER FLOW: Representative Details -->
                     <section class="auth-register-section @(isLodgingOwner ? "" : "auth-hidden")"
                              data-auth-section="LodgingOwner"
-                             data-auth-step-section="2"
                              aria-labelledby="lodging-representative-title">
                         <h2 class="auth-section-title" id="lodging-representative-title">
                             <i class="bi bi-person-lines-fill" aria-hidden="true"></i>Thông tin người đại diện
@@ -214,14 +195,9 @@
                                 <span asp-validation-for="ChucVu" class="field-validation-error"></span>
                             </div>
                         </div>
-                    </section>
 
-                    <!-- LODGING OWNER FLOW: STEP 3 - Facility Details -->
-                    <section class="auth-register-section @(isLodgingOwner ? "" : "auth-hidden")"
-                             data-auth-section="LodgingOwner"
-                             data-auth-step-section="3"
-                             aria-labelledby="lodging-facility-title">
-                        <h2 class="auth-section-title" id="lodging-facility-title">
+                        <!-- LODGING OWNER FLOW: Facility Details -->
+                        <h2 class="auth-section-title mt-4" id="lodging-facility-title">
                             <i class="bi bi-building-check" aria-hidden="true"></i>Thông tin cơ sở lưu trú
                         </h2>
                         <p class="auth-section-desc mb-3 text-muted fs-7">Thông tin chi tiết về cơ sở lưu trú tại địa bàn quản lý.</p>
@@ -260,8 +236,8 @@
                         </div>
                     </section>
 
-                    <!-- COMMITMENT CHECKBOX (Hidden in LodgingOwner Step 1 & 2) -->
-                    <section class="auth-commitment" data-auth-commitment-section aria-label="Cam kết thông tin">
+                    <!-- COMMITMENT CHECKBOX (Always visible below target sections) -->
+                    <section class="auth-commitment" aria-label="Cam kết thông tin">
                         <div class="form-check">
                             <input asp-for="CamKetThongTin" class="form-check-input" type="checkbox" data-auth-commitment />
                             <label asp-for="CamKetThongTin" class="form-check-label text-dark fw-semibold" style="font-size: 0.92rem;">
@@ -271,24 +247,18 @@
                         <span asp-validation-for="CamKetThongTin" class="field-validation-error d-block"></span>
                     </section>
 
-                    <!-- ACTIONS SECTION (Adapted with Back/Next controls for Stepper) -->
+                    <!-- ACTIONS SECTION -->
                     <div class="auth-footer-actions d-flex align-items-center justify-content-between flex-wrap gap-2 w-100">
                         <div class="d-flex align-items-center gap-2">
-                            <a asp-controller="TrangChu" asp-action="Index" class="btn btn-outline-secondary px-3 py-2" data-auth-btn-cancel>
+                            <a asp-controller="TrangChu" asp-action="Index" class="btn btn-outline-secondary px-3 py-2">
                                 <i class="bi bi-x-circle me-2" aria-hidden="true"></i>Hủy bỏ
                             </a>
-                            <button type="button" class="btn btn-outline-secondary px-3 py-2" data-auth-reset data-auth-btn-reset>
+                            <button type="button" class="btn btn-outline-secondary px-3 py-2" data-auth-reset>
                                 <i class="bi bi-arrow-counterclockwise me-2" aria-hidden="true"></i>Làm mới
-                            </button>
-                            <button type="button" class="btn btn-outline-secondary px-3 py-2 d-none" data-auth-btn-prev>
-                                <i class="bi bi-arrow-left me-2" aria-hidden="true"></i>Quay lại
                             </button>
                         </div>
                         <div class="d-flex align-items-center gap-2">
-                            <button type="button" class="btn btn-success px-4 py-2 d-none" data-auth-btn-next>
-                                <span>Tiếp tục</span><i class="bi bi-arrow-right ms-2" aria-hidden="true"></i>
-                            </button>
-                            <button type="submit" class="btn btn-primary px-4 py-2" data-auth-requires-commitment data-auth-btn-submit>
+                            <button type="submit" class="btn btn-primary px-4 py-2" data-auth-requires-commitment>
                                 <i class="bi bi-check2-circle me-2" aria-hidden="true"></i>Đăng ký
                             </button>
                         </div>
