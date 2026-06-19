@@ -16,24 +16,15 @@
     <!-- Header Premium -->
     <div class="row mb-4">
         <div class="col-12">
-            <div class="card border-0 shadow-sm" style="border-radius: 16px; overflow: hidden; background: linear-gradient(135deg, var(--police-primary), var(--police-primary-dark));">
-                <div class="card-body p-4 text-white">
-                    <div class="d-flex flex-column flex-md-row justify-content-between align-items-md-center gap-3">
-                        <div class="d-flex align-items-center gap-3">
-                            <div class="bg-primary bg-opacity-20 text-primary rounded-circle p-3 fs-3 d-inline-flex align-items-center justify-content-center" style="width: 60px; height: 60px; border: 1px solid rgba(47, 143, 31, 0.3);">
-                                <i class="bi bi-shield-shaded"></i>
-                            </div>
-                            <div>
-                                <h4 class="fw-bold mb-1">Thống kê & Kiểm soát Địa bàn</h4>
-                                <p class="text-white-50 mb-0">Hệ thống phân tích số liệu tạm trú và lưu trú tại phường phụ trách</p>
-                            </div>
-                        </div>
-                        <div>
-                            <span class="badge bg-primary px-3 py-2 fs-6 rounded-pill">
-                                <i class="bi bi-geo-alt-fill me-1"></i> Địa bàn: @wardName
-                            </span>
-                        </div>
+            <div class="police-page-header mb-4">
+                <div class="d-flex align-items-center justify-content-between flex-wrap gap-3">
+                    <div>
+                        <h5 class="fw-bold mb-1" style="color: var(--police-primary-dark);"><i class="bi bi-graph-up-arrow me-2 text-success"></i>Thống kê & Kiểm soát Địa bàn</h5>
+                        <p class="text-muted mb-0 fs-7">Hệ thống phân tích số liệu tạm trú và lưu trú tại phường phụ trách: <strong>@wardName</strong></p>
                     </div>
+                    <span class="badge bg-success bg-opacity-10 text-success fw-bold px-3 py-2 border border-success border-opacity-20" style="border-radius: 30px;">
+                        <i class="bi bi-geo-alt-fill me-1"></i> Địa bàn: @wardName
+                    </span>
                 </div>
             </div>
         </div>
@@ -164,7 +155,7 @@
                                         </div>
                                     </div>
                                     <div class="progress" style="height: 10px; border-radius: 5px; background-color: #f1f5f9;">
-                                        <div class="progress-bar progress-bar-striped progress-bar-animated bg-primary" role="progressbar" style="width: @percentage%; border-radius: 5px;" aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                        <div class="progress-bar" role="progressbar" style="width: @percentage%; border-radius: 5px; background-color: var(--primary-dark) !important;" aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
                                     </div>
                                 </div>
                             }
@@ -224,7 +215,7 @@
                                             <td class="text-end fw-semibold text-success border-0">@item.Count người</td>
                                             <td class="border-0">
                                                 <div class="progress" style="height: 10px; border-radius: 5px; background-color: #f1f5f9;">
-                                                    <div class="progress-bar bg-success" role="progressbar" style="width: @percentage%; border-radius: 5px;" aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
+                                                    <div class="progress-bar" role="progressbar" style="width: @percentage%; border-radius: 5px; background-color: var(--primary-dark) !important;" aria-valuenow="@percentage" aria-valuemin="0" aria-valuemax="100"></div>
                                                 </div>
                                             </td>
                                         </tr>
@@ -242,10 +233,10 @@
     <!-- Action buttons footer -->
     <div class="row mt-4 mb-2">
         <div class="col-12 text-end">
-            <button onclick="window.print();" class="btn btn-outline-primary rounded-pill px-4 shadow-sm">
+            <button onclick="window.print();" class="btn btn-outline-secondary rounded-pill px-4 shadow-sm">
                 <i class="bi bi-printer me-2"></i>In Báo Cáo Thống Kê
             </button>
-            <a asp-action="TongQuan" class="btn btn-success rounded-pill px-4 ms-2 shadow-sm text-white" style="background-color: var(--police-primary) !important; border-color: var(--police-primary) !important;">
+            <a asp-action="TongQuan" class="btn btn-success rounded-pill px-4 ms-2 shadow-sm text-white">
                 <i class="bi bi-arrow-left me-2"></i>Quay lại Dashboard
             </a>
         </div>
