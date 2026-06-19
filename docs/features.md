@@ -23,7 +23,7 @@
 3.1.5. Công an Phường/Xã
 •	Đăng nhập
 •	Phê duyệt khai báo tạm trú trong Phường/Xã phụ trách
-•	Cảnh báo vi phạm của người nước ngoài
+•	Xem cảnh báo vi phạm của người nước ngoài
 •	Báo cáo vi phạm lên Cán bộ quản lý xuất nhập cảnh
 •	Tra cứu người nước ngoài trên địa bàn phụ trách
 •	Thống kê, báo cáo

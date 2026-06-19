@@ -55,9 +55,14 @@
                         <i class="bi bi-person-badge-fill"></i> Tra cứu địa bàn
                     </a>
                 </li>
-                <li class="police-menu-item @(actionName == "CanhBaoViPham" ? "active" : "")">
+                <!-- <li class="police-menu-item @(actionName == "CanhBaoViPham" ? "active" : "")">
                     <a asp-controller="CongAn" asp-action="CanhBaoViPham">
                         <i class="bi bi-exclamation-triangle-fill"></i> Cảnh báo vi phạm
+                    </a>
+                </li> -->
+                <li class="police-menu-item @(actionName == "DanhSachCanhBao" ? "active" : "")">
+                    <a asp-controller="CongAn" asp-action="DanhSachCanhBao">
+                        <i class="bi bi-bell-fill"></i> Cảnh báo từ XNC
                     </a>
                 </li>
                 <li class="police-menu-item @(actionName == "BaoCaoViPham" ? "active" : "")">
