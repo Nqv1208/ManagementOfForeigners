@@ -108,8 +108,8 @@
                         <p class="auth-section-desc mb-3 text-muted fs-7">Vui lòng nhập đúng thông tin theo hộ chiếu.</p>
                         <div class="auth-form-grid">
                             <div class="auth-form-group">
-                                <label asp-for="HoTen" class="auth-required"></label>
-                                <input asp-for="HoTen" class="form-control" autocomplete="name" placeholder="Họ và tên đầy đủ" />
+                                <label asp-for="HoTen" class="auth-required">Họ và tên</label>
+                                <input asp-for="HoTen" class="form-control text-uppercase" autocomplete="name" placeholder="Họ và tên viết hoa không dấu (Ví dụ: JOHN SMITH)" />
                                 <span asp-validation-for="HoTen" class="field-validation-error"></span>
                             </div>
                             <div class="auth-form-group">
