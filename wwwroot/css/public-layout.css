@@ -212,7 +212,7 @@
 .public-nav-menu {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 0;
     flex: 1 1 auto;
     min-width: 0;
     list-style: none;

@@ -9,6 +9,9 @@ document.addEventListener("DOMContentLoaded", function () {
 
     // 2. Ghim thanh menu điều hướng khi scroll trang
     initStickyHeader();
+
+    // 3. Tính toán chiều cao header động để cân bằng chiều cao hero section
+    initHeroHeight();
 });
 
 /**
@@ -80,4 +83,20 @@ function initStickyHeader() {
     window.addEventListener("scroll", handleScroll);
     // Chạy thử lúc load trang phòng trường hợp trang được tải lại khi đang ở giữa trang
     handleScroll();
+}
+
+/**
+ * Tính toán chiều cao header động và truyền vào CSS variable
+ */
+function initHeroHeight() {
+    const header = document.querySelector(".public-header");
+    if (!header) return;
+
+    function updateHeaderHeight() {
+        const height = header.offsetHeight;
+        document.documentElement.style.setProperty("--header-height", `${height}px`);
+    }
+
+    updateHeaderHeight();
+    window.addEventListener("resize", updateHeaderHeight);
 }
