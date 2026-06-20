@@ -110,13 +110,12 @@
                                                 @if (dec.TrangThai == "Chờ duyệt")
                                                 {
                                                     <li>
-                                                        <form asp-action="PheDuyet" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn phê duyệt hồ sơ khai báo này?');" class="d-block">
-                                                            @Html.AntiForgeryToken()
-                                                            <input type="hidden" name="id" value="@dec.MaHSKhaiBao" />
-                                                            <button type="submit" class="dropdown-item text-success">
-                                                                <i class="bi bi-check-circle me-2"></i>Phê duyệt nhanh
-                                                            </button>
-                                                        </form>
+                                                        <button type="button" class="dropdown-item text-success quick-approve-btn" 
+                                                                data-id="@dec.MaHSKhaiBao" 
+                                                                data-bs-toggle="modal" 
+                                                                data-bs-target="#quickApproveModal">
+                                                            <i class="bi bi-check-circle me-2"></i>Phê duyệt nhanh
+                                                        </button>
                                                     </li>
                                                     <li>
                                                         <button type="button" class="dropdown-item text-danger quick-reject-btn" 
@@ -153,9 +152,9 @@
 <!-- Quick Reject Modal -->
 <div class="modal fade" id="quickRejectModal" tabindex="-1" aria-labelledby="quickRejectModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-dialog-centered">
-        <div class="modal-content" style="border-radius: 12px; overflow: hidden; border: none;">
-            <div class="modal-header bg-danger text-white">
-                <h6 class="modal-title fw-bold" id="quickRejectModalLabel"><i class="bi bi-exclamation-triangle-fill me-1"></i>Từ chối phê duyệt hồ sơ</h6>
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px; overflow: hidden;">
+            <div class="modal-header bg-danger text-white border-0 py-3">
+                <h6 class="modal-title fw-bold" id="quickRejectModalLabel"><i class="bi bi-exclamation-triangle-fill me-2"></i>Từ chối phê duyệt hồ sơ</h6>
                 <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <form asp-action="TuChoi" method="post">
@@ -168,9 +167,37 @@
                         <textarea name="LyDoTuChoi" class="form-control" rows="3" placeholder="Nhập lý do từ chối (Ví dụ: Thiếu thông tin, sai số hộ chiếu...)" style="border-radius: 8px;" required></textarea>
                     </div>
                 </div>
-                <div class="modal-footer" style="background-color: #f8fafc;">
-                    <button type="button" class="btn btn-outline-secondary btn-sm px-3 py-1.5 fw-semibold" data-bs-dismiss="modal" style="border-radius: 6px; font-size: 0.85rem;">Hủy</button>
-                    <button type="submit" class="btn btn-danger btn-sm px-3 py-1.5 fw-semibold" style="border-radius: 6px; font-size: 0.85rem;">Xác nhận từ chối</button>
+                <div class="modal-footer border-0 bg-light d-flex justify-content-end gap-2 py-3 px-4">
+                    <button type="button" class="btn btn-outline-secondary fw-semibold px-3 py-2" data-bs-dismiss="modal" style="border-radius: 8px; font-size: 0.85rem;">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-danger fw-semibold px-3 py-2 text-white" style="border-radius: 8px; font-size: 0.85rem;">Xác nhận từ chối</button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<!-- Quick Approve Modal -->
+<div class="modal fade" id="quickApproveModal" tabindex="-1" aria-labelledby="quickApproveModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+            <div class="modal-header border-bottom-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <div class="status-icon status-icon--success status-icon--lg mb-3">
+                    <div class="status-icon__inner">
+                        <i class="bi bi-check-lg"></i>
+                    </div>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Xác nhận phê duyệt nhanh</h5>
+                <p class="text-muted fs-7 mb-0">Bạn có chắc chắn muốn phê duyệt nhanh hồ sơ khai báo tạm trú <strong id="quickApproveIdDisplay" class="text-dark"></strong> không? Dữ liệu lưu trú sẽ chính thức được ghi nhận.</p>
+            </div>
+            <form asp-action="PheDuyet" method="post" id="quickApproveForm">
+                @Html.AntiForgeryToken()
+                <input type="hidden" name="id" id="quickApproveId" />
+                <div class="modal-footer border-top-0 d-flex justify-content-center gap-2 pb-4">
+                    <button type="button" class="btn btn-light fw-semibold px-4 py-2" data-bs-dismiss="modal" style="border-radius: 8px;">Hủy bỏ</button>
+                    <button type="submit" class="btn btn-success fw-semibold px-4 py-2 text-white" style="border-radius: 8px;">Đồng ý phê duyệt</button>
                 </div>
             </form>
         </div>
@@ -183,6 +210,12 @@
             $('.quick-reject-btn').click(function() {
                 var id = $(this).data('id');
                 $('#quickRejectId').val(id);
+            });
+
+            $('.quick-approve-btn').click(function() {
+                var id = $(this).data('id');
+                $('#quickApproveId').val(id);
+                $('#quickApproveIdDisplay').text(id);
             });
         });
     </script>

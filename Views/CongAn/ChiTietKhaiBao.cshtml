@@ -146,13 +146,15 @@
                                     <i class="bi bi-x-circle me-1"></i> Từ chối duyệt
                                 </button>
 
-                                <!-- Approve Action -->
-                                <form asp-action="PheDuyet" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn phê duyệt hồ sơ khai báo này?');">
+                                <!-- Approve Trigger Button -->
+                                <button type="button" class="btn btn-success fw-semibold px-4 py-2 text-white" data-bs-toggle="modal" data-bs-target="#approveConfirmModal" style="border-radius: 8px;">
+                                    <i class="bi bi-check-circle me-1"></i> Phê duyệt hồ sơ
+                                </button>
+
+                                <!-- Hidden Approve Form -->
+                                <form id="approveForm" asp-action="PheDuyet" method="post" class="d-none">
                                     @Html.AntiForgeryToken()
                                     <input type="hidden" name="id" value="@Model.MaHSKhaiBao" />
-                                    <button type="submit" class="btn btn-success fw-semibold px-4 py-2 text-white" style="border-radius: 8px;">
-                                        <i class="bi bi-check-circle me-1"></i> Phê duyệt hồ sơ
-                                    </button>
                                 </form>
                             </div>
 
@@ -160,7 +162,7 @@
                             <div class="collapse mt-3" id="tuChoiFormCollapse">
                                 <div class="card card-body bg-light border-0 shadow-sm p-4" style="border-radius: 12px;">
                                     <h6 class="fw-bold mb-3 text-dark"><i class="bi bi-exclamation-circle me-1 text-danger"></i> Nhập lý do từ chối duyệt</h6>
-                                    <form asp-action="TuChoi" method="post" onsubmit="return confirm('Bạn có chắc chắn muốn từ chối hồ sơ khai báo này?');">
+                                    <form id="rejectForm" asp-action="TuChoi" method="post">
                                         @Html.AntiForgeryToken()
                                         <input type="hidden" name="MaHSKhaiBao" value="@Model.MaHSKhaiBao" />
                                         
@@ -181,3 +183,82 @@
         </div>
     </div>
 </div>
+
+<!-- Custom Approve Confirmation Modal -->
+<div class="modal fade" id="approveConfirmModal" tabindex="-1" aria-labelledby="approveConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+            <div class="modal-header border-bottom-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <div class="status-icon status-icon--success status-icon--lg mb-3">
+                    <div class="status-icon__inner">
+                        <i class="bi bi-check-lg"></i>
+                    </div>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Xác nhận phê duyệt</h5>
+                <p class="text-muted fs-7 mb-0">Bạn có chắc chắn muốn phê duyệt hồ sơ khai báo tạm trú <strong class="text-dark">@Model.MaHSKhaiBao</strong> này không? Dữ liệu lưu trú sẽ chính thức được ghi nhận.</p>
+            </div>
+            <div class="modal-footer border-top-0 d-flex justify-content-center gap-2 pb-4">
+                <button type="button" class="btn btn-light fw-semibold px-4 py-2" data-bs-dismiss="modal" style="border-radius: 8px;">Hủy bỏ</button>
+                <button type="button" id="confirmApproveBtn" class="btn btn-success fw-semibold px-4 py-2 text-white" style="border-radius: 8px;">Đồng ý phê duyệt</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Custom Reject Confirmation Modal -->
+<div class="modal fade" id="rejectConfirmModal" tabindex="-1" aria-labelledby="rejectConfirmModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg" style="border-radius: 16px;">
+            <div class="modal-header border-bottom-0 pb-0">
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body p-4 text-center">
+                <div class="status-icon status-icon--danger status-icon--lg mb-3">
+                    <div class="status-icon__inner">
+                        <i class="bi bi-x-lg"></i>
+                    </div>
+                </div>
+                <h5 class="fw-bold text-dark mb-2">Xác nhận từ chối</h5>
+                <p class="text-muted fs-7 mb-0">Bạn có chắc chắn muốn từ chối hồ sơ khai báo tạm trú <strong class="text-dark">@Model.MaHSKhaiBao</strong> này không?</p>
+            </div>
+            <div class="modal-footer border-top-0 d-flex justify-content-center gap-2 pb-4">
+                <button type="button" class="btn btn-light fw-semibold px-4 py-2" data-bs-dismiss="modal" style="border-radius: 8px;">Hủy bỏ</button>
+                <button type="button" id="confirmRejectBtn" class="btn btn-danger fw-semibold px-4 py-2 text-white" style="border-radius: 8px;">Đồng ý từ chối</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Confirm Approve
+            $('#confirmApproveBtn').click(function() {
+                $('#approveForm').submit();
+            });
+
+            // Confirm Reject
+            var rejectForm = $('#rejectForm');
+            var isConfirmedReject = false;
+
+            rejectForm.submit(function(e) {
+                if (!isConfirmedReject) {
+                    e.preventDefault();
+                    if (this.checkValidity()) {
+                        $('#rejectConfirmModal').modal('show');
+                    } else {
+                        this.reportValidity();
+                    }
+                }
+            });
+
+            $('#confirmRejectBtn').click(function() {
+                isConfirmedReject = true;
+                rejectForm.submit();
+            });
+        });
+    </script>
+}
