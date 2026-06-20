@@ -80,14 +80,37 @@
                 </div>
                 <div class="card-body px-4">
                     <div class="d-grid gap-3">
-                        <a asp-action="KhaiBaoLuuTru" class="btn btn-success btn-lg fs-7 py-3" style="border-radius: 12px; font-weight: 600;">
-                            <i class="bi bi-person-plus-fill me-2"></i> Khai báo khách mới
+                        <a asp-action="KhaiBaoLuuTru" class="coso-quick-action-card primary text-decoration-none">
+                            <div class="icon-wrap">
+                                <i class="bi bi-person-plus-fill"></i>
+                            </div>
+                            <div class="action-details">
+                                <span class="action-title">Khai báo khách mới</span>
+                                <span class="action-desc">Nhập đăng ký cư trú cho khách nước ngoài thực tế</span>
+                            </div>
+                            <i class="bi bi-chevron-right arrow-icon"></i>
                         </a>
-                        <a asp-action="DanhSachKhaiBao" class="btn btn-outline-success btn-lg fs-7 py-3" style="border-radius: 12px; font-weight: 600;">
-                            <i class="bi bi-file-earmark-text-fill me-2"></i> Xem hồ sơ khai báo
+
+                        <a asp-action="DanhSachKhaiBao" class="coso-quick-action-card success text-decoration-none">
+                            <div class="icon-wrap">
+                                <i class="bi bi-file-earmark-text-fill"></i>
+                            </div>
+                            <div class="action-details">
+                                <span class="action-title">Hồ sơ khai báo</span>
+                                <span class="action-desc">Xem lịch sử khai báo và trạng thái duyệt hồ sơ</span>
+                            </div>
+                            <i class="bi bi-chevron-right arrow-icon"></i>
                         </a>
-                        <a asp-action="DanhSachLuuTru" class="btn btn-outline-secondary btn-lg fs-7 py-3" style="border-radius: 12px; font-weight: 600;">
-                            <i class="bi bi-people-fill me-2"></i> Xem khách đang ở
+
+                        <a asp-action="DanhSachLuuTru" class="coso-quick-action-card secondary text-decoration-none">
+                            <div class="icon-wrap">
+                                <i class="bi bi-people-fill"></i>
+                            </div>
+                            <div class="action-details">
+                                <span class="action-title">Khách đang lưu trú</span>
+                                <span class="action-desc">Theo dõi danh sách khách đang ở thực tế tại cơ sở</span>
+                            </div>
+                            <i class="bi bi-chevron-right arrow-icon"></i>
                         </a>
                     </div>
 

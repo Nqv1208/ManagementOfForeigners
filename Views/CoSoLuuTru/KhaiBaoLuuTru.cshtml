@@ -74,7 +74,7 @@
                         <!-- D. Hộ chiếu / nhập cảnh (Passport search row) -->
                         <div class="row g-3 mb-3">
                             <div class="col-md-6">
-                                <label asp-for="SoHoChieu" class="form-label fw-semibold text-dark fs-7"></label><span class="text-danger ms-1">*</span>
+                                <label asp-for="SoHoChieu" class="form-label fw-semibold text-dark fs-7">Số hộ chiếu <span class="text-danger ms-1">*</span></label>
                                 <div class="input-group passport-search-row">
                                     <input asp-for="SoHoChieu" class="form-control" placeholder="Nhập số hộ chiếu..." id="txtPassport" />
                                     <button class="btn btn-success" type="button" id="btnSearchPassport">
@@ -85,7 +85,7 @@
                                 <div id="passportFeedback" class="fs-8 mt-1 d-none"></div>
                             </div>
                             <div class="col-md-6">
-                                <label asp-for="LoaiHoChieu" class="form-label fw-semibold text-dark fs-7"></label>
+                                <label asp-for="LoaiHoChieu" class="form-label fw-semibold text-dark fs-7">Loại hộ chiếu</label>
                                 <select asp-for="LoaiHoChieu" class="form-select">
                                     <option value="Phổ thông">Phổ thông</option>
                                     <option value="Công vụ">Công vụ</option>
@@ -99,19 +99,19 @@
                         <div class="form-grid">
                             <!-- Row 1 -->
                             <div class="form-group span-2">
-                                <label asp-for="HoTen" class="form-label fw-semibold text-dark fs-7"></label><span class="text-danger ms-1">*</span>
-                                <input asp-for="HoTen" class="form-control text-uppercase" placeholder="Họ và tên viết hoa không dấu..." id="txtHoTen" />
+                                <label asp-for="HoTen" class="form-label fw-semibold text-dark fs-7">Họ và tên <span class="text-danger ms-1">*</span></label>
+                                <input asp-for="HoTen" class="form-control text-uppercase" placeholder="Họ và tên viết hoa không dấu (Ví dụ: JOHN SMITH)" id="txtHoTen" />
                                 <span asp-validation-for="HoTen" class="text-danger fs-8"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="QuocTich" class="form-label fw-semibold text-dark fs-7"></label><span class="text-danger ms-1">*</span>
+                                <label asp-for="QuocTich" class="form-label fw-semibold text-dark fs-7">Quốc tịch <span class="text-danger ms-1">*</span></label>
                                 <input asp-for="QuocTich" class="form-control" placeholder="Ví dụ: Anh, Pháp, Mỹ..." id="txtQuocTich" />
                                 <span asp-validation-for="QuocTich" class="text-danger fs-8"></span>
                             </div>
 
                             <!-- Row 2 -->
                             <div class="form-group">
-                                <label asp-for="GioiTinh" class="form-label fw-semibold text-dark fs-7"></label><span class="text-danger ms-1">*</span>
+                                <label asp-for="GioiTinh" class="form-label fw-semibold text-dark fs-7">Giới tính <span class="text-danger ms-1">*</span></label>
                                 <select asp-for="GioiTinh" class="form-select" id="ddlGioiTinh">
                                     <option value="">-- Chọn giới tính --</option>
                                     <option value="Nam">Nam</option>
@@ -121,35 +121,35 @@
                                 <span asp-validation-for="GioiTinh" class="text-danger fs-8"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="NgaySinh" class="form-label fw-semibold text-dark fs-7"></label><span class="text-danger ms-1">*</span>
+                                <label asp-for="NgaySinh" class="form-label fw-semibold text-dark fs-7">Ngày sinh <span class="text-danger ms-1">*</span></label>
                                 <input asp-for="NgaySinh" class="form-control" type="date" id="txtNgaySinh" />
                                 <span asp-validation-for="NgaySinh" class="text-danger fs-8"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="NgayHetHanHoChieu" class="form-label fw-semibold text-dark fs-7"></label><span class="text-danger ms-1">*</span>
+                                <label asp-for="NgayHetHanHoChieu" class="form-label fw-semibold text-dark fs-7">Ngày hết hạn hộ chiếu <span class="text-danger ms-1">*</span></label>
                                 <input asp-for="NgayHetHanHoChieu" class="form-control" type="date" id="txtNgayHetHanHoChieu" />
                                 <span asp-validation-for="NgayHetHanHoChieu" class="text-danger fs-8"></span>
                             </div>
 
                             <!-- Row 3 -->
                             <div class="form-group">
-                                <label asp-for="NgayCapHoChieu" class="form-label fw-semibold text-dark fs-7"></label>
+                                <label asp-for="NgayCapHoChieu" class="form-label fw-semibold text-dark fs-7">Ngày cấp hộ chiếu</label>
                                 <input asp-for="NgayCapHoChieu" class="form-control" type="date" id="txtNgayCapHoChieu" />
                                 <span asp-validation-for="NgayCapHoChieu" class="text-danger fs-8"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="QuocGiaCapHoChieu" class="form-label fw-semibold text-dark fs-7"></label>
+                                <label asp-for="QuocGiaCapHoChieu" class="form-label fw-semibold text-dark fs-7">Quốc gia cấp hộ chiếu</label>
                                 <input asp-for="QuocGiaCapHoChieu" class="form-control" placeholder="Quốc gia cấp hộ chiếu..." id="txtQuocGiaCap" />
                                 <span asp-validation-for="QuocGiaCapHoChieu" class="text-danger fs-8"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="SoDienThoaiKhach" class="form-label fw-semibold text-dark fs-7"></label>
+                                <label asp-for="SoDienThoaiKhach" class="form-label fw-semibold text-dark fs-7">Số điện thoại khách (nếu có)</label>
                                 <input asp-for="SoDienThoaiKhach" class="form-control" placeholder="Số điện thoại khách hàng..." id="txtSoDienThoaiKhach" />
                                 <span asp-validation-for="SoDienThoaiKhach" class="text-danger fs-8"></span>
                             </div>
 
                             <div class="form-group span-2">
-                                <label asp-for="EmailKhach" class="form-label fw-semibold text-dark fs-7"></label>
+                                <label asp-for="EmailKhach" class="form-label fw-semibold text-dark fs-7">Email khách (nếu có)</label>
                                 <input asp-for="EmailKhach" class="form-control" placeholder="Email khách hàng..." id="txtEmailKhach" />
                                 <span asp-validation-for="EmailKhach" class="text-danger fs-8"></span>
                             </div>
@@ -161,7 +161,7 @@
                         <h5 class="section-title"><i class="bi bi-airplane me-2"></i>Thông tin cư trú & nhập cảnh</h5>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label asp-for="LoaiGiayToCuTru" class="form-label fw-semibold text-dark fs-7"></label><span class="text-danger ms-1">*</span>
+                                <label asp-for="LoaiGiayToCuTru" class="form-label fw-semibold text-dark fs-7">Loại giấy tờ cư trú <span class="text-danger ms-1">*</span></label>
                                 <select asp-for="LoaiGiayToCuTru" class="form-select">
                                     <option value="Visa">Visa</option>
                                     <option value="Thẻ tạm trú">Thẻ tạm trú</option>
@@ -173,23 +173,23 @@
                                 <span asp-validation-for="LoaiGiayToCuTru" class="text-danger fs-8"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="SoGiayToCuTru" class="form-label fw-semibold text-dark fs-7"></label>
+                                <label asp-for="SoGiayToCuTru" class="form-label fw-semibold text-dark fs-7">Số visa / số giấy tờ cư trú</label>
                                 <input asp-for="SoGiayToCuTru" class="form-control" placeholder="Số visa / giấy tờ..." />
                                 <span asp-validation-for="SoGiayToCuTru" class="text-danger fs-8"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="NgayNhapCanh" class="form-label fw-semibold text-dark fs-7"></label>
+                                <label asp-for="NgayNhapCanh" class="form-label fw-semibold text-dark fs-7">Ngày nhập cảnh</label>
                                 <input asp-for="NgayNhapCanh" class="form-control" type="date" />
                                 <span asp-validation-for="NgayNhapCanh" class="text-danger fs-8"></span>
                             </div>
 
                             <div class="form-group">
-                                <label asp-for="CuaKhauNhapCanh" class="form-label fw-semibold text-dark fs-7"></label>
+                                <label asp-for="CuaKhauNhapCanh" class="form-label fw-semibold text-dark fs-7">Cửa khẩu nhập cảnh</label>
                                 <input asp-for="CuaKhauNhapCanh" class="form-control" placeholder="Cửa khẩu nhập cảnh..." />
                                 <span asp-validation-for="CuaKhauNhapCanh" class="text-danger fs-8"></span>
                             </div>
                             <div class="form-group" id="groupMucDich">
-                                <label asp-for="MucDichLuuTru" class="form-label fw-semibold text-dark fs-7"></label><span class="text-danger ms-1">*</span>
+                                <label asp-for="MucDichLuuTru" class="form-label fw-semibold text-dark fs-7">Mục đích lưu trú <span class="text-danger ms-1">*</span></label>
                                 <select asp-for="MucDichLuuTru" class="form-select" id="ddlMucDich">
                                     <option value="Du lịch">Du lịch</option>
                                     <option value="Làm việc">Làm việc</option>
@@ -202,7 +202,7 @@
                                 <span asp-validation-for="MucDichLuuTru" class="text-danger fs-8"></span>
                             </div>
                             <div class="form-group d-none" id="groupMucDichKhac">
-                                <label asp-for="MucDichKhac" class="form-label fw-semibold text-dark fs-7"></label><span class="text-danger ms-1">*</span>
+                                <label asp-for="MucDichKhac" class="form-label fw-semibold text-dark fs-7">Mô tả mục đích khác <span class="text-danger ms-1">*</span></label>
                                 <input asp-for="MucDichKhac" class="form-control" placeholder="Nhập mục đích khác..." id="txtMucDichKhac" />
                                 <span asp-validation-for="MucDichKhac" class="text-danger fs-8"></span>
                             </div>
@@ -214,24 +214,24 @@
                         <h5 class="section-title"><i class="bi bi-clock-history me-2"></i>Thông tin lưu trú tại cơ sở</h5>
                         <div class="form-grid">
                             <div class="form-group">
-                                <label asp-for="SoPhong" class="form-label fw-semibold text-dark fs-7"></label><span class="text-danger ms-1">*</span>
+                                <label asp-for="SoPhong" class="form-label fw-semibold text-dark fs-7">Số phòng / Căn hộ <span class="text-danger ms-1">*</span></label>
                                 <input asp-for="SoPhong" class="form-control" placeholder="Số phòng hoặc số căn hộ..." />
                                 <span asp-validation-for="SoPhong" class="text-danger fs-8"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="NgayBatDau" class="form-label fw-semibold text-dark fs-7"></label><span class="text-danger ms-1">*</span>
+                                <label asp-for="NgayBatDau" class="form-label fw-semibold text-dark fs-7">Ngày bắt đầu lưu trú <span class="text-danger ms-1">*</span></label>
                                 <input asp-for="NgayBatDau" class="form-control" type="date" id="txtNgayBatDau" />
                                 <span asp-validation-for="NgayBatDau" class="text-danger fs-8"></span>
                             </div>
                             <div class="form-group">
-                                <label asp-for="NgayKetThucDuKien" class="form-label fw-semibold text-dark fs-7"></label>
+                                <label asp-for="NgayKetThucDuKien" class="form-label fw-semibold text-dark fs-7">Ngày kết thúc dự kiến</label>
                                 <input asp-for="NgayKetThucDuKien" class="form-control" type="date" id="txtNgayKetThuc" />
                                 <span asp-validation-for="NgayKetThucDuKien" class="text-danger fs-8"></span>
                                 <div class="form-text fs-9 text-muted mt-1">Có thể để trống nếu khách chưa có lịch rời đi dự kiến.</div>
                             </div>
 
                             <div class="form-group full">
-                                <label asp-for="GhiChu" class="form-label fw-semibold text-dark fs-7"></label>
+                                <label asp-for="GhiChu" class="form-label fw-semibold text-dark fs-7">Ghi chú thêm (nếu có)</label>
                                 <textarea asp-for="GhiChu" class="form-control" rows="2" placeholder="Ghi chú thêm về điều kiện hoặc lịch trình lưu trú..."></textarea>
                                 <span asp-validation-for="GhiChu" class="text-danger fs-8"></span>
                             </div>
