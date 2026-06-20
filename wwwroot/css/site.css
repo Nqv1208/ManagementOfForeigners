@@ -25,6 +25,35 @@
     --danger: #dc2626;
     --info: #2f8f1f;
 
+    /* Status Color Tokens */
+    --status-success-bg: #DFF3E3;
+    --status-success-soft: #EAF7EC;
+    --status-success-main: #2E7D32;
+    --status-success-strong: #1F6A28;
+    --status-success-text: #FFFFFF;
+
+    --status-warning-bg: #FFF4DB;
+    --status-warning-soft: #FFF8E6;
+    --status-warning-main: #D97706;
+    --status-warning-strong: #B45309;
+    --status-warning-text: #FFFFFF;
+
+    --status-danger-bg: #FDE8E8;
+    --status-danger-soft: #FEF2F2;
+    --status-danger-main: #DC2626;
+    --status-danger-strong: #B91C1C;
+    --status-danger-text: #FFFFFF;
+
+    --status-info-bg: #E8F1FE;
+    --status-info-soft: #EFF6FF;
+    --status-info-main: #2563EB;
+    --status-info-strong: #1D4ED8;
+    --status-info-text: #FFFFFF;
+
+    --status-neutral-bg: #F2F4F7;
+    --status-neutral-main: #667085;
+    --status-neutral-strong: #344054;
+
     --portal-primary: var(--primary);
     --portal-primary-dark: var(--primary-dark);
     --portal-primary-light: var(--primary-soft);
@@ -769,3 +798,192 @@ body {
     font-size: 0.75rem !important;
     line-height: 1.5 !important;
 }
+
+/* ===== Refactored Status Icons ===== */
+.status-icon {
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+}
+
+.status-icon__inner {
+    border-radius: 9999px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    color: #ffffff;
+}
+
+.status-icon svg,
+.status-icon i {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 1;
+}
+
+/* Status variants */
+.status-icon--success {
+    background-color: var(--status-success-bg) !important;
+}
+.status-icon--success .status-icon__inner {
+    background-color: var(--status-success-main) !important;
+    color: var(--status-success-text) !important;
+}
+
+.status-icon--warning {
+    background-color: var(--status-warning-bg) !important;
+}
+.status-icon--warning .status-icon__inner {
+    background-color: var(--status-warning-main) !important;
+    color: var(--status-warning-text) !important;
+}
+
+.status-icon--danger {
+    background-color: var(--status-danger-bg) !important;
+}
+.status-icon--danger .status-icon__inner {
+    background-color: var(--status-danger-main) !important;
+    color: var(--status-danger-text) !important;
+}
+
+.status-icon--info {
+    background-color: var(--status-info-bg) !important;
+}
+.status-icon--info .status-icon__inner {
+    background-color: var(--status-info-main) !important;
+    color: var(--status-info-text) !important;
+}
+
+.status-icon--neutral {
+    background-color: var(--status-neutral-bg) !important;
+}
+.status-icon--neutral .status-icon__inner {
+    background-color: var(--status-neutral-main) !important;
+    color: #ffffff !important;
+}
+
+/* Size variations */
+.status-icon--sm {
+    width: 36px;
+    height: 36px;
+}
+.status-icon--sm .status-icon__inner {
+    width: 22px;
+    height: 22px;
+}
+.status-icon--sm svg,
+.status-icon--sm i {
+    width: 12px;
+    height: 12px;
+    font-size: 12px;
+}
+
+.status-icon--md {
+    width: 48px;
+    height: 48px;
+}
+.status-icon--md .status-icon__inner {
+    width: 28px;
+    height: 28px;
+}
+.status-icon--md svg,
+.status-icon--md i {
+    width: 15px;
+    height: 15px;
+    font-size: 15px;
+}
+
+.status-icon--lg {
+    width: 64px;
+    height: 64px;
+}
+.status-icon--lg .status-icon__inner {
+    width: 36px;
+    height: 36px;
+}
+.status-icon--lg svg,
+.status-icon--lg i {
+    width: 18px;
+    height: 18px;
+    font-size: 18px;
+}
+
+/* ===== Overrides to fix bg-opacity with text-color overlap issues (e.g. green-on-green) ===== */
+.bg-opacity-10.bg-primary,
+.bg-opacity-15.bg-primary {
+    background-color: var(--status-success-bg) !important;
+}
+.bg-opacity-10.bg-success,
+.bg-opacity-15.bg-success {
+    background-color: var(--status-success-bg) !important;
+}
+.bg-opacity-10.bg-warning,
+.bg-opacity-15.bg-warning {
+    background-color: var(--status-warning-bg) !important;
+}
+.bg-opacity-10.bg-danger,
+.bg-opacity-15.bg-danger {
+    background-color: var(--status-danger-bg) !important;
+}
+.bg-opacity-10.bg-info,
+.bg-opacity-15.bg-info {
+    background-color: var(--status-info-bg) !important;
+}
+
+/* Specific text color fixes when used inside soft-background indicators/badges */
+.bg-opacity-10.text-primary,
+.bg-opacity-15.text-primary {
+    color: var(--status-success-main) !important;
+}
+.bg-opacity-10.text-success,
+.bg-opacity-15.text-success {
+    color: var(--status-success-main) !important;
+}
+.bg-opacity-10.text-warning,
+.bg-opacity-15.text-warning,
+.bg-opacity-10.text-warning-emphasis,
+.bg-opacity-15.text-warning-emphasis {
+    color: var(--status-warning-main) !important;
+}
+.bg-opacity-10.text-danger,
+.bg-opacity-15.text-danger {
+    color: var(--status-danger-main) !important;
+}
+.bg-opacity-10.text-info,
+.bg-opacity-15.text-info {
+    color: var(--status-info-main) !important;
+}
+
+/* Border overrides to match soft colors */
+.bg-opacity-10.border-primary,
+.bg-opacity-15.border-primary,
+.border-opacity-20.border-primary {
+    border-color: rgba(46, 125, 50, 0.2) !important;
+}
+.bg-opacity-10.border-success,
+.bg-opacity-15.border-success,
+.border-opacity-20.border-success {
+    border-color: rgba(46, 125, 50, 0.2) !important;
+}
+.bg-opacity-10.border-warning,
+.bg-opacity-15.border-warning,
+.border-opacity-20.border-warning {
+    border-color: rgba(217, 119, 6, 0.2) !important;
+}
+.bg-opacity-10.border-danger,
+.bg-opacity-15.border-danger,
+.border-opacity-20.border-danger,
+.border-danger-border {
+    border-color: rgba(220, 38, 38, 0.2) !important;
+}
+.bg-opacity-10.border-info,
+.bg-opacity-15.border-info,
+.border-opacity-20.border-info {
+    border-color: rgba(37, 99, 235, 0.2) !important;
+}
+
+
