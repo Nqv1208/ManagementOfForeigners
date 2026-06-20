@@ -471,9 +471,9 @@ public class CanBoController : Controller
         if (!string.IsNullOrWhiteSpace(search))
         {
             query = query.Where(h =>
-                h.TaiKhoan.NguoiNuocNgoai.HoTen.Contains(search) ||
-                h.TaiKhoan.NguoiNuocNgoai.SoHoChieu.Contains(search) ||
-                h.CoSoLuuTru.TenCoSo.Contains(search));
+                (h.TaiKhoan != null && h.TaiKhoan.NguoiNuocNgoai != null && h.TaiKhoan.NguoiNuocNgoai.HoTen.Contains(search)) ||
+                (h.TaiKhoan != null && h.TaiKhoan.NguoiNuocNgoai != null && h.TaiKhoan.NguoiNuocNgoai.SoHoChieu.Contains(search)) ||
+                (h.CoSoLuuTru != null && h.CoSoLuuTru.TenCoSo.Contains(search)));
         }
 
         if (!string.IsNullOrWhiteSpace(status))
